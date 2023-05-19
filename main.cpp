@@ -15,8 +15,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     wc.lpszClassName = "SampleGame";            //ウィンドウクラス名
     wc.lpfnWndProc = WndProc;                   //ウィンドウプロシージャ
     wc.style = CS_VREDRAW | CS_HREDRAW;         //スタイル（デフォルト）
-    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION); //アイコン
-    wc.hIconSm = LoadIcon(NULL, IDI_WINLOGO);   //小さいアイコン
+    wc.hIcon = LoadIcon(NULL, IDI_QUESTION);        //アイコン
+    wc.hIconSm = LoadIcon(NULL, IDI_QUESTION);   //小さいアイコン
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);   //マウスカーソル
     wc.lpszMenuName = NULL;                     //メニュー（なし）
     wc.cbClsExtra = 0;
@@ -28,7 +28,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
   //ウィンドウを作成
     HWND hWnd = CreateWindow(
         "SampleGame",         //ウィンドウクラス名
-        "サンプルゲーム",     //タイトルバーに表示する内容
+        "さんぷるげーむ",     //タイトルバーに表示する内容
         WS_OVERLAPPEDWINDOW, //スタイル（普通のウィンドウ）
         CW_USEDEFAULT,       //表示位置左（おまかせ）
         CW_USEDEFAULT,       //表示位置上（おまかせ）
