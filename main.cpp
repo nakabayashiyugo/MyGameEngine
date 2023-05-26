@@ -83,7 +83,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //”wŒi‚ÌF
             float clearColor[4] = { 0.0f, 0.5f, 0.5f, 1.0f };//R,G,B,A
 
-            //‰æ–Ê‚ðƒNƒŠƒA
             pContext->ClearRenderTargetView(pRenderTargetView, clearColor);
 
 
