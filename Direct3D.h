@@ -2,7 +2,7 @@
 //インクルード
 
 #include <d3d11.h>
-
+#pragma comment(lib, "d3dcompiler.lib")
 
 
 //リンカ
