@@ -1,6 +1,7 @@
 //インクルード
 #include <Windows.h>
 #include <d3d11.h>
+#include "Direct3D.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -63,6 +64,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
   //ウィンドウを表示
     ShowWindow(hWnd, nCmdShow);
+
+    //Direct3D初期化
+
+    Direct3D::Initialize(winW, winH, hWnd);
 
     ///////////////////////////いろいろ準備するための設定///////////////////////////////
     //いろいろな設定項目をまとめた構造体
@@ -131,14 +136,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         else
         {
             //ゲームの処理
+            Direct3D::BeginDraw();
+             
             //背景の色
-            float clearColor[4] = { 0.0f, 0.5f, 0.5f, 0.0f };//R,G,B,A
+            float clearColor[4] = { 0.0f, 0.8f, 0.0f, 1.0f };//R,G,B,A
 
             pContext->ClearRenderTargetView(pRenderTargetView, clearColor);
 
 
             //描画処理
-
+            Direct3D::EndDraw();
 
             //スワップ（バックバッファを表に表示する）
             pSwapChain->Present(0, 0);
@@ -151,6 +158,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     pSwapChain->Release();
     pContext->Release();
     pDevice->Release();
+    Direct3D::Release();
 
 	return 0;
 }
