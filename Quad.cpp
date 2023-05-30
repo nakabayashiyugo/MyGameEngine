@@ -17,7 +17,7 @@ void Quad::Initialize()
 		XMVectorSet(-1.0f,  1.0f, 0.0f, 0.0f),	// 四角形の頂点（左上）
 		XMVectorSet(1.0f,  1.0f, 0.0f, 0.0f),	// 四角形の頂点（右上）
 		XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f),	// 四角形の頂点（右下）
-		XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f),	// 四角形の頂点（左下）		
+		XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f),	// 四角形の頂点（左下）	
 	};
 
 	// 頂点データ用バッファの設定
@@ -33,7 +33,7 @@ void Quad::Initialize()
 	Direct3D::pDevice->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 
 	//インデックス情報
-	int index[] = { 0,2,3, 0,1,2 };
+	int index[] = { 0,1,2, 0,2,3 };
 
 	// インデックスバッファを生成する
 	D3D11_BUFFER_DESC   bd;
@@ -97,4 +97,7 @@ void Quad::Draw()
 
 void Quad::Release()
 {
+	pVertexBuffer_->Release();
+	pIndexBuffer_->Release();
+	pConstantBuffer_->Release();
 }
