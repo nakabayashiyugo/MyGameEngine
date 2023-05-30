@@ -68,23 +68,38 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
     //一時的にバックバッファを取得しただけなので解放
     pBackBuffer->Release();
 
-    //シェーダー準備
+    ///////////////////////////ビューポート（描画範囲）設定///////////////////////////////
+    //レンダリング結果を表示する範囲
+    D3D11_VIEWPORT vp;
+    vp.Width = (float)winW;	//幅
+    vp.Height = (float)winH;//高さ
+    vp.MinDepth = 0.0f;	//手前
+    vp.MaxDepth = 1.0f;	//奥
+    vp.TopLeftX = 0;	//左
+    vp.TopLeftY = 0;	//上
 
+    //データを画面に描画するための一通りの設定（パイプライン）
+    pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // データの入力種類を指定
+    pContext->OMSetRenderTargets(1, &pRenderTargetView, nullptr);            // 描画先を設定
+    pContext->RSSetViewports(1, &vp);
+
+    //シェーダー準備
     InitShader();
 }
 
 //描画開始
 void Direct3D::BeginDraw()
-
 {
-
+    //背景の色
+    float clearColor[4] = { 0.0f, 0.8f, 0.0f, 1.0f };//R,G,B,A
+    pContext->ClearRenderTargetView(pRenderTargetView, clearColor);
 }
 
 //描画終了
 void Direct3D::EndDraw()
-
 {
-
+    //スワップ（バックバッファを表に表示する）
+    pSwapChain->Present(0, 0);
 }
 
 //解放処理
@@ -97,7 +112,6 @@ void Direct3D::Release()
 }
 
 //シェーダー準備
-
 void Direct3D::InitShader()
 {
     // 頂点シェーダの作成（コンパイル）
