@@ -66,8 +66,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     ShowWindow(hWnd, nCmdShow);
 
     //Direct3D‰Šú‰»
-
     Direct3D::Initialize(winW, winH, hWnd);
+
     Quad* pQuad = new Quad();
     pQuad->Initialize();
     
@@ -98,7 +98,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
     //‰ð•úˆ—
     Direct3D::Release();
-    pQuad->Release();
+    SAFE_DELETE(pQuad);
 
 	return 0;
 }

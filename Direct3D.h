@@ -3,11 +3,12 @@
 #include <d3dcompiler.h>
 #include <d3d11.h>
 
+//ƒŠƒ“ƒJ
+#pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 
-//ƒŠƒ“ƒJ
-
-#pragma comment(lib, "d3d11.lib")
+#define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
+#define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
 
 namespace Direct3D
 

@@ -1,4 +1,5 @@
 #include "Direct3D.h"
+#include <cassert>
 
 //変数
 namespace Direct3D
@@ -62,11 +63,17 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
     ID3D11Texture2D* pBackBuffer;
     pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 
+    HRESULT hr;
     //レンダーターゲットビューを作成
-    pDevice->CreateRenderTargetView(pBackBuffer, NULL, &pRenderTargetView);
+    hr = pDevice->CreateRenderTargetView(pBackBuffer, NULL, &pRenderTargetView);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
 
+    }
+    
     //一時的にバックバッファを取得しただけなので解放
-    pBackBuffer->Release();
+    SAFE_RELEASE(pBackBuffer);
 
     ///////////////////////////ビューポート（描画範囲）設定///////////////////////////////
     //レンダリング結果を表示する範囲
@@ -105,10 +112,15 @@ void Direct3D::EndDraw()
 //解放処理
 void Direct3D::Release()
 {
-    pRasterizerState->Release();
-    pVertexLayout->Release();
-    pPixelShader->Release();
-    pVertexShader->Release();
+    SAFE_RELEASE(pRasterizerState);
+    SAFE_RELEASE(pVertexLayout);
+    SAFE_RELEASE(pPixelShader);
+    SAFE_RELEASE(pVertexShader);
+
+    SAFE_RELEASE(pRenderTargetView);
+    SAFE_RELEASE(pSwapChain);
+    SAFE_RELEASE(pContext);
+    SAFE_RELEASE(pDevice);
 }
 
 //シェーダー準備
@@ -125,13 +137,13 @@ void Direct3D::InitShader()
     };
     pDevice->CreateInputLayout(layout, 1, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &pVertexLayout);
 
-    pCompileVS->Release();
+    SAFE_RELEASE(pCompileVS);
 
     // ピクセルシェーダの作成（コンパイル）
     ID3DBlob* pCompilePS = nullptr;
     D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
     pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &pPixelShader);
-    pCompilePS->Release();
+    SAFE_RELEASE(pCompilePS);
 
     //ラスタライザ作成
     D3D11_RASTERIZER_DESC rdc = {};
