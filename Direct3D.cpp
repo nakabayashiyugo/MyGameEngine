@@ -69,6 +69,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
     if (FAILED(hr))
     {
         //失敗したときの処理
+        MessageBox(nullptr, "レンダーターゲットビューの作成に失敗しました", "エラー", MB_OK);
         return hr;
     }
     
@@ -95,6 +96,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
     if (FAILED(hr))
     {
         //失敗したときの処理
+        MessageBox(nullptr, "シェーダーの呼び出しに失敗しました", "エラー", MB_OK);
         return hr;
     }
     return S_OK;
@@ -140,6 +142,7 @@ HRESULT Direct3D::InitShader()
     if (FAILED(hr))
     {
         //失敗したときの処理
+        MessageBox(nullptr, "頂点バッファのコンパイルに失敗しました", "エラー", MB_OK);
         return hr;
     }
 
@@ -147,7 +150,13 @@ HRESULT Direct3D::InitShader()
     D3D11_INPUT_ELEMENT_DESC layout[] = {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
     };
-    pDevice->CreateInputLayout(layout, 1, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &pVertexLayout);
+    hr = pDevice->CreateInputLayout(layout, 1, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &pVertexLayout);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        MessageBox(nullptr, "頂点インプットレイアウトの設定に失敗しました", "エラー", MB_OK);
+        return hr;
+    }
 
     SAFE_RELEASE(pCompileVS);
 
@@ -158,6 +167,7 @@ HRESULT Direct3D::InitShader()
     if (FAILED(hr))
     {
         //失敗したときの処理
+        MessageBox(nullptr, "ピクセルシェーダのコンパイルに失敗しました", "エラー", MB_OK);
         return hr;
     }
     SAFE_RELEASE(pCompilePS);
@@ -165,12 +175,13 @@ HRESULT Direct3D::InitShader()
     //ラスタライザ作成
     D3D11_RASTERIZER_DESC rdc = {};
     rdc.CullMode = D3D11_CULL_BACK;
-    rdc.FillMode = D3D11_FILL_WIREFRAME;
+    rdc.FillMode = D3D11_FILL_SOLID;
     rdc.FrontCounterClockwise = FALSE;
     hr = pDevice->CreateRasterizerState(&rdc, &pRasterizerState);
     if (FAILED(hr))
     {
         //失敗したときの処理
+        MessageBox(nullptr, "ラスタライザの作成に失敗しました", "エラー", MB_OK);
         return hr;
     }
 

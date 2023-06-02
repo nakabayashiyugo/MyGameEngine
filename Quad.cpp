@@ -36,6 +36,7 @@ HRESULT Quad::Initialize()
 	if (FAILED(hr))
 	{
 		//エラー処理
+		MessageBox(nullptr, "頂点バッファの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 
@@ -58,6 +59,7 @@ HRESULT Quad::Initialize()
 	if (FAILED(hr))
 	{
 		//エラー処理
+		MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 
@@ -75,6 +77,7 @@ HRESULT Quad::Initialize()
 	if (FAILED(hr))
 	{
 		//エラー処理
+		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 
