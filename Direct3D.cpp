@@ -16,7 +16,7 @@ namespace Direct3D
 }
 
 //初期化
-void Direct3D::Initialize(int winW, int winH, HWND hWnd)
+HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 {
     ///////////////////////////いろいろ準備するための設定///////////////////////////////
     //いろいろな設定項目をまとめた構造体
@@ -69,7 +69,7 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
     if (FAILED(hr))
     {
         //失敗したときの処理
-
+        return hr;
     }
     
     //一時的にバックバッファを取得しただけなので解放
@@ -91,7 +91,13 @@ void Direct3D::Initialize(int winW, int winH, HWND hWnd)
     pContext->RSSetViewports(1, &vp);
 
     //シェーダー準備
-    InitShader();
+    hr = InitShader();
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        return hr;
+    }
+    return S_OK;
 }
 
 //描画開始
@@ -124,12 +130,18 @@ void Direct3D::Release()
 }
 
 //シェーダー準備
-void Direct3D::InitShader()
+HRESULT Direct3D::InitShader()
 {
+    HRESULT hr;
     // 頂点シェーダの作成（コンパイル）
     ID3DBlob* pCompileVS = nullptr;
     D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
-    pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &pVertexShader);
+    hr = pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &pVertexShader);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        return hr;
+    }
 
     //頂点インプットレイアウト
     D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -142,7 +154,12 @@ void Direct3D::InitShader()
     // ピクセルシェーダの作成（コンパイル）
     ID3DBlob* pCompilePS = nullptr;
     D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
-    pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &pPixelShader);
+    hr = pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &pPixelShader);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        return hr;
+    }
     SAFE_RELEASE(pCompilePS);
 
     //ラスタライザ作成
@@ -150,7 +167,12 @@ void Direct3D::InitShader()
     rdc.CullMode = D3D11_CULL_BACK;
     rdc.FillMode = D3D11_FILL_WIREFRAME;
     rdc.FrontCounterClockwise = FALSE;
-    pDevice->CreateRasterizerState(&rdc, &pRasterizerState);
+    hr = pDevice->CreateRasterizerState(&rdc, &pRasterizerState);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        return hr;
+    }
 
     //それぞれをデバイスコンテキストにセット
     pContext->VSSetShader(pVertexShader, NULL, 0);	//頂点シェーダー
