@@ -190,4 +190,6 @@ HRESULT Direct3D::InitShader()
     pContext->PSSetShader(pPixelShader, NULL, 0);	//ピクセルシェーダー
     pContext->IASetInputLayout(pVertexLayout);	//頂点インプットレイアウト
     pContext->RSSetState(pRasterizerState);		//ラスタライザー
+
+    return S_OK;
 }
