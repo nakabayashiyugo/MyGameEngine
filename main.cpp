@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include "Direct3D.h"
 #include "Quad.h"
+#include "Camera.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -74,7 +75,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //失敗したときの処理
         PostQuitMessage(0);
     }
+    //カメラ、起動
+    Camera::Initialize();
 
+    //ポリゴンクラス作ってる
     Quad* pQuad = new Quad();
     hr = pQuad->Initialize();
     if (FAILED(hr))
@@ -82,7 +86,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //失敗したときの処理
         PostQuitMessage(0);
     }
-    
+
   //メッセージループ（何か起きるのを待つ）
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
@@ -98,6 +102,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //メッセージなし
         else
         {
+            //カメラ、更新
+            Camera::Update();
+
             //ゲームの処理
             Direct3D::BeginDraw();
 

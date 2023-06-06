@@ -1,6 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include "Direct3D.h"
+#include "Camera.h"
 
 using namespace DirectX;
 
