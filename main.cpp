@@ -113,7 +113,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             Direct3D::BeginDraw();
 
             k += 0.05f;
-            XMMATRIX mat = XMMatrixTranslation(k / 100, 0, 0) * XMMatrixRotationZ(XMConvertToRadians(k));
+            XMMATRIX mat = XMMatrixRotationZ(XMConvertToRadians(k));
             //XMMATRIX mat = ;
             //XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45))
             //         * XMMatrixTranslation(4, 0, 0);
