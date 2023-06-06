@@ -78,6 +78,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     //カメラ、起動
     Camera::Initialize();
 
+    //Camera::SetPosition(XMFLOAT3(0, 0, -10));
+    Camera::SetTarget(XMFLOAT3(0, 0, 0));
+
     //ポリゴンクラス作ってる
     Quad* pQuad = new Quad();
     hr = pQuad->Initialize();
@@ -88,6 +91,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
 
   //メッセージループ（何か起きるのを待つ）
+    float k = 0;
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
     while (msg.message != WM_QUIT)
@@ -108,7 +112,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ゲームの処理
             Direct3D::BeginDraw();
 
-            pQuad->Draw();
+            k += 0.05f;
+            XMMATRIX mat = XMMatrixTranslation(k / 100, 0, 0) * XMMatrixRotationZ(XMConvertToRadians(k));
+            //XMMATRIX mat = ;
+            //XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45))
+            //         * XMMatrixTranslation(4, 0, 0);
+            pQuad->Draw(mat);
 
             //描画処理
             Direct3D::EndDraw();
