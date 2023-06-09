@@ -64,3 +64,13 @@ void Texture::Release()
 	SAFE_RELEASE(pSampler_);
 	SAFE_RELEASE(pSRV_);
 }
+
+ID3D11SamplerState* Texture::GetSampler()
+{
+	return pSampler_;
+}
+
+ID3D11ShaderResourceView* Texture::GetSRV()
+{
+	return pSRV_;
+}
