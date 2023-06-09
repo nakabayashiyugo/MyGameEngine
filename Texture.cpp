@@ -39,7 +39,7 @@ HRESULT Texture::Load(std::string fileName)
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	hr = Direct3D::pDevice->CreateSamplerState(&SamDesc, &pSampler_);
+	hr = Direct3D::pDevice_->CreateSamplerState(&SamDesc, &pSampler_);
 	if (FAILED(hr))
 	{
 		return E_FAIL;
@@ -49,7 +49,7 @@ HRESULT Texture::Load(std::string fileName)
 	srv.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	srv.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srv.Texture2D.MipLevels = 1;
-	hr = CreateShaderResourceView(Direct3D::pDevice, 
+	hr = CreateShaderResourceView(Direct3D::pDevice_, 
 		image.GetImages(), image.GetImageCount(),metadata, & pSRV_);
 	if (FAILED(hr))
 	{
