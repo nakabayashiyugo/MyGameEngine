@@ -1,26 +1,50 @@
-#include "Quad.h"
+#include "Dice.h"
 
-Quad::Quad():
+Dice::Dice() :
 	pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr),
 	pTexture_(nullptr)
 {
 }
 
-Quad::~Quad()
+Dice::~Dice()
 {
 	Release();
 }
 
-HRESULT Quad::Initialize()
+HRESULT Dice::Initialize()
 {
 	HRESULT hr;
 	// 頂点情報
 	VERTEX vertices[] =
 	{
-		{XMVectorSet(-1.0f,  1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
-		{XMVectorSet(1.0f,  1.0f, 0.0f, 0.0f),	XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
-		{XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f),	XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
-		{XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f),	XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）	
+		//前面
+		{XMVectorSet(-1.0f,  1.0f, -1.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },//左上
+		{XMVectorSet(1.0f,  1.0f, -1.0f, 0.0f),	XMVectorSet(0.25f, 0.0f, 0.0f, 0.0f) },//右上
+		{XMVectorSet(1.0f, -1.0f, -1.0f, 0.0f),	XMVectorSet(0.25f, 0.5f, 0.0f, 0.0f) },//右下
+		{XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f),XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f) },//左下
+		//上面
+		{XMVectorSet(-1.0f,  1.0f, -1.0f, 0.0f), XMVectorSet(0.5f, 0.5f, 0.0f, 0.0f) },//左上
+		{XMVectorSet(1.0f,  1.0f, -1.0f, 0.0f),	XMVectorSet(0.75f, 0.5f, 0.0f, 0.0f) },//右上
+		{XMVectorSet(-1.0f,  1.0f, 1.0f, 0.0f), XMVectorSet(0.5f, 0.0f, 0.0f, 0.0f) },//左上奥
+		{XMVectorSet(1.0f,  1.0f, 1.0f, 0.0f),	XMVectorSet(0.75f, 0.0f, 0.0f, 0.0f) },//右上奥
+		//右側面
+		{XMVectorSet(1.0f,  1.0f, 1.0f, 0.0f),	XMVectorSet(0.5f, 0.0f, 0.0f, 0.0f) },//右上奥
+		{XMVectorSet(1.0f, -1.0f, 1.0f, 0.0f),	XMVectorSet(0.5f, 0.5f, 0.0f, 0.0f) },//右下奥
+		//左側面
+		{XMVectorSet(-1.0f,  1.0f, -1.0f, 0.0f), XMVectorSet(0.25f, 0.5f, 0.0f, 0.0f) },//左上
+		{XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f),XMVectorSet(0.25f, 1.0f, 0.0f, 0.0f) },//左下
+		{XMVectorSet(-1.0f,  1.0f, 1.0f, 0.0f), XMVectorSet(0.0f, 0.5f, 0.0f, 0.0f) },//左上奥
+		{XMVectorSet(-1.0f, -1.0f, 1.0f, 0.0f),	XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },//左下奥
+		//後面
+		{XMVectorSet(-1.0f,  1.0f, 1.0f, 0.0f), XMVectorSet(0.5f, 0.5f, 0.0f, 0.0f) },//左上奥
+		{XMVectorSet(1.0f,  1.0f, 1.0f, 0.0f),	XMVectorSet(0.25f, 0.5f, 0.0f, 0.0f) },//右上奥
+		{XMVectorSet(1.0f, -1.0f, 1.0f, 0.0f),	XMVectorSet(0.25f, 1.0f, 0.0f, 0.0f) },//右下奥
+		{XMVectorSet(-1.0f, -1.0f, 1.0f, 0.0f),	XMVectorSet(0.5f, 1.0f, 0.0f, 0.0f) },//左下奥
+		//下面
+		{XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f),XMVectorSet(0.75f, 0.0f, 0.0f, 0.0f) },//左下
+		{XMVectorSet(1.0f, -1.0f, -1.0f, 0.0f),	XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) },//右下
+		{XMVectorSet(1.0f, -1.0f, 1.0f, 0.0f),	XMVectorSet(1.0f, 0.5f, 0.0f, 0.0f) },//右下奥
+		{XMVectorSet(-1.0f, -1.0f, 1.0f, 0.0f),	XMVectorSet(0.75f, 0.5f, 0.0f, 0.0f) },//左下奥
 	};
 
 	// 頂点データ用バッファの設定
@@ -42,7 +66,13 @@ HRESULT Quad::Initialize()
 	}
 
 	//インデックス情報
-	int index[] = { 0,1,2, 0,2,3 };
+	int index[] = { 0,1,2, 0,2,3, //前面
+					4,6,7, 4,7,5, //上面
+					1,8,2, 2,8,9, //右側面
+					10,11,13, 10,13,12, //左側面
+					14,16,15, 14,17,16, //後面
+					18,19,20, 18,20,21, //下面
+					};
 
 	// インデックスバッファを生成する
 	D3D11_BUFFER_DESC   bd;
@@ -83,12 +113,12 @@ HRESULT Quad::Initialize()
 	}
 
 	pTexture_ = new Texture;
-	pTexture_->Load("Assets\\Quad.png");
+	pTexture_->Load("Assets\\Dice.png");
 
 	return S_OK;
 }
 
-void Quad::Draw(XMMATRIX& worldMatrix)
+void Dice::Draw(XMMATRIX& worldMatrix)
 {
 	CONSTANT_BUFFER cb;
 	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
@@ -118,10 +148,10 @@ void Quad::Draw(XMMATRIX& worldMatrix)
 	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 
-	Direct3D::pContext_->DrawIndexed(6, 0, 0);
+	Direct3D::pContext_->DrawIndexed(36, 0, 0);
 }
 
-void Quad::Release()
+void Dice::Release()
 {
 	SAFE_RELEASE(pTexture_);
 	SAFE_DELETE(pTexture_);
