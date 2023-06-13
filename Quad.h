@@ -26,14 +26,19 @@ class Quad
 
 	Texture* pTexture_;
 
+	int indNum_;
+
 public:
 	/// <summary>
 	///  四角形を表すクラスのコンストラクタ
 	/// </summary>
 	Quad();
 	~Quad();
-	HRESULT Initialize();
-	void Draw(XMMATRIX& worldMatrix);
-	void Release();
+	virtual HRESULT Initialize();
+	HRESULT MyCreateBuffer(VERTEX *_vertices, int _verNum, int *_index);
+	virtual void Draw(XMMATRIX& worldMatrix);
+	virtual void Release();
+	void SetIndNum(int i);
+	int GetIndNum();
 };
 

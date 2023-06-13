@@ -82,7 +82,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     //Camera::SetPosition(XMFLOAT3(0, 0, -10));
     Camera::SetTarget(XMFLOAT3(0, 0, 0));
 
-    ////ポリゴンクラス作ってる
+    //ポリゴンクラス作ってる
     //Quad* pQuad = new Quad();
     //hr = pQuad->Initialize();
     //if (FAILED(hr))
@@ -121,15 +121,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             Direct3D::BeginDraw();
 
             k += 0.05f;
-            XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(k));
+            //XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(k));
             XMMATRIX matX = XMMatrixRotationX(XMConvertToRadians(k));
             //XMMATRIX mat = XMMatrixRotationX(XMConvertToRadians(k));
             /*XMMATRIX mat = ;
             XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45))
                      * XMMatrixTranslation(4, 0, 0);
                      * */
-            XMMATRIX mat = matZ * matX;
-            pDice->Draw(mat);
+            //XMMATRIX mat = matZ * matX;
+            pDice->Draw(matX);
+            //pQuad->Draw(matX);
 
             //描画処理
             Direct3D::EndDraw();
