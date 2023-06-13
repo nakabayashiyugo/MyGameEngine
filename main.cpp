@@ -121,14 +121,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             Direct3D::BeginDraw();
 
             k += 0.05f;
-            XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(k));
             XMMATRIX matX = XMMatrixRotationX(XMConvertToRadians(k));
+            //XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(k));
+            XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(k));
             //XMMATRIX mat = XMMatrixRotationX(XMConvertToRadians(k));
             /*XMMATRIX mat = ;
             XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45))
                      * XMMatrixTranslation(4, 0, 0);
                      * */
-            XMMATRIX mat = matZ * matX;
+            XMMATRIX mat = matX * matZ;
             pDice->Draw(mat);
             //pQuad->Draw(matX);
 

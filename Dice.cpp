@@ -36,7 +36,6 @@ HRESULT Dice::Initialize()
 		{XMVectorSet(-1.0f, -1.0f, 1.0f, 0.0f),	XMVectorSet(0.75f, 0.5f, 0.0f, 0.0f) },//左下奥
 	};
 
-
 	//インデックス情報
 	int index[] = { 0,1,2, 0,2,3, //前面
 					4,6,7, 4,7,5, //上面

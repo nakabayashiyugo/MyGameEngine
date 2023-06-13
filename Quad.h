@@ -36,8 +36,8 @@ public:
 	~Quad();
 	virtual HRESULT Initialize();
 	HRESULT MyCreateBuffer(VERTEX *_vertices, int _verNum, int *_index);
-	virtual void Draw(XMMATRIX& worldMatrix);
-	virtual void Release();
+	void Draw(XMMATRIX& worldMatrix);
+	void Release();
 	void SetIndNum(int i);
 	int GetIndNum();
 };

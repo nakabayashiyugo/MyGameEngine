@@ -9,6 +9,6 @@ class Dice
 	:public Quad
 {
 public:
-	virtual HRESULT Initialize();
+	virtual HRESULT Initialize() override;
 };
 
