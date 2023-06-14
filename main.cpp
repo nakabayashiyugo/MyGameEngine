@@ -2,8 +2,8 @@
 #include <Windows.h>
 #include <d3d11.h>
 #include "Direct3D.h"
-#include "Quad.h"
-//#include "Dice.h"
+//#include "Quad.h"
+#include "Dice.h"
 #include "Camera.h"
 
 //リンカ
@@ -83,20 +83,20 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     Camera::SetTarget(XMFLOAT3(0, 0, 0));
 
     //ポリゴンクラス作ってる
-    Quad* pQuad = new Quad();
-    hr = pQuad->Initialize();
-    if (FAILED(hr))
-    {
-        //失敗したときの処理
-        PostQuitMessage(0);
-    }
-    //Dice* pDice = new Dice();
-    //hr = pDice->Initialize();
+    //Quad* pQuad = new Quad();
+    //hr = pQuad->Initialize();
     //if (FAILED(hr))
     //{
     //    //失敗したときの処理
     //    PostQuitMessage(0);
     //}
+    Dice* pDice = new Dice();
+    hr = pDice->Initialize();
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        PostQuitMessage(0);
+    }
 
   //メッセージループ（何か起きるのを待つ）
     float k = 0;
@@ -120,7 +120,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ゲームの処理
             Direct3D::BeginDraw();
 
-            k += 0.01f;
+            k += 0.03f;
             //XMMATRIX matX = XMMatrixRotationX(XMConvertToRadians(k));
             XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(k));
             //XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(k));
@@ -130,8 +130,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
                      * XMMatrixTranslation(4, 0, 0);
                      * */
             //XMMATRIX mat = matX * matZ;
-            //pDice->Draw(matZ);
-            pQuad->Draw(matY);
+            pDice->Draw(matY);
+            //pQuad->Draw(matY);
 
             //描画処理
             Direct3D::EndDraw();
@@ -140,8 +140,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
     //解放処理
     Direct3D::Release();
-    SAFE_DELETE(pQuad);
-    //SAFE_DELETE(pDice);
+    //SAFE_DELETE(pQuad);
+    SAFE_DELETE(pDice);
 
 	return 0;
 }
