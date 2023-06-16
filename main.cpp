@@ -2,8 +2,9 @@
 #include <Windows.h>
 #include <d3d11.h>
 #include "Direct3D.h"
-//#include "Quad.h"
+#include "Quad.h"
 #include "Dice.h"
+#include "Sprite.h"
 #include "Camera.h"
 
 //ƒŠƒ“ƒJ
@@ -83,15 +84,25 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     Camera::SetTarget(XMFLOAT3(0, 0, 0));
 
     //ƒ|ƒŠƒSƒ“ƒNƒ‰ƒXì‚Á‚Ä‚é
-    //Quad* pQuad = new Quad();
-    //hr = pQuad->Initialize();
+    // 
+    Quad* pQuad = new Quad();
+    hr = pQuad->Initialize();
+    if (FAILED(hr))
+    {
+        //¸”s‚µ‚½‚Æ‚«‚Ìˆ—
+        PostQuitMessage(0);
+    }
+
+    //Dice* pDice = new Dice();
+    //hr = pDice->Initialize();
     //if (FAILED(hr))
     //{
     //    //¸”s‚µ‚½‚Æ‚«‚Ìˆ—
     //    PostQuitMessage(0);
     //}
-    Dice* pDice = new Dice();
-    hr = pDice->Initialize();
+
+    Sprite* pSprite = new Sprite();
+    hr = pSprite->Initialize(WINDOW_HEIGHT, WINDOW_WIDTH);
     if (FAILED(hr))
     {
         //¸”s‚µ‚½‚Æ‚«‚Ìˆ—
@@ -120,7 +131,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ƒQ[ƒ€‚Ìˆ—
             Direct3D::BeginDraw();
 
-            k += 0.03f;
+            //k += 0.03f;
             //XMMATRIX matX = XMMatrixRotationX(XMConvertToRadians(k));
             XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(k));
             //XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(k));
@@ -129,9 +140,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45))
                      * XMMatrixTranslation(4, 0, 0);
                      * */
-            //XMMATRIX mat = matX * matZ;
-            pDice->Draw(matY);
+            //XMMATRIX mat = matY * matZ;
+            //pDice->Draw(matY);
             //pQuad->Draw(matY);
+            pSprite->Draw(matY);
 
             //•`‰æˆ—
             Direct3D::EndDraw();
@@ -141,7 +153,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     //‰ğ•úˆ—
     Direct3D::Release();
     //SAFE_DELETE(pQuad);
-    SAFE_DELETE(pDice);
+    //SAFE_DELETE(pDice);
+    SAFE_DELETE(pSprite);
 
 	return 0;
 }
