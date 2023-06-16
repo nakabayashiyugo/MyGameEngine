@@ -85,13 +85,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
     //ƒ|ƒŠƒSƒ“ƒNƒ‰ƒXì‚Á‚Ä‚é
     // 
-    Quad* pQuad = new Quad();
-    hr = pQuad->Initialize();
-    if (FAILED(hr))
-    {
-        //Ž¸”s‚µ‚½‚Æ‚«‚Ìˆ—
-        PostQuitMessage(0);
-    }
+    //Quad* pQuad = new Quad();
+    //hr = pQuad->Initialize();
+    //if (FAILED(hr))
+    //{
+    //    //Ž¸”s‚µ‚½‚Æ‚«‚Ìˆ—
+    //    PostQuitMessage(0);
+    //}
 
     //Dice* pDice = new Dice();
     //hr = pDice->Initialize();
