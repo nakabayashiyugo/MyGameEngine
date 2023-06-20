@@ -49,7 +49,7 @@ HRESULT Quad::Initialize()
 
 void Quad::Draw(XMMATRIX& worldMatrix)
 {
-	Direct3D::SetShader(SHADER_2D);
+	Direct3D::SetShader(SHADER_3D);
 
 	PassDataToCB(worldMatrix);
 	SetBufferToPipeline();
