@@ -6,6 +6,7 @@
 #include "Dice.h"
 #include "Sprite.h"
 #include "Camera.h"
+#include "Transform.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -110,7 +111,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
 
   //メッセージループ（何か起きるのを待つ）
-    float k = 0;
+    Transform* pTransform = new Transform();
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
     while (msg.message != WM_QUIT)
@@ -131,16 +132,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ゲームの処理
             Direct3D::BeginDraw();
 
-            k += 0.03f;
-            XMMATRIX matX = XMMatrixRotationX(XMConvertToRadians(k)) ;
-            XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(k));
-            XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(0));
-            //XMMATRIX mat = XMMatrixRotationX(XMConvertToRadians(k));
-            //XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45)) * XMMatrixTranslation(4, 0, 0);
-            XMMATRIX mat = matY * matX * XMMatrixTranslation(0, 2, 0);
-            pDice->Draw(mat);
-            //pQuad->Draw(matY);
-            pSprite->Draw(matZ);
+            pTransform->Calclation();
+            XMMATRIX mat = XMMatrixRotationZ(XMConvertToRadians(0));
+            XMMATRIX diceMat = pTransform->GetWorldMatrix();
+            pDice->Draw(diceMat);
+            //pQuad->Draw(mat);
+            pSprite->Draw(mat);
 
             //描画処理
             Direct3D::EndDraw();
