@@ -93,13 +93,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     //    PostQuitMessage(0);
     //}
 
-    //Dice* pDice = new Dice();
-    //hr = pDice->Initialize();
-    //if (FAILED(hr))
-    //{
-    //    //¸”s‚µ‚½‚Æ‚«‚Ìˆ—
-    //    PostQuitMessage(0);
-    //}
+    Dice* pDice = new Dice();
+    hr = pDice->Initialize();
+    if (FAILED(hr))
+    {
+        //¸”s‚µ‚½‚Æ‚«‚Ìˆ—
+        PostQuitMessage(0);
+    }
 
     Sprite* pSprite = new Sprite();
     hr = pSprite->Initialize(WINDOW_HEIGHT, WINDOW_WIDTH);
@@ -131,19 +131,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ƒQ[ƒ€‚Ìˆ—
             Direct3D::BeginDraw();
 
-            //k += 0.03f;
-            //XMMATRIX matX = XMMatrixRotationX(XMConvertToRadians(k));
+            k += 0.03f;
+            XMMATRIX matX = XMMatrixRotationX(XMConvertToRadians(k)) ;
             XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(k));
-            //XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(k));
+            XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(0));
             //XMMATRIX mat = XMMatrixRotationX(XMConvertToRadians(k));
-            /*XMMATRIX mat = ;
-            XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45))
-                     * XMMatrixTranslation(4, 0, 0);
-                     * */
-            //XMMATRIX mat = matY * matZ;
-            //pDice->Draw(matY);
+            //XMMATRIX mat = XMMatrixScaling(1.0f, 3.0f, 1.0f) * XMMatrixRotationZ(XMConvertToRadians(-45)) * XMMatrixTranslation(4, 0, 0);
+            XMMATRIX mat = matY * matX * XMMatrixTranslation(0, 2, 0);
+            pDice->Draw(mat);
             //pQuad->Draw(matY);
-            pSprite->Draw(matY);
+            pSprite->Draw(matZ);
 
             //•`‰æˆ—
             Direct3D::EndDraw();
@@ -153,7 +150,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     //‰ğ•úˆ—
     Direct3D::Release();
     //SAFE_DELETE(pQuad);
-    //SAFE_DELETE(pDice);
+    SAFE_DELETE(pDice);
     SAFE_DELETE(pSprite);
 
 	return 0;
