@@ -110,7 +110,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         PostQuitMessage(0);
     }
 
-  //メッセージループ（何か起きるのを待つ）
+    //メッセージループ（何か起きるのを待つ）
     Transform* pTransform = new Transform();
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));

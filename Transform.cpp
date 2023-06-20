@@ -2,7 +2,7 @@
 
 Transform::Transform()
     :matTranslate_(XMMatrixIdentity()), matRotate_(XMMatrixIdentity()), matScale_(XMMatrixIdentity()),
-    position_(XMFLOAT3(0, 2, 0)), rotate_(XMFLOAT3(0, 0, 0)), scale_(XMFLOAT3(1, 1, 1))
+    position_(XMFLOAT3(0, 0, 0)), rotate_(XMFLOAT3(0, 0, 0)), scale_(XMFLOAT3(1, 1, 1))
 {
 }
 
@@ -12,6 +12,8 @@ Transform::~Transform()
 
 void Transform::Calclation()
 {
+    position_.y = 2.0f;
+
     rotate_.x += 0.03f;
     rotate_.y += 0.03f;
 
