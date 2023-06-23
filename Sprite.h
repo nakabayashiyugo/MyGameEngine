@@ -4,6 +4,7 @@
 #include "Direct3D.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "Transform.h"
 
 using namespace DirectX;
 
@@ -39,7 +40,7 @@ public:
 	Sprite();
 	~Sprite();
 	HRESULT Initialize(int winH, int winW);
-	void Draw(XMMATRIX& worldMatrix);
+	void Draw(Transform& transform);
 	void Release();
 
 private:
@@ -57,7 +58,7 @@ private:
 
 	HRESULT LoadTexture();
 
-	void PassDataToCB(DirectX::XMMATRIX& worldMatrix);
+	void PassDataToCB(Transform& transform);
 	void SetBufferToPipeline();
 };
 

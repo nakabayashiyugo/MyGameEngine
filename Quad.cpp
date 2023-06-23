@@ -47,11 +47,12 @@ HRESULT Quad::Initialize()
 	return S_OK;
 }
 
-void Quad::Draw(XMMATRIX& worldMatrix)
+void Quad::Draw(Transform& transform)
 {
 	Direct3D::SetShader(SHADER_3D);
+	transform.Calclation();//トランスフォームを計算
 
-	PassDataToCB(worldMatrix);
+	PassDataToCB(transform);
 	SetBufferToPipeline();
 }
 
@@ -172,12 +173,12 @@ HRESULT Quad::LoadTexture()
 	return S_OK;
 }
 
-void Quad::PassDataToCB(DirectX::XMMATRIX& worldMatrix)
+void Quad::PassDataToCB(Transform transform)
 {
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
-	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-	cb.matW = XMMatrixTranspose(worldMatrix);
+	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める

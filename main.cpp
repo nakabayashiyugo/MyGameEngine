@@ -7,6 +7,8 @@
 #include "Sprite.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "Fbx.h"
+
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -94,21 +96,26 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     //    PostQuitMessage(0);
     //}
 
-    Dice* pDice = new Dice();
-    hr = pDice->Initialize();
-    if (FAILED(hr))
-    {
-        //失敗したときの処理
-        PostQuitMessage(0);
-    }
+    //Dice* pDice = new Dice();
+    //hr = pDice->Initialize();
+    //if (FAILED(hr))
+    //{
+    //    //失敗したときの処理
+    //    PostQuitMessage(0);
+    //}
 
-    Sprite* pSprite = new Sprite();
-    hr = pSprite->Initialize(WINDOW_HEIGHT, WINDOW_WIDTH);
-    if (FAILED(hr))
-    {
-        //失敗したときの処理
-        PostQuitMessage(0);
-    }
+    //Sprite* pSprite = new Sprite();
+    //hr = pSprite->Initialize(WINDOW_HEIGHT, WINDOW_WIDTH);
+    //if (FAILED(hr))
+    //{
+    //    //失敗したときの処理
+    //    PostQuitMessage(0);
+    //}
+
+    //FBX　ロード
+    Fbx* pFbx = new Fbx();
+    pFbx->Load("Oden.fbx");
+
 
   //メッセージループ（何か起きるのを待つ）
     Transform* pTransform = new Transform();
@@ -132,12 +139,30 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ゲームの処理
             Direct3D::BeginDraw();
 
-            pTransform->Calclation();
-            XMMATRIX mat = XMMatrixIdentity();
-            XMMATRIX diceMat = pTransform->GetWorldMatrix();
-            pDice->Draw(diceMat);
-            //pQuad->Draw(mat);
-            pSprite->Draw(mat);
+            //XMMATRIX mat = XMMatrixIdentity();
+            //XMMATRIX diceMat = pTransform->GetWorldMatrix();
+            //pDice->Draw(pTransform);
+            ////pQuad->Draw(mat);
+            //pSprite->Draw(mat);
+
+            /*static float angle = 0;
+
+            angle += 0.01f;
+
+            Transform diceTransform;
+            diceTransform.position_.y = 3.0f;
+            diceTransform.rotate_.y = angle;
+            pDice->Draw(diceTransform);
+
+            mat = XMMatrixScaling(512.0f / 800.0f, 256.0f / 600.0f, 1.0f);
+            Transform spriteTransform;
+            spriteTransform.scale_.x = 1;
+            spriteTransform.scale_.y = 1;
+
+            mat = XMMatrixScaling(512.0f/800.0f, 256.0f/600.0f, 1.0f);
+            pSprite->Draw(spriteTransform);*/
+            Transform diceTransform;
+            pFbx->Draw(diceTransform);
 
             //描画処理
             Direct3D::EndDraw();
@@ -147,8 +172,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     //解放処理
     Direct3D::Release();
     //SAFE_DELETE(pQuad);
-    SAFE_DELETE(pDice);
-    SAFE_DELETE(pSprite);
+    //SAFE_DELETE(pDice);
+    //SAFE_DELETE(pSprite);
+    SAFE_RELEASE(pFbx);
 
 	return 0;
 }

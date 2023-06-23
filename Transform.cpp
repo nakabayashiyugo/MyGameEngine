@@ -12,11 +12,6 @@ Transform::~Transform()
 
 void Transform::Calclation()
 {
-    position_.y = 2.0f;
-
-    rotate_.x += 0.03f;
-    rotate_.y += 0.03f;
-
     matTranslate_ = XMMatrixTranslation(position_.x, position_.y, position_.z);
 
     matRotate_ = XMMatrixRotationX(XMConvertToRadians(rotate_.x)) *
@@ -29,4 +24,9 @@ void Transform::Calclation()
 XMMATRIX Transform::GetWorldMatrix()
 {
     return matScale_ * matRotate_ * matTranslate_;
+}
+
+XMMATRIX Transform::GetNormalMatrix()
+{
+    return matRotate_ * XMMatrixInverse(nullptr, matScale_);
 }

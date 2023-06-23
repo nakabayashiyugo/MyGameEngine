@@ -4,6 +4,7 @@
 #include "Direct3D.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "Transform.h"
 
 using namespace DirectX;
 
@@ -41,7 +42,7 @@ public:
 	Quad();
 	~Quad();
 	HRESULT Initialize();
-	void Draw(XMMATRIX& worldMatrix);
+	void Draw(Transform& transform);
 	void Release();
 
 private:
@@ -56,7 +57,7 @@ private:
 
 	HRESULT LoadTexture();
 
-	void PassDataToCB(DirectX::XMMATRIX& worldMatrix);
+	void PassDataToCB(Transform transform);
 	void SetBufferToPipeline();
 };
 
