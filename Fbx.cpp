@@ -132,7 +132,7 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 
 HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 {
-	pIndexBuffer_ = new ID3D11Buffer * [materialCount_];
+	pIndexBuffer_ = new ID3D11Buffer *[materialCount_];
 
 	int* index = new int[polygonCount_ * 3];
 	for (int i = 0; i < materialCount_; i++)
