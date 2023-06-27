@@ -46,7 +46,7 @@ public:
 
 	HRESULT InitVertex(fbxsdk::FbxMesh* mesh);
 	HRESULT InitIndex(fbxsdk::FbxMesh* mesh);		//インデックスバッファ準備
-	HRESULT IntConstantBuffer(fbxsdk::FbxMesh* mesh);
+	HRESULT IntConstantBuffer();
 	HRESULT InitMaterial(fbxsdk::FbxNode* node);
 
 	void    Draw(Transform& transform);

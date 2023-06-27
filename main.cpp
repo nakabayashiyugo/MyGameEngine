@@ -117,10 +117,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     Fbx* pFbx = new Fbx();
     std::string oden = "Assets/Oden.fbx";
     hr = pFbx->Load(oden);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        PostQuitMessage(0);
+    }
 
 
   //メッセージループ（何か起きるのを待つ）
-    static float angle = 0;
+    
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
     while (msg.message != WM_QUIT)
@@ -147,7 +152,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //pQuad->Draw(mat);
             //pSprite->Draw(mat);
 
-            
+            static float angle = 0;
 
             angle += 0.01f;
 

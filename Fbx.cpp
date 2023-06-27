@@ -2,6 +2,7 @@
 #include "Texture.h"
 
 Fbx::Fbx()
+	: pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr), pMaterialList_(nullptr)
 {
 }
 
@@ -46,7 +47,7 @@ HRESULT Fbx::Load(std::string fileName)
 		MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
-	hr = IntConstantBuffer(mesh);	//コンスタントバッファ準備
+	hr = IntConstantBuffer();	//コンスタントバッファ準備
 	if (FAILED(hr))
 	{
 		//エラー処理
@@ -150,7 +151,7 @@ HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 	return S_OK;
 }
 
-HRESULT Fbx::IntConstantBuffer(fbxsdk::FbxMesh* mesh)
+HRESULT Fbx::IntConstantBuffer()
 {
 	HRESULT hr;
 
