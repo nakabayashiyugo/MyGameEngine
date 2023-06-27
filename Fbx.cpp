@@ -1,4 +1,5 @@
 #include "Fbx.h"
+#include "Texture.h"
 
 Fbx::Fbx()
 {
@@ -22,24 +23,50 @@ HRESULT Fbx::Load(std::string fileName)
 	FbxNode* rootNode = pFbxScene->GetRootNode();
 	FbxNode* pNode = rootNode->GetChild(0);
 	FbxMesh* mesh = pNode->GetMesh();
-
+ 
 	//各情報の個数を取得
 
 	vertexCount_ = mesh->GetControlPointsCount();	//頂点の数
-
 	polygonCount_ = mesh->GetPolygonCount();	//ポリゴンの数
+	materialCount_ = pNode->GetMaterialCount();
 
-	InitVertex(mesh);		//頂点バッファ準備
-	InitIndex(mesh);		//インデックスバッファ準備
-	IntConstantBuffer(mesh);	//コンスタントバッファ準備
+	HRESULT hr;
 
+	hr = InitVertex(mesh);		//頂点バッファ準備
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "頂点データ用バッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+	hr = InitIndex(mesh);		//インデックスバッファ準備
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+	hr = IntConstantBuffer(mesh);	//コンスタントバッファ準備
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+	hr = InitMaterial(pNode);
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
 
 	//マネージャ解放
 	pFbxManager->Destroy();
 	return S_OK;
 }
 
-void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
+HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 {
 	//頂点情報を入れる配列
 	VERTEX* vertices = new VERTEX[vertexCount_];
@@ -59,6 +86,8 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 		}
 	}
 
+	HRESULT hr;
+
 	// 頂点データ用バッファの設定
 	D3D11_BUFFER_DESC bd_vertex;
 	bd_vertex.ByteWidth = sizeof(vertices[0]) * vertexCount_;
@@ -69,11 +98,18 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 	bd_vertex.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA data_vertex;
 	data_vertex.pSysMem = &vertices[0];
-	Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
+	hr = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "頂点データ用バッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
 
+	return S_OK;
 }
 
-void Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
+HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 {
 	int* index = new int[polygonCount_ * 3];
 	int count = 0;
@@ -89,6 +125,8 @@ void Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 		}
 	}
 
+	HRESULT hr;
+
 	// インデックスバッファを生成する
 	D3D11_BUFFER_DESC   bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -101,11 +139,21 @@ void Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 	InitData.pSysMem = &index[0];
 	InitData.SysMemPitch = 0;
 	InitData.SysMemSlicePitch = 0;
-	Direct3D::pDevice_->CreateBuffer(&bd, &InitData, &pIndexBuffer_);
+	hr = Direct3D::pDevice_->CreateBuffer(&bd, &InitData, &pIndexBuffer_);
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	return S_OK;
 }
 
-void Fbx::IntConstantBuffer(fbxsdk::FbxMesh* mesh)
+HRESULT Fbx::IntConstantBuffer(fbxsdk::FbxMesh* mesh)
 {
+	HRESULT hr;
+
 	//コンスタントバッファ作成
 	D3D11_BUFFER_DESC cb;
 	cb.ByteWidth = sizeof(CONSTANT_BUFFER);
@@ -116,7 +164,55 @@ void Fbx::IntConstantBuffer(fbxsdk::FbxMesh* mesh)
 	cb.StructureByteStride = 0;
 
 	// コンスタントバッファの作成
-	Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pConstantBuffer_);
+	hr = Direct3D::pDevice_->CreateBuffer(&cb, nullptr, &pConstantBuffer_);
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	return S_OK;
+}
+
+HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
+{
+	pMaterialList_ = new MATERIAL[materialCount_];
+
+	for (int i = 0; i < materialCount_; i++)
+	{
+		//i番目のマテリアル情報を取得
+		FbxSurfaceMaterial* pMaterial = pNode->GetMaterial(i);
+
+		//テクスチャ情報
+		FbxProperty  lProperty = pMaterial->FindProperty(FbxSurfaceMaterial::sDiffuse);
+
+		//テクスチャの数数
+		int fileTextureCount = lProperty.GetSrcObjectCount<FbxFileTexture>();
+
+		//テクスチャあり
+		if (fileTextureCount == true)
+		{
+			FbxFileTexture* textureInfo = lProperty.GetSrcObject<FbxFileTexture>(0);
+			const char* textureFilePath = textureInfo->GetRelativeFileName();
+
+			//ファイル名+拡張だけにする
+			char name[_MAX_FNAME];	//ファイル名
+			char ext[_MAX_EXT];	//拡張子
+			_splitpath_s(textureFilePath, nullptr, 0, nullptr, 0, name, _MAX_FNAME, ext, _MAX_EXT);
+			wsprintf(name, "%s%s", name, ext);
+
+			//ファイルからテクスチャ作成
+			pMaterialList_[i].pTexture = new Texture();
+			pMaterialList_[i].pTexture->Load(name);
+		}
+		//テクスチャ無し
+		else
+		{
+			pMaterialList_[i].pTexture = nullptr;
+		}
+	}
+	return S_OK;
 }
 
 void Fbx::Draw(Transform& transform)
@@ -152,7 +248,7 @@ void Fbx::Draw(Transform& transform)
 	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 
-	Direct3D::pContext_->DrawIndexed(polygonCount_ * 3, 0, 0);
+	Direct3D::pContext_->DrawIndexed(vertexCount_, 0, 0);
 }
 
 void Fbx::Release()

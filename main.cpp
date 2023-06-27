@@ -1,6 +1,7 @@
 //インクルード
 #include <Windows.h>
 #include <d3d11.h>
+#include <string>
 #include "Direct3D.h"
 #include "Quad.h"
 #include "Dice.h"
@@ -114,11 +115,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
     //FBX　ロード
     Fbx* pFbx = new Fbx();
-    pFbx->Load("Oden.fbx");
+    std::string oden = "Assets/Oden.fbx";
+    hr = pFbx->Load(oden);
 
 
   //メッセージループ（何か起きるのを待つ）
-    Transform* pTransform = new Transform();
+    static float angle = 0;
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
     while (msg.message != WM_QUIT)
@@ -142,26 +144,28 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //XMMATRIX mat = XMMatrixIdentity();
             //XMMATRIX diceMat = pTransform->GetWorldMatrix();
             //pDice->Draw(pTransform);
-            ////pQuad->Draw(mat);
+            //pQuad->Draw(mat);
             //pSprite->Draw(mat);
 
-            /*static float angle = 0;
+            
 
             angle += 0.01f;
 
+            //Transform diceTransform;
+            //diceTransform.position_.y = 3.0f;
+            //diceTransform.rotate_.y = angle;
+            //pDice->Draw(diceTransform);
+            ////
+            //mat = XMMatrixScaling(512.0f / 800.0f, 256.0f / 600.0f, 1.0f);
+            //Transform spriteTransform;
+            //spriteTransform.scale_.x = 1;
+            //spriteTransform.scale_.y = 1;
+            ////
+            //mat = XMMatrixScaling(512.0f/800.0f, 256.0f/600.0f, 1.0f);
+            //pSprite->Draw(spriteTransform);
             Transform diceTransform;
-            diceTransform.position_.y = 3.0f;
             diceTransform.rotate_.y = angle;
-            pDice->Draw(diceTransform);
-
-            mat = XMMatrixScaling(512.0f / 800.0f, 256.0f / 600.0f, 1.0f);
-            Transform spriteTransform;
-            spriteTransform.scale_.x = 1;
-            spriteTransform.scale_.y = 1;
-
-            mat = XMMatrixScaling(512.0f/800.0f, 256.0f/600.0f, 1.0f);
-            pSprite->Draw(spriteTransform);*/
-            Transform diceTransform;
+            diceTransform.Calclation();
             pFbx->Draw(diceTransform);
 
             //描画処理
