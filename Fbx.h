@@ -2,6 +2,7 @@
 #include <d3d11.h>
 #include <fbxsdk.h>
 #include <string>
+#include <vector>
 #include "Transform.h"
 #include "Direct3D.h"
 #include "Camera.h"
@@ -40,6 +41,8 @@ class Fbx
 	ID3D11Buffer** pIndexBuffer_;
 	ID3D11Buffer* pConstantBuffer_;
 	MATERIAL* pMaterialList_;
+	std::vector <int> indexCount_;
+
 public:
 
 	Fbx();

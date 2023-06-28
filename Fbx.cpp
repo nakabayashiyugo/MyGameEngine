@@ -85,7 +85,7 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 {
 	//頂点情報を入れる配列
 	VERTEX* vertices = new VERTEX[vertexCount_];
-
+	
 	//全ポリゴン
 	for (DWORD poly = 0; poly < polygonCount_; poly++)
 	{
@@ -107,6 +107,7 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 		}
 	}
 
+	
 	HRESULT hr;
 
 	// 頂点データ用バッファの設定
@@ -133,8 +134,10 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 {
 	pIndexBuffer_ = new ID3D11Buffer *[materialCount_];
+	indexCount_ = std::vector<int>(materialCount_);
 
-	int* index = new int[polygonCount_ * 3];
+
+	std::vector<int> index(polygonCount_ * 3);//ポリゴン数*3＝全頂点分用意
 	for (int i = 0; i < materialCount_; i++)
 	{
 		int count = 0;
@@ -155,6 +158,8 @@ HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 				}
 			}
 		}
+		indexCount_[i] = count;
+
 
 		HRESULT hr;
 
@@ -167,7 +172,7 @@ HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 		bd.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA InitData;
-		InitData.pSysMem = &index[0];
+		InitData.pSysMem = index.data();
 		InitData.SysMemPitch = 0;
 		InitData.SysMemSlicePitch = 0;
 		hr = Direct3D::pDevice_->CreateBuffer(&bd, &InitData, &pIndexBuffer_[i]);
@@ -250,22 +255,25 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 
 void Fbx::Draw(Transform& transform)
 {
+	//Direct3D::SetShader(SHADER_3D);
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
 	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 	cb.matNormal = XMMatrixTranspose(transform.GetWorldMatrix());
 
-	D3D11_MAPPED_SUBRESOURCE pdata;
-	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
-	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
-
-	//頂点バッファ
-	UINT stride = sizeof(VERTEX);
-	UINT offset = 0;
-	Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
-
 	for (int i = 0; i < materialCount_; i++)
 	{
+		D3D11_MAPPED_SUBRESOURCE pdata;
+		Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
+		memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+
+		Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+
+		//頂点バッファ
+		UINT stride = sizeof(VERTEX);
+		UINT offset = 0;
+		Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
+
 		// インデックスバッファーをセット
 		stride = sizeof(int);
 		offset = 0;
@@ -282,9 +290,10 @@ void Fbx::Draw(Transform& transform)
 			ID3D11ShaderResourceView* pSRV = pMaterialList_[i].pTexture->GetSRV();
 			Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 		}
+		
 
 		//描画
-		Direct3D::pContext_->DrawIndexed(polygonCount_ * 3, 0, 0);
+		Direct3D::pContext_->DrawIndexed(indexCount_[i], 0, 0);
 	}
 }
 
