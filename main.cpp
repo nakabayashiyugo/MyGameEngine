@@ -154,7 +154,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
             static float angle = 0;
 
-            angle += 0.01f;
+            angle += 0.05f;
 
             //Transform diceTransform;
             //diceTransform.position_.y = 3.0f;
@@ -171,7 +171,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             Transform diceTransform;
             diceTransform.position_.y = -2.0f;
             diceTransform.rotate_.y = angle;
-            diceTransform.Calclation();
             pFbx->Draw(diceTransform);
 
             //•`‰æˆ—

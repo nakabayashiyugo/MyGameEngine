@@ -31,6 +31,7 @@ class Fbx
 	{
 		XMVECTOR position;
 		XMVECTOR uv;
+		XMVECTOR normal;
 	};
 
 	int vertexCount_;	//í∏ì_êî
