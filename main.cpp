@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <string>
 #include "Direct3D.h"
+#include "Input.h"
 #include "Quad.h"
 #include "Dice.h"
 #include "Sprite.h"
@@ -81,11 +82,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //失敗したときの処理
         PostQuitMessage(0);
     }
+    Input::Initialize(hWnd);
+
     //カメラ、起動
     Camera::Initialize();
 
     //Camera::SetPosition(XMFLOAT3(0, 0, -10));
     Camera::SetTarget(XMFLOAT3(0, 0, 0));
+
+    
 
     //ポリゴンクラス作ってる
     // 
@@ -146,6 +151,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ゲームの処理
             Direct3D::BeginDraw();
 
+            Input::Update();
+
             //XMMATRIX mat = XMMatrixIdentity();
             //XMMATRIX diceMat = pTransform->GetWorldMatrix();
             //pDice->Draw(pTransform);
@@ -173,6 +180,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             diceTransform.rotate_.y = angle;
             pFbx->Draw(diceTransform);
 
+            if (Input::IsKey(DIK_ESCAPE))
+            {
+                PostQuitMessage(0);
+            }
+
             //描画処理
             Direct3D::EndDraw();
         }
@@ -180,6 +192,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
     //解放処理
     Direct3D::Release();
+    Input::Release();
     //SAFE_DELETE(pQuad);
     //SAFE_DELETE(pDice);
     //SAFE_DELETE(pSprite);
