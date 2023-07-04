@@ -4,7 +4,7 @@
 #include "Engine/Direct3D.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
-
+#include "Engine/RootJob.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -14,6 +14,8 @@ const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
 const char* GAME_TITLE = "サンプルゲーム";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
+
+RootJob* pRootJob = nullptr;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -78,13 +80,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
     Input::Initialize(hWnd);
 
+    pRootJob = new RootJob();
+    pRootJob->Initialize();
+
     //カメラ、起動
     Camera::Initialize();
 
     //Camera::SetPosition(XMFLOAT3(0, 0, -10));
     Camera::SetTarget(XMFLOAT3(0, 0, 0));
     
-
 
   //メッセージループ（何か起きるのを待つ）
     
@@ -108,8 +112,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //入力、更新
             Input::Update();
 
+            pRootJob->Update();
+
             //ゲームの処理
             Direct3D::BeginDraw();
+
+            //ルートジョブからすべてのオブジェクトのドローを呼ぶ
 
             //描画処理
             Direct3D::EndDraw();
@@ -117,8 +125,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
 
     //解放処理
-    Direct3D::Release();
+    SAFE_DELETE(pRootJob);
     Input::Release();
+    Direct3D::Release();
 
 	return 0;
 }
