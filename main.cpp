@@ -112,7 +112,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //入力、更新
             Input::Update();
 
-            pRootJob->Update();
+            pRootJob->UpdateSub();
 
             //ゲームの処理
             Direct3D::BeginDraw();
@@ -126,7 +126,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
 
     //解放処理
-    SAFE_DELETE(pRootJob);
+    pRootJob->ReleaseSub();
     Input::Release();
     Direct3D::Release();
 
