@@ -1,5 +1,4 @@
 #pragma once
-
 #include <list>
 #include <string>
 #include "Transform.h"
@@ -21,4 +20,5 @@ public:
 	virtual void Update() = 0;
 	virtual void Draw() = 0;
 	virtual void Release() = 0;
+	void DrawSub();
 };
