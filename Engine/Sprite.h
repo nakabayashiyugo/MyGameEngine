@@ -40,7 +40,7 @@ public:
 	Sprite();
 	~Sprite();
 	HRESULT Initialize(int winH, int winW);
-	void Draw(Transform& transform, bool isShaft);
+	void Draw(Transform& transform);
 	void Release();
 
 private:
@@ -58,7 +58,7 @@ private:
 
 	HRESULT LoadTexture();
 
-	void PassDataToCB(Transform& transform, bool isShaft);
+	void PassDataToCB(Transform& transform);
 	void SetBufferToPipeline();
 };
 

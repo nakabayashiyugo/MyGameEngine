@@ -263,7 +263,7 @@ HRESULT Fbx::InitMaterial(fbxsdk::FbxNode* pNode)
 	return S_OK;
 }
 
-void Fbx::Draw(Transform& transform, bool isShaft)
+void Fbx::Draw(Transform& transform)
 {
 	Direct3D::SetShader(SHADER_3D);
 	transform.Calclation();//トランスフォームを計算
@@ -272,8 +272,8 @@ void Fbx::Draw(Transform& transform, bool isShaft)
 	{
 		//コンスタントバッファに渡す情報
 		CONSTANT_BUFFER cb;
-		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix(isShaft) * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-		cb.matNormal = XMMatrixTranspose(transform.GetWorldMatrix(isShaft));
+		cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+		cb.matNormal = XMMatrixTranspose(transform.GetWorldMatrix());
 		cb.diffuseColor = pMaterialList_[i].diffuse;
 		cb.isTexture = pMaterialList_[i].pTexture != nullptr;
 

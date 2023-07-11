@@ -17,7 +17,7 @@ void Player::Initialize()
 	pFbx = new Fbx;
 	pFbx->Load("Assets\\oden2.fbx");
 
-	Instantiate<PlayerChild>(this);
+	pPlayerChild = Instantiate<PlayerChild>(this);
 }
 
 void Player::Update()
@@ -32,11 +32,11 @@ void Player::Update()
 
 void Player::Draw()
 {
-	pFbx->Draw(this->transform_, isShaft_);
+	pFbx->Draw(this->transform_);
 }
 
 void Player::Release()
 {
-	//SAFE_RELEASE(pFbx);
+	SAFE_RELEASE(pFbx);
 	SAFE_DELETE(pFbx);
 }

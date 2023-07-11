@@ -4,7 +4,7 @@ GameObject::GameObject()
 {
 }
 
-GameObject::GameObject(GameObject* parent, const std::string& name):childList_(0), isDead_(false), isShaft_(true)
+GameObject::GameObject(GameObject* parent, const std::string& name):childList_(0), isDead_(false)
 {
 	pParent_ = parent;
 	objectName_ = name;

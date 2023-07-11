@@ -13,22 +13,23 @@ PlayerChild::~PlayerChild()
 
 void PlayerChild::Initialize()
 {
-	isShaft_ = false;
 
 	pFbx = new Fbx;
 	pFbx->Load("Assets\\oden2.fbx");
+
+	transform_.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+	transform_.position_.x = -4;
 }
 
 void PlayerChild::Update()
 {
-	transform_.position_.x = -4;
-	transform_.rotate_.y++;
-	transform_.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+	
+	//transform_.rotate_.y++;
 }
 
 void PlayerChild::Draw()
 {
-	pFbx->Draw(this->transform_, isShaft_);
+	pFbx->Draw(this->transform_);
 }
 
 void PlayerChild::Release()

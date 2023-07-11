@@ -21,17 +21,9 @@ void Transform::Calclation()
     matScale_ = XMMatrixScaling(scale_.x, scale_.y, scale_.z);
 }
 
-XMMATRIX Transform::GetWorldMatrix(bool isShaft)
+XMMATRIX Transform::GetWorldMatrix()
 {
-    if (isShaft)
-    {
         return matScale_ * matRotate_ * matTranslate_;
-    }
-    else
-    {
-        return matScale_ * matTranslate_ * matRotate_;
-    }
-    
 }
 
 XMMATRIX Transform::GetNormalMatrix()

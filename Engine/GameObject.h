@@ -14,7 +14,6 @@ protected:
 	std::string				objectName_;
 
 	bool isDead_;
-	bool isShaft_; //©•ª‚ğ²‚É‰ñ‚Á‚Ä‚¢‚é‚©A‚»‚¤‚Å‚È‚¢‚©
 
 public:
 	GameObject();
@@ -31,12 +30,13 @@ public:
 	virtual void Release() = 0;
 	void ReleaseSub();
 	template <class T>
-	void Instantiate(GameObject* parent)
+	GameObject* Instantiate(GameObject* parent)
 	{
 		T* pObject;
 		pObject = new T(parent);
 		pObject->Initialize();
 		childList_.push_back(pObject);
+		return pObject;
 	}
 
 	void KillMe();

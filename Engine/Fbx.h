@@ -57,6 +57,6 @@ public:
 	HRESULT IntConstantBuffer();
 	HRESULT InitMaterial(fbxsdk::FbxNode* node);
 
-	void    Draw(Transform& transform, bool isShaft);
+	void    Draw(Transform& transform);
 	void    Release();
 };

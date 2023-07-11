@@ -47,12 +47,12 @@ HRESULT Sprite::Initialize(int winH, int winW)
 	return S_OK;
 }
 
-void Sprite::Draw(Transform& transform, bool isShaft)
+void Sprite::Draw(Transform& transform)
 {
 	Direct3D::SetShader(SHADER_2D);
 	transform.Calclation();//トランスフォームを計算
 
-	PassDataToCB(transform, isShaft);
+	PassDataToCB(transform);
 	SetBufferToPipeline();
 }
 
@@ -184,11 +184,11 @@ HRESULT Sprite::LoadTexture()
 	return S_OK;
 }
 
-void Sprite::PassDataToCB(Transform& transform, bool isShaft)
+void Sprite::PassDataToCB(Transform& transform)
 {
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
-	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix(isShaft));
+	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める

@@ -25,7 +25,7 @@ public:
 	void Calclation();
 
 	//ƒ[ƒ‹ƒhs—ñ‚ğæ“¾
-	XMMATRIX GetWorldMatrix(bool isShaft);
+	XMMATRIX GetWorldMatrix();
 
 	XMMATRIX GetNormalMatrix();
 };
