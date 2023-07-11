@@ -1,25 +1,23 @@
 //インクルード
 #include <Windows.h>
-#include <d3d11.h>
 #include <string>
-#include "Direct3D.h"
-#include "Input.h"
-#include "Quad.h"
-#include "Dice.h"
-#include "Sprite.h"
-#include "Camera.h"
-#include "Transform.h"
-#include "Fbx.h"
-
+#include <stdlib.h>
+#include "Engine/Direct3D.h"
+#include "Engine/Input.h"
+#include "Engine/Camera.h"
+#include "Engine/RootJob.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "winmm.lib")
 
 //定数宣言
 const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
 const char* GAME_TITLE = "サンプルゲーム";
 const int WINDOW_WIDTH = 800;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
+
+RootJob* pRootJob = nullptr;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -84,50 +82,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
     Input::Initialize(hWnd);
 
+    pRootJob = new RootJob();
+    pRootJob->Initialize();
+
     //カメラ、起動
     Camera::Initialize();
 
     //Camera::SetPosition(XMFLOAT3(0, 0, -10));
     Camera::SetTarget(XMFLOAT3(0, 0, 0));
-
     
-
-    //ポリゴンクラス作ってる
-    // 
-    //Quad* pQuad = new Quad();
-    //hr = pQuad->Initialize();
-    //if (FAILED(hr))
-    //{
-    //    //失敗したときの処理
-    //    PostQuitMessage(0);
-    //}
-
-    //Dice* pDice = new Dice();
-    //hr = pDice->Initialize();
-    //if (FAILED(hr))
-    //{
-    //    //失敗したときの処理
-    //    PostQuitMessage(0);
-    //}
-
-    //Sprite* pSprite = new Sprite();
-    //hr = pSprite->Initialize(WINDOW_HEIGHT, WINDOW_WIDTH);
-    //if (FAILED(hr))
-    //{
-    //    //失敗したときの処理
-    //    PostQuitMessage(0);
-    //}
-
-    //FBX　ロード
-    Fbx* pFbx = new Fbx();
-    std::string oden = "Assets/Oden2.fbx";
-    hr = pFbx->Load(oden);
-    if (FAILED(hr))
-    {
-        //失敗したときの処理
-        PostQuitMessage(0);
-    }
-
 
   //メッセージループ（何か起きるのを待つ）
     
@@ -145,51 +108,45 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //メッセージなし
         else
         {
+            timeBeginPeriod(1);
+
+            static DWORD countFps = 0;
+
+            static DWORD startTime = timeGetTime();
+            DWORD nowTime = timeGetTime();
+            static DWORD lastUpdateTime = nowTime;
+
+            if (nowTime - startTime >= 1000)
+            {
+                char str[16];
+                wsprintf(str, "%u", countFps);
+
+                SetWindowText(hWnd, str);
+            }
+
+            if ((nowTime - lastUpdateTime) * 60 <= 1000)
+            {
+                continue;
+            }
+            lastUpdateTime = nowTime;
+
+            countFps++;
+
+            timeEndPeriod(1);
+
             //カメラ、更新
             Camera::Update();
+
+            //入力、更新
+            Input::Update();
+
+            pRootJob->UpdateSub();
 
             //ゲームの処理
             Direct3D::BeginDraw();
 
-            Input::Update();
-
-            //XMMATRIX mat = XMMatrixIdentity();
-            //XMMATRIX diceMat = pTransform->GetWorldMatrix();
-            //pDice->Draw(pTransform);
-            //pQuad->Draw(mat);
-            //pSprite->Draw(mat);
-
-            static float angle = 0;
-
-            angle += 0.05f;
-
-            //Transform diceTransform;
-            //diceTransform.position_.y = 3.0f;
-            //diceTransform.rotate_.y = angle;
-            //pDice->Draw(diceTransform);
-            ////
-            //mat = XMMatrixScaling(512.0f / 800.0f, 256.0f / 600.0f, 1.0f);
-            //Transform spriteTransform;
-            //spriteTransform.scale_.x = 1;
-            //spriteTransform.scale_.y = 1;
-            ////
-            //mat = XMMatrixScaling(512.0f/800.0f, 256.0f/600.0f, 1.0f);
-            //pSprite->Draw(spriteTransform);
-            static Transform diceTransform;
-           
-            diceTransform.position_.y = -2.0f;
-            diceTransform.rotate_.y = angle;
-            pFbx->Draw(diceTransform);
-
-            if (Input::IsKeyDown(DIK_ESCAPE))
-            {
-                static int cnt = 0;
-                cnt++;
-                if (cnt >= 3)
-                {
-                    PostQuitMessage(0);
-                }
-            }
+            //ルートジョブからすべてのオブジェクトのドローを呼ぶ
+            pRootJob->DrawSub();
 
             //描画処理
             Direct3D::EndDraw();
@@ -197,12 +154,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
 
     //解放処理
-    Direct3D::Release();
+    pRootJob->ReleaseSub();
     Input::Release();
-    //SAFE_DELETE(pQuad);
-    //SAFE_DELETE(pDice);
-    //SAFE_DELETE(pSprite);
-    SAFE_RELEASE(pFbx);
+    Direct3D::Release();
 
 	return 0;
 }
