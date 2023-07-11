@@ -1,6 +1,7 @@
 //インクルード
 #include <Windows.h>
 #include <string>
+#include <stdlib.h>
 #include "Engine/Direct3D.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
@@ -8,6 +9,7 @@
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "winmm.lib")
 
 //定数宣言
 const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
@@ -106,6 +108,35 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //メッセージなし
         else
         {
+            timeBeginPeriod(1);
+
+            static DWORD countFps = 0;
+
+            static DWORD startTime = timeGetTime();
+            DWORD nowTime = timeGetTime();
+            static DWORD lastUpdateTime = nowTime;
+
+            if (nowTime - startTime >= 1000)
+            {
+                char str[16];
+                wsprintf(str, "%u", countFps);
+
+                SetWindowText(hWnd, str);
+
+                countFps = 0;
+                startTime = nowTime;
+            }
+
+            if ((nowTime - lastUpdateTime) * 60 <= 1000)
+            {
+                continue;
+            }
+            lastUpdateTime = nowTime;
+
+            countFps++;
+
+            timeEndPeriod(1);
+
             //カメラ、更新
             Camera::Update();
 
