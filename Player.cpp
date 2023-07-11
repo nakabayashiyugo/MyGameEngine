@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "PlayerChild.h"
 #include "Engine/Fbx.h"
 #include "Engine/Input.h"
 
@@ -15,6 +16,8 @@ void Player::Initialize()
 {
 	pFbx = new Fbx;
 	pFbx->Load("Assets\\oden2.fbx");
+
+	Instantiate<PlayerChild>(this);
 }
 
 void Player::Update()
