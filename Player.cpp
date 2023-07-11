@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Engine/Fbx.h"
+#include "Engine/Input.h"
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"), pFbx(nullptr)
@@ -19,6 +20,11 @@ void Player::Initialize()
 void Player::Update()
 {
 	transform_.rotate_.y ++;
+
+	if (Input::IsKeyDown(DIK_SPACE))
+	{
+		this->KillMe();
+	}
 }
 
 void Player::Draw()
