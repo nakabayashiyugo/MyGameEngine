@@ -175,7 +175,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             ////
             //mat = XMMatrixScaling(512.0f/800.0f, 256.0f/600.0f, 1.0f);
             //pSprite->Draw(spriteTransform);
-            Transform diceTransform;
+            static Transform diceTransform;
+           
             diceTransform.position_.y = -2.0f;
             diceTransform.rotate_.y = angle;
             pFbx->Draw(diceTransform);
