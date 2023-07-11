@@ -314,4 +314,8 @@ void Fbx::Draw(Transform& transform)
 
 void Fbx::Release()
 {
+	SAFE_DELETE(pMaterialList_);
+	SAFE_RELEASE(pConstantBuffer_);
+	SAFE_RELEASE(pVertexBuffer_);
+	//SAFE_RELEASE(pIndexBuffer_);
 }

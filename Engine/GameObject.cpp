@@ -20,10 +20,19 @@ void GameObject::UpdateSub()
 	for (auto itr = childList_.begin(); itr != childList_.end(); itr++)
 	{
 		(*itr)->UpdateSub();
+	}
 
+	for (auto itr = childList_.begin(); itr != childList_.end();)
+	{
 		if ((*itr)->isDead_)
 		{
 			(*itr)->ReleaseSub();
+			SAFE_DELETE(*itr);
+			itr = childList_.erase(itr);
+		}
+		else
+		{
+			itr++;
 		}
 	}
 }
@@ -43,9 +52,7 @@ void GameObject::ReleaseSub()
 	for (auto itr = childList_.begin(); itr != childList_.end(); itr++)
 	{
 		(*itr)->ReleaseSub();
-		SAFE_DELETE((*itr)->pParent_);
-		childList_.erase(itr);
-		itr--;
+		SAFE_DELETE(*itr);
 	}
 }
 

@@ -122,6 +122,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
                 wsprintf(str, "%u", countFps);
 
                 SetWindowText(hWnd, str);
+
+                countFps = 0;
+                startTime = nowTime;
             }
 
             if ((nowTime - lastUpdateTime) * 60 <= 1000)
