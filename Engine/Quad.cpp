@@ -47,12 +47,12 @@ HRESULT Quad::Initialize()
 	return S_OK;
 }
 
-void Quad::Draw(Transform& transform)
+void Quad::Draw(Transform& transform, bool isShaft)
 {
 	Direct3D::SetShader(SHADER_3D);
 	transform.Calclation();//トランスフォームを計算
 
-	PassDataToCB(transform);
+	PassDataToCB(transform, isShaft);
 	SetBufferToPipeline();
 }
 
@@ -173,12 +173,12 @@ HRESULT Quad::LoadTexture()
 	return S_OK;
 }
 
-void Quad::PassDataToCB(Transform transform)
+void Quad::PassDataToCB(Transform transform, bool isShaft)
 {
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
-	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
+	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix(isShaft) * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix(isShaft));
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める

@@ -42,7 +42,7 @@ public:
 	Quad();
 	~Quad();
 	HRESULT Initialize();
-	void Draw(Transform& transform);
+	void Draw(Transform& transform, bool isShaft);
 	void Release();
 
 private:
@@ -57,7 +57,7 @@ private:
 
 	HRESULT LoadTexture();
 
-	void PassDataToCB(Transform transform);
+	void PassDataToCB(Transform transform, bool isShaft);
 	void SetBufferToPipeline();
 };
 

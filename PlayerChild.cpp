@@ -13,6 +13,8 @@ PlayerChild::~PlayerChild()
 
 void PlayerChild::Initialize()
 {
+	isShaft_ = false;
+
 	pFbx = new Fbx;
 	pFbx->Load("Assets\\oden2.fbx");
 }
@@ -26,7 +28,7 @@ void PlayerChild::Update()
 
 void PlayerChild::Draw()
 {
-	pFbx->Draw(this->transform_);
+	pFbx->Draw(this->transform_, isShaft_);
 }
 
 void PlayerChild::Release()

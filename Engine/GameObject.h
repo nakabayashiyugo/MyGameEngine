@@ -14,6 +14,7 @@ protected:
 	std::string				objectName_;
 
 	bool isDead_;
+	bool isShaft_; //©•ª‚ğ²‚É‰ñ‚Á‚Ä‚¢‚é‚©A‚»‚¤‚Å‚È‚¢‚©
 
 public:
 	GameObject();

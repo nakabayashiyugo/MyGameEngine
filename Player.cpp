@@ -32,7 +32,7 @@ void Player::Update()
 
 void Player::Draw()
 {
-	pFbx->Draw(this->transform_);
+	pFbx->Draw(this->transform_, isShaft_);
 }
 
 void Player::Release()
