@@ -17,17 +17,30 @@ void Player::Initialize()
 	pFbx = new Fbx;
 	pFbx->Load("Assets\\oden2.fbx");
 
-	pPlayerChild = Instantiate<PlayerChild>(this);
+	GameObject*  pPlayerChild = Instantiate<PlayerChild>(this);
+	GameObject*  pPlayerChild2 = Instantiate<PlayerChild>(this);
+
+	pPlayerChild->SetTransformPos(XMFLOAT3(2.0f, 1.0f, 0.0f));
+	pPlayerChild2->SetTransformPos(XMFLOAT3(-2.0f, 1.0f, 0.0f));
 }
 
 void Player::Update()
 {
-	transform_.rotate_.y ++;
+	transform_.rotate_.y += 1;
 
 	if (Input::IsKeyDown(DIK_SPACE))
 	{
 		this->KillMe();
 	}
+	if (Input::IsKey(DIK_LEFT))
+	{
+		transform_.position_.x--;
+	}
+	if (Input::IsKey(DIK_RIGHT))
+	{
+		transform_.position_.x++;
+	}
+
 }
 
 void Player::Draw()

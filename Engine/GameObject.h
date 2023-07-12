@@ -40,4 +40,10 @@ public:
 	}
 
 	void KillMe();
+
+	void SetTransformPos(XMFLOAT3 pos);
+	void SetTransformRot(XMFLOAT3 rot);
+	void SetTransformSca(XMFLOAT3 sca);
+
+	Transform GetTransform();
 };

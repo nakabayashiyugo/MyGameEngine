@@ -9,7 +9,7 @@ class Player
 	: public GameObject
 {
 	Fbx* pFbx;
-	GameObject* pPlayerChild;
+	
 public:
 	//コンストラクタ
 	//引数：parent  親オブジェクト（SceneManager）

@@ -1,13 +1,16 @@
 #include "GameObject.h"
 
 GameObject::GameObject()
+	:pParent_(nullptr)
 {
 }
 
-GameObject::GameObject(GameObject* parent, const std::string& name):childList_(0), isDead_(false)
+GameObject::GameObject(GameObject* parent, const std::string& name)
+	:pParent_(nullptr), isDead_(false)
 {
-	pParent_ = parent;
 	objectName_ = name;
+	if (parent != nullptr)
+		this->transform_.pParent_ = &(parent->transform_);
 }
 
 GameObject::~GameObject()
@@ -60,3 +63,24 @@ void GameObject::KillMe()
 {
 	isDead_ = true;
 }
+
+void GameObject::SetTransformPos(XMFLOAT3 pos)
+{
+	transform_.position_ = pos;
+}
+
+void GameObject::SetTransformRot(XMFLOAT3 rot)
+{
+	transform_.rotate_ = rot;
+}
+
+void GameObject::SetTransformSca(XMFLOAT3 sca)
+{
+	transform_.scale_ = sca;
+}
+
+Transform GameObject::GetTransform()
+{
+	return transform_;
+}
+
