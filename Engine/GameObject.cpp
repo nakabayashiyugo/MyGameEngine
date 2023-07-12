@@ -6,9 +6,8 @@ GameObject::GameObject()
 }
 
 GameObject::GameObject(GameObject* parent, const std::string& name)
-	:pParent_(nullptr), isDead_(false)
+	:pParent_(parent), objectName_(name), isDead_(false)
 {
-	objectName_ = name;
 	if (parent != nullptr)
 		this->transform_.pParent_ = &(parent->transform_);
 }
@@ -51,12 +50,12 @@ void GameObject::DrawSub()
 
 void GameObject::ReleaseSub()
 {
-	Release();
 	for (auto itr = childList_.begin(); itr != childList_.end(); itr++)
 	{
 		(*itr)->ReleaseSub();
 		SAFE_DELETE(*itr);
 	}
+	Release();
 }
 
 void GameObject::KillMe()

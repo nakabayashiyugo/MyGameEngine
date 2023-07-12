@@ -22,6 +22,10 @@ void PlayerChild::Initialize()
 void PlayerChild::Update()
 {
 	transform_.rotate_.y++;
+	if (transform_.rotate_.y >= 300)
+	{
+		KillMe();
+	}
 }
 
 void PlayerChild::Draw()
