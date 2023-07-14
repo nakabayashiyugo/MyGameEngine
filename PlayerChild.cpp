@@ -17,11 +17,13 @@ void PlayerChild::Initialize()
 	assert(hModel_ >= 0);
 
 	transform_.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
+
+	transform_.rotate_.x = 90;
 }
 
 void PlayerChild::Update()
 {
-	transform_.rotate_.y++;
+	transform_.rotate_.z++;
 	transform_.position_.z += 0.5f;
 	if (transform_.position_.z >= 50)
 	{
