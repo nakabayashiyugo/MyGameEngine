@@ -22,7 +22,8 @@ void PlayerChild::Initialize()
 void PlayerChild::Update()
 {
 	transform_.rotate_.y++;
-	if (transform_.rotate_.y >= 300)
+	transform_.position_.z += 0.5f;
+	if (transform_.position_.z >= 50)
 	{
 		KillMe();
 	}
