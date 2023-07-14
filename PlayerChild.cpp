@@ -1,6 +1,6 @@
 #include "PlayerChild.h"
 #include "Engine/Input.h"
-#include "Model.h"
+#include "Engine/Model.h"
 
 PlayerChild::PlayerChild(GameObject* parent)
 	: GameObject(parent, "PlayerChild"), hModel_(-1)

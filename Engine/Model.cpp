@@ -1,5 +1,5 @@
 #include "Model.h"
-#include "Engine/Fbx.h"
+#include "Fbx.h"
 
 namespace Model
 {

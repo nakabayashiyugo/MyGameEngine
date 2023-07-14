@@ -6,7 +6,7 @@
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
 #include "Engine/RootJob.h"
-#include "Model.h"
+#include "Engine/Model.h"
 
 //ƒŠƒ“ƒJ
 #pragma comment(lib, "d3d11.lib")
