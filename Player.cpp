@@ -2,9 +2,10 @@
 #include "PlayerChild.h"
 #include "Engine/Fbx.h"
 #include "Engine/Input.h"
+#include "Model.h"
 
 Player::Player(GameObject* parent)
-	: GameObject(parent, "Player"), pFbx(nullptr)
+	: GameObject(parent, "Player"), hModel_(-1)
 {
 }
 
@@ -14,8 +15,8 @@ Player::~Player()
 
 void Player::Initialize()
 {
-	pFbx = new Fbx;
-	pFbx->Load("Assets\\oden2.fbx");
+	hModel_ = Model::Load("Assets\\oden2.fbx");
+	assert(hModel_ >= 0);
 
 	//GameObject*  pPlayerChild = Instantiate<PlayerChild>(this);
 	//GameObject*  pPlayerChild2 = Instantiate<PlayerChild>(this);
@@ -46,7 +47,8 @@ void Player::Update()
 
 void Player::Draw()
 {
-	pFbx->Draw(this->transform_);
+	Model::SetTransform(hModel_, transform_);
+	Model::Draw(hModel_);
 }
 
 void Player::Release()

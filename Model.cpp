@@ -1,6 +1,19 @@
 #include "Model.h"
 #include "Engine/Fbx.h"
 
+namespace Model
+{
+	struct ModelData
+	{
+		Fbx* pFbx_;
+		Transform transform_;
+		std::string fileName_;
+	};
+
+	//モデルのポインタを入れておくポインタ
+	std::vector<ModelData*> modelList;
+}
+
 void Model::SetTransform(int hModel, Transform transform)
 {
 	modelList[hModel]->transform_ = transform;
@@ -11,7 +24,7 @@ int Model::Load(std::string filename)
 	ModelData* pData = new ModelData();
 	pData->fileName_ = filename;
 	pData->pFbx_ = nullptr;
-	for (auto itr = modelList.begin(); itr == modelList.end(); itr++)
+	for (auto itr = modelList.begin(); itr != modelList.end(); itr++)
 	{
 		if ((*itr)->fileName_ == filename)
 		{
