@@ -83,7 +83,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
     Input::Initialize(hWnd);
 
-    pRootJob = new RootJob();
+    pRootJob = new RootJob(nullptr);
     pRootJob->Initialize();
 
     //ƒJƒƒ‰A‹N“®
