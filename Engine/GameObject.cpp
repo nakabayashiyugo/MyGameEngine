@@ -58,6 +58,41 @@ void GameObject::ReleaseSub()
 	Release();
 }
 
+GameObject* GameObject::FindChildObject(std::string _objName)
+{
+	if (_objName == this->objectName_)
+	{
+		return (this); //Ž©•ª‚ª_objName‚¾‚Á‚½!!
+	}
+	else
+	{
+		for (auto itr:childList_)
+		{
+			GameObject* obj = itr->FindChildObject(_objName);
+			if (obj != nullptr)
+			{
+				return obj;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+GameObject* GameObject::GetRootJob()
+{
+	if (pParent_ == nullptr)
+	{
+		return this;
+	}
+	return pParent_->GetRootJob();
+}
+
+GameObject* GameObject::FindObject(std::string _objName)
+{
+	return this->GetRootJob()->FindChildObject(_objName);
+}
+
 void GameObject::KillMe()
 {
 	isDead_ = true;
