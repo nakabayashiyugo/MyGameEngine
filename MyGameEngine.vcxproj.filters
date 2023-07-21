@@ -72,6 +72,12 @@
     <ClCompile Include="Engine\SceneManager.cpp">
       <Filter>ソース ファイル\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SphereCollider.cpp">
+      <Filter>ソース ファイル\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple3D.hlsl" />
@@ -127,6 +133,12 @@
       <Filter>ソース ファイル\ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SceneManager.h">
+      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SphereCollider.h">
       <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
     </ClInclude>
   </ItemGroup>

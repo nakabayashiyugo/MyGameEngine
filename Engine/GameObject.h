@@ -3,6 +3,8 @@
 #include <string>
 #include "Transform.h"
 
+class SphereCollider
+
 #define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
 
 class GameObject
@@ -12,6 +14,7 @@ protected:
 	Transform				transform_;
 	GameObject*				pParent_;
 	std::string				objectName_;
+	SphereCollider*			pCollider_;
 
 	bool isDead_;
 
@@ -30,6 +33,11 @@ public:
 	void DrawSub();
 	virtual void Release() = 0;
 	void ReleaseSub();
+
+	//当たり判定
+	void AddCollider(SphereCollider* pCollider);
+	void Collision(GameObject* pTarget);
+	void RoundRobin(GameObject* pTarget);
 
 public:
 	//テンプレートの定義
@@ -56,6 +64,7 @@ public:
 	GameObject* FindChildObject(std::string _objName);
 	GameObject* GetRootJob();
 	GameObject* FindObject(std::string _objName);
+
 
 	void KillMe();
 };

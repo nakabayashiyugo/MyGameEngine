@@ -58,6 +58,18 @@ void GameObject::ReleaseSub()
 	Release();
 }
 
+void GameObject::AddCollider(SphereCollider* pCollider)
+{
+}
+
+void GameObject::Collision(GameObject* pTarget)
+{
+}
+
+void GameObject::RoundRobin(GameObject* pTarget)
+{
+}
+
 GameObject* GameObject::FindChildObject(std::string _objName)
 {
 	if (_objName == this->objectName_)
