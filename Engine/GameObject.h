@@ -3,7 +3,7 @@
 #include <string>
 #include "Transform.h"
 
-class SphereCollider
+class SphereCollider;
 
 #define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
 

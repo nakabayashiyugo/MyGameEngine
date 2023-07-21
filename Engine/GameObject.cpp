@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "SphereCollider.h"
 
 GameObject::GameObject()
 	:pParent_(nullptr)
@@ -6,7 +7,7 @@ GameObject::GameObject()
 }
 
 GameObject::GameObject(GameObject* parent, const std::string& name)
-	:pParent_(parent), objectName_(name), isDead_(false)
+	:pParent_(parent), objectName_(name), isDead_(false), pCollider_(nullptr)
 {
 	if (parent != nullptr)
 		this->transform_.pParent_ = &(parent->transform_);
@@ -19,6 +20,8 @@ GameObject::~GameObject()
 void GameObject::UpdateSub()
 {
 	Update();
+
+	RoundRobin(GetRootJob());
 	for (auto itr = childList_.begin(); itr != childList_.end(); itr++)
 	{
 		(*itr)->UpdateSub();
@@ -60,14 +63,36 @@ void GameObject::ReleaseSub()
 
 void GameObject::AddCollider(SphereCollider* pCollider)
 {
+	this->pCollider_ = pCollider;
 }
 
 void GameObject::Collision(GameObject* pTarget)
 {
+	if (pTarget == this || pTarget->pCollider_ == nullptr)
+		return;
+
+	float Length = (this->transform_.position_.x - pTarget->transform_.position_.x) * (this->transform_.position_.x - pTarget->transform_.position_.x)
+				 + (this->transform_.position_.y - pTarget->transform_.position_.y) * (this->transform_.position_.y - pTarget->transform_.position_.y)
+				 + (this->transform_.position_.z - pTarget->transform_.position_.z) * (this->transform_.position_.z - pTarget->transform_.position_.z);
+
+	float rLength = (this->pCollider_->GetRadius() + pTarget->pCollider_->GetRadius()) * (this->pCollider_->GetRadius() + pTarget->pCollider_->GetRadius());
+
+	if (Length <= rLength)
+	{
+ 		double p = 0;
+	}
 }
 
 void GameObject::RoundRobin(GameObject* pTarget)
 {
+	if (pCollider_ == nullptr)
+		return;
+	if (pTarget->pCollider_ != nullptr)
+		Collision(pTarget);
+	for (auto itr : pTarget->childList_)
+	{
+		RoundRobin(itr);
+	}
 }
 
 GameObject* GameObject::FindChildObject(std::string _objName)

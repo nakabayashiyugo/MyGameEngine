@@ -11,7 +11,7 @@ void PlayScene::Initialize()
 {
 	GameObject* pPlayer = Instantiate<Player>(this);
 	GameObject* pEnemy = Instantiate<Enemy>(this);
-	pEnemy->SetTransformPos(XMFLOAT3(0, 0, 5.0f));
+	pEnemy->SetTransformPos(XMFLOAT3(0, 0, 10.0f));
 	pEnemy->SetTransformSca(XMFLOAT3(0.5f, 0.5f, 0.5f));
 }
 

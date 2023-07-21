@@ -1,6 +1,7 @@
 #include "PlayerChild.h"
 #include "Engine/Input.h"
 #include "Engine/Model.h"
+#include "Engine/SphereCollider.h"
 
 PlayerChild::PlayerChild(GameObject* parent)
 	: GameObject(parent, "PlayerChild"), hModel_(-1)
@@ -19,6 +20,9 @@ void PlayerChild::Initialize()
 	transform_.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
 
 	transform_.rotate_.x = 90;
+
+	SphereCollider* col = new SphereCollider(1.0);
+	AddCollider(col);
 }
 
 void PlayerChild::Update()
