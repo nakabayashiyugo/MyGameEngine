@@ -37,7 +37,7 @@ public:
 	//“–‚½‚è”»’è
 	void AddCollider(SphereCollider* pCollider);
 	void Collision(GameObject* pTarget);
-	virtual void OnCollision(GameObject* pTarget);
+	virtual void OnCollision(GameObject* pTarget) {};
 	void RoundRobin(GameObject* pTarget);
 
 public:

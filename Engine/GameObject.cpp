@@ -83,12 +83,6 @@ void GameObject::Collision(GameObject* pTarget)
 	}
 }
 
-void GameObject::OnCollision(GameObject* pTarget)
-{
-}
-
-
-
 void GameObject::RoundRobin(GameObject* pTarget)
 {
 	if (pCollider_ == nullptr)
