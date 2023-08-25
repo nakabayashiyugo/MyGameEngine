@@ -37,6 +37,7 @@ public:
 	//当たり判定
 	void AddCollider(SphereCollider* pCollider);
 	void Collision(GameObject* pTarget);
+	virtual void OnCollision(GameObject* pTarget);
 	void RoundRobin(GameObject* pTarget);
 
 public:
@@ -58,6 +59,8 @@ public:
 	void SetTransformSca(XMFLOAT3 sca);
 
 	Transform GetTransform();
+
+	std::string GetObjectName();
 
 public:
 	//オブジェクト探すためのやつ

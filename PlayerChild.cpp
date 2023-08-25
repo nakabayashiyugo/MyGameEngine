@@ -44,3 +44,12 @@ void PlayerChild::Draw()
 void PlayerChild::Release()
 {
 }
+
+void PlayerChild::OnCollision(GameObject* pTarget)
+{
+	if (pTarget->GetObjectName() == "Enemy")
+	{
+		pTarget->KillMe();
+		this->KillMe();
+	}
+}

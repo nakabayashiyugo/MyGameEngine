@@ -79,9 +79,15 @@ void GameObject::Collision(GameObject* pTarget)
 
 	if (Length <= rLength)
 	{
- 		double p = 0;
+		OnCollision(pTarget);
 	}
 }
+
+void GameObject::OnCollision(GameObject* pTarget)
+{
+}
+
+
 
 void GameObject::RoundRobin(GameObject* pTarget)
 {
@@ -153,5 +159,10 @@ void GameObject::SetTransformSca(XMFLOAT3 sca)
 Transform GameObject::GetTransform()
 {
 	return transform_;
+}
+
+std::string GameObject::GetObjectName()
+{
+	return objectName_;
 }
 
