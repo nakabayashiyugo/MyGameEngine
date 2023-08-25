@@ -54,29 +54,17 @@
     <ClCompile Include="Engine\RootJob.cpp">
       <Filter>ソース ファイル\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="PlayScene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerChild.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Model.cpp">
       <Filter>ソース ファイル\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="TestScene.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Engine\SceneManager.cpp">
       <Filter>ソース ファイル\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\SphereCollider.cpp">
       <Filter>ソース ファイル\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="TestScene.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,29 +105,17 @@
     <ClInclude Include="Engine\RootJob.h">
       <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="PlayScene.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerChild.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Model.h">
       <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="TestScene.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SceneManager.h">
       <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\SphereCollider.h">
       <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="TestScene.h">
+      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

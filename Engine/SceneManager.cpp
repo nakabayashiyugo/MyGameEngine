@@ -1,6 +1,5 @@
 #include "SceneManager.h"
 #include "../TestScene.h"
-#include "../PlayScene.h"
 #include "Model.h"
 
 SceneManager::SceneManager(GameObject* parent)
@@ -37,9 +36,6 @@ void SceneManager::Update()
 		case SCENE_ID_TEST:
 			Instantiate<TestScene>(this);
 				break;
-		case SCENE_ID_PLAY:
-			Instantiate<PlayScene>(this);
-			break;
 		}
 		currentSceneID_ = nextSceneID_;
 	}
