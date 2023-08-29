@@ -17,27 +17,30 @@ void Controller::Initialize()
 void Controller::Update()
 {
 	velocity_ = XMVectorSet(0, 0, 0, 0);
-	XMFLOAT3 cameraPos = XMFLOAT3(0, 15, -5);
+	XMVECTOR cameraBase = XMVectorSet(0, 15, -5, 0);
 
+	//前後左右移動
 	if (Input::IsKey(DIK_W))
 	{
-		velocity_ += XMVectorSet(0, 0, 0.1, 0);
+		velocity_ += XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);
 	}
 	if (Input::IsKey(DIK_S))
 	{
-		velocity_ += XMVectorSet(0, 0, -0.1, 0);
+		velocity_ += XMVectorSet(0.0f, 0.0f, -0.1f, 0.0f);
 	}
 	if (Input::IsKey(DIK_A))
 	{
-		velocity_ += XMVectorSet(-0.1, 0, 0, 0);
+		velocity_ += XMVectorSet(-0.1f, 0.0f, 0.0f, 0.0f);
 	}
 	if (Input::IsKey(DIK_D))
 	{
-		velocity_ += XMVectorSet(0.1, 0, 0.0, 0);
+		velocity_ += XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
 	}
+	//どの方向も同じスピードにする
+	velocity_ = XMVector4Normalize(velocity_);
+	velocity_ /= 10;
 
-	//rotate
-	static int rotNum = 0;
+	//回転
 	if (Input::IsKey(DIK_UP))
 	{
 	}
@@ -46,23 +49,22 @@ void Controller::Update()
 	}
 	if (Input::IsKey(DIK_RIGHT))
 	{
-		rotNum++;
+		transform_.rotate_.y++;
 	}
 	if (Input::IsKey(DIK_LEFT))
 	{
-		rotNum--;
+		transform_.rotate_.y--;
 	}
-	transform_.rotate_.y = rotNum;
-	XMVECTOR cameraBase = XMLoadFloat3(&cameraPos);
-	XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(rotNum));
-	XMVECTOR CameraRotVec = XMVector3Transform(cameraBase, yrot);
-	XMFLOAT3 v;
-	XMStoreFloat3(&v, CameraRotVec);
+	//カメラ回転
+	XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(transform_.rotate_.y));
+	XMVECTOR cameraRotVec = XMVector3Transform(cameraBase, yrot);
 
-	Camera::SetPosition(XMFLOAT3(transform_.position_.x + v.x, transform_.position_.y + v.y,
-		transform_.position_.z + v.z));
+	XMVECTOR vPos = XMLoadFloat3(&transform_.position_);
+
+	Camera::SetPosition(vPos + cameraRotVec);
 	Camera::SetTarget(XMFLOAT3(transform_.position_));
 
+	//移動方向回転
 	velocity_ = XMVector3Transform(velocity_, yrot);
 
 	transform_.position_ += velocity_;
