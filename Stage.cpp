@@ -36,6 +36,13 @@ void Stage::Initialize()
 		hModel_[i] = Model::Load(fname_base + modelName[i]);
 		assert(hModel_[i] >= 0);
 	}
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			table_[x][z] = x / 3;
+		}
+	}
 }
 
 void Stage::Update()
@@ -49,8 +56,9 @@ void Stage::Draw()
 		for (int z = 0; z < ZSIZE; z++)
 		{
 			transform_.position_ = XMFLOAT3((float)x, 0, (float)z);
-			Model::SetTransform(hModel_[x / 3], transform_);
-			Model::Draw(hModel_[x / 3]);
+			int type = table_[x][z];
+			Model::SetTransform(hModel_[type], transform_);
+			Model::Draw(hModel_[type]);
 		}
 	}
 	
