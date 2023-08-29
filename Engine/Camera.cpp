@@ -34,6 +34,16 @@ void Camera::SetPosition(XMFLOAT3 position)
 	SetPosition(XMLoadFloat3(&position));
 }
 
+XMVECTOR Camera::GetPosition()
+{
+	return position_;
+}
+
+XMVECTOR Camera::GetRotate()
+{
+	return XMVECTOR();
+}
+
 //è≈ì_Çê›íË
 void Camera::SetTarget(XMVECTOR target)
 {
