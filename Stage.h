@@ -14,14 +14,21 @@ namespace
 		MODEL_SAND,
 		MODEL_WATER,
 	};
+	
 }
+
+struct
+{
+	MODEL_TYPE modelType;
+	int height;
+}table_[XSIZE][ZSIZE];
 
 class Stage
 	:public GameObject
 {
 	int hModel_[MODEL_NUM];
-	int table_[XSIZE][ZSIZE];
 	
+
 public:
 	Stage(GameObject* parent);
 

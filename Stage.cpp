@@ -14,7 +14,8 @@ Stage::Stage(GameObject* parent)
 	{
 		for (int z = 0; z < ZSIZE; z++)
 		{
-			table_[x][z] = MODEL_TYPE::MODEL_DEFAULT;
+			table_[x][z].modelType = MODEL_TYPE::MODEL_DEFAULT;
+			table_[x][z].height = (rand() % 5) + 1;
 		}
 	}
 }
@@ -40,7 +41,7 @@ void Stage::Initialize()
 	{
 		for (int z = 0; z < ZSIZE; z++)
 		{
-			table_[x][z] = x / 3;
+			table_[x][z].modelType = (MODEL_TYPE)(x / 3);
 		}
 	}
 }
@@ -55,10 +56,13 @@ void Stage::Draw()
 	{
 		for (int z = 0; z < ZSIZE; z++)
 		{
-			transform_.position_ = XMFLOAT3((float)x, 0, (float)z);
-			int type = table_[x][z];
-			Model::SetTransform(hModel_[type], transform_);
-			Model::Draw(hModel_[type]);
+			for (int y = 0; y < table_[x][z].height; y++)
+			{
+				transform_.position_ = XMFLOAT3((float)x, y, (float)z);
+				int type = table_[x][z].modelType;
+				Model::SetTransform(hModel_[type], transform_);
+				Model::Draw(hModel_[type]);
+			}
 		}
 	}
 	
