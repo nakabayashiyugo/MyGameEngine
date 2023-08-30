@@ -14,8 +14,8 @@ Stage::Stage(GameObject* parent)
 	{
 		for (int z = 0; z < ZSIZE; z++)
 		{
-			table_[x][z].modelType = MODEL_TYPE::MODEL_DEFAULT;
-			table_[x][z].height = (rand() % 5) + 1;
+			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
+			SetHeight(x, z, (z / 3));
 		}
 	}
 }
@@ -41,7 +41,7 @@ void Stage::Initialize()
 	{
 		for (int z = 0; z < ZSIZE; z++)
 		{
-			table_[x][z].modelType = (MODEL_TYPE)(x / 3);
+			SetBlock(x, z, (MODEL_TYPE)(x / 3));
 		}
 	}
 }
@@ -70,4 +70,15 @@ void Stage::Draw()
 
 void Stage::Release()
 {
+}
+
+void Stage::SetBlock(int x, int z, MODEL_TYPE _type)
+{
+	table_[x][z].modelType = _type;
+	assert(_type <= MODEL_TYPE::MODEL_MAX);
+}
+
+void Stage::SetHeight(int x, int z, int _height)
+{
+	table_[x][z].height = _height;
 }

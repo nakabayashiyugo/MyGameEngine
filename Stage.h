@@ -13,6 +13,7 @@ namespace
 		MODEL_GRASS,
 		MODEL_SAND,
 		MODEL_WATER,
+		MODEL_MAX,
 	};
 	
 }
@@ -43,5 +44,8 @@ public:
 
 	//ŠJ•ú
 	void Release() override;
+
+	void SetBlock(int x, int z, MODEL_TYPE _type);
+	void SetHeight(int x, int z, int _height);
 };
 
