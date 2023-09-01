@@ -13,6 +13,14 @@ class Texture;
 #pragma comment(lib, "LibXml2-MD.lib")
 #pragma comment(lib, "zlib-MD.lib")
 
+struct RayCastData
+{
+	XMFLOAT3 start;
+	XMFLOAT3 dir;
+	bool hit;
+	float dist;
+};
+
 class Fbx
 {
 	//マテリアル
@@ -37,6 +45,8 @@ class Fbx
 		XMVECTOR normal;
 	};
 
+	VERTEX* pVertices_;
+	int** ppIndex_;
 	int vertexCount_;	//頂点数
 	int polygonCount_;	//ポリゴン数
 	int materialCount_;	//マテリアルの個数
@@ -59,4 +69,6 @@ public:
 
 	void    Draw(Transform& transform);
 	void    Release();
+
+	void RayCast(RayCastData& rayData);
 };

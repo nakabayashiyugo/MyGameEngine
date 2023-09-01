@@ -1,5 +1,6 @@
 #include "Fbx.h"
 #include "Texture.h"
+#include "DirectXCollision.h"
 
 Fbx::Fbx()
 	: pVertexBuffer_(nullptr), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr), pMaterialList_(nullptr)
@@ -84,7 +85,7 @@ HRESULT Fbx::Load(std::string fileName)
 HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 {
 	//頂点情報を入れる配列
-	VERTEX* vertices = new VERTEX[vertexCount_];
+	pVertices_ = new VERTEX[vertexCount_];
 	
 	//全ポリゴン
 	for (DWORD poly = 0; poly < polygonCount_; poly++)
@@ -97,18 +98,18 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 
 			//頂点の位置
 			FbxVector4 pos = mesh->GetControlPointAt(index);
-			vertices[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0.0f);
+			pVertices_[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0.0f);
 
 			//頂点のUV
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
 			FbxVector2  uv = pUV->GetDirectArray().GetAt(uvIndex);
-			vertices[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
+			pVertices_[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
 
 			//頂点の法線
 			FbxVector4 Normal;
 			mesh->GetPolygonVertexNormal(poly, vertex, Normal);	//ｉ番目のポリゴンの、ｊ番目の頂点の法線をゲット
-			vertices[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0.0f);
+			pVertices_[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0.0f);
 		}
 	}
 
@@ -117,14 +118,14 @@ HRESULT Fbx::InitVertex(fbxsdk::FbxMesh* mesh)
 
 	// 頂点データ用バッファの設定
 	D3D11_BUFFER_DESC bd_vertex;
-	bd_vertex.ByteWidth = sizeof(vertices[0]) * vertexCount_;
+	bd_vertex.ByteWidth = sizeof(VERTEX) * vertexCount_;
 	bd_vertex.Usage = D3D11_USAGE_DEFAULT;
 	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd_vertex.CPUAccessFlags = 0;
 	bd_vertex.MiscFlags = 0;
 	bd_vertex.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA data_vertex;
-	data_vertex.pSysMem = &vertices[0];
+	data_vertex.pSysMem = pVertices_;
 	hr = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 	if (FAILED(hr))
 	{
@@ -140,11 +141,14 @@ HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 {
 	pIndexBuffer_ = new ID3D11Buffer *[materialCount_];
 	indexCount_ = std::vector<int>(materialCount_);
+	ppIndex_ = new int* [materialCount_];
 
 
-	std::vector<int> index(polygonCount_ * 3);//ポリゴン数*3＝全頂点分用意
+	//std::vector<int> index(polygonCount_ * 3);//ポリゴン数*3＝全頂点分用意
 	for (int i = 0; i < materialCount_; i++)
 	{
+		ppIndex_[i] = new int[polygonCount_ * 3];
+
 		int count = 0;
 
 		//全ポリゴン
@@ -158,7 +162,7 @@ HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 				//3頂点分
 				for (DWORD vertex = 0; vertex < 3; vertex++)
 				{
-					index[count] = mesh->GetPolygonVertex(poly, vertex);
+					ppIndex_[i][count] = mesh->GetPolygonVertex(poly, vertex);
 					count++;
 				}
 			}
@@ -171,13 +175,13 @@ HRESULT Fbx::InitIndex(fbxsdk::FbxMesh* mesh)
 		// インデックスバッファを生成する
 		D3D11_BUFFER_DESC   bd;
 		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = sizeof(index[0]) * polygonCount_ * 3;
+		bd.ByteWidth = sizeof(int) * polygonCount_ * 3;
 		bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		bd.CPUAccessFlags = 0;
 		bd.MiscFlags = 0;
 
 		D3D11_SUBRESOURCE_DATA InitData;
-		InitData.pSysMem = index.data();
+		InitData.pSysMem = ppIndex_[i];
 		InitData.SysMemPitch = 0;
 		InitData.SysMemSlicePitch = 0;
 		hr = Direct3D::pDevice_->CreateBuffer(&bd, &InitData, &pIndexBuffer_[i]);
@@ -318,4 +322,29 @@ void Fbx::Release()
 	SAFE_RELEASE(pConstantBuffer_);
 	SAFE_RELEASE(pVertexBuffer_);
 	//SAFE_RELEASE(pIndexBuffer_);
+}
+
+void Fbx::RayCast(RayCastData& rayData)
+{
+	for (int material = 0; material < materialCount_; material++)
+	{
+		for (int poly = 0; poly < indexCount_[material] / 3; poly++)
+		{
+			int i0 = ppIndex_[material][poly * 3 + 0];
+			int i1 = ppIndex_[material][poly * 3 + 1];
+			int i2 = ppIndex_[material][poly * 3 + 2];
+			XMVECTOR v0 = pVertices_[i0].position;
+			XMVECTOR v1 = pVertices_[i1].position;
+			XMVECTOR v2 = pVertices_[i2].position;
+
+			XMVECTOR start = XMLoadFloat3(&rayData.start);
+			XMVECTOR dir = XMLoadFloat3(&rayData.dir);
+
+			rayData.hit = TriangleTests::Intersects(start, dir, v0, v1, v2, rayData.dist);
+			if (rayData.hit)
+			{
+				return;
+			}
+		}
+	}
 }

@@ -32,16 +32,16 @@ ID3D11RenderTargetView* pRenderTargetView_;	//レンダーターゲットビュー
 //エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
-    XMVECTOR beginP = XMVectorSet(10, 5, 1, 0);
-    XMVECTOR dir = XMVectorSet(0, -1, 0, 0);
-    XMVECTOR p0 = XMVectorSet(0, 0, 0, 0);
-    XMVECTOR p1 = XMVectorSet(0, 0, 3, 0);
-    XMVECTOR p2 = XMVectorSet(3, 0, 0, 0);
-    float dist = 0;
+    //XMVECTOR beginP = XMVectorSet(10, 5, 1, 0);
+    //XMVECTOR dir = XMVectorSet(0, -1, 0, 0);
+    //XMVECTOR p0 = XMVectorSet(0, 0, 0, 0);
+    //XMVECTOR p1 = XMVectorSet(0, 0, 3, 0);
+    //XMVECTOR p2 = XMVectorSet(3, 0, 0, 0);
+    //float dist = 0;
 
-    bool result = TriangleTests::Intersects(beginP, dir, p0, p1, p2, dist);
+    //bool result = TriangleTests::Intersects(beginP, dir, p0, p1, p2, dist);
 
-    int a = 0;
+    //int a = 0;
 
     //ウィンドウクラス（設計図）を作成
     WNDCLASSEX wc;

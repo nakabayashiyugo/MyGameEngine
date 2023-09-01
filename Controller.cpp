@@ -1,6 +1,8 @@
 #include "Controller.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
+#include "Engine/Model.h"
+#include "Engine/Fbx.h"
 
 Controller::Controller(GameObject* parent)
 	: GameObject(parent, "Controller"), velocity_(XMVectorSet( 0, 0, 0, 0 ))
@@ -11,6 +13,7 @@ void Controller::Initialize()
 {
 	transform_.position_ = XMFLOAT3(7, 1, 7);
 	Camera::SetPosition(XMFLOAT3(7, 1, 7));
+
 }
 
 void Controller::Update()
