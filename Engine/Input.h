@@ -1,4 +1,6 @@
 #pragma once
+#include <DirectXMath.h>
+#include "Direct3D.h"
 
 #include <dInput.h>
 
@@ -15,4 +17,12 @@ namespace Input
 	bool IsKeyDown(int keyCode);
 	bool IsKeyUp(int keyCode);
 	void Release();
+
+	//É}ÉEÉX
+	bool IsMouseButton(int buttonCode);
+	bool IsMouseButtonDown(int buttonCode);
+	bool IsMuoseButtonUp(int buttonCode);
+	XMFLOAT3 GetMousePosition();
+	XMFLOAT3 GetMouseMove();
+	void SetMousePosition(int x, int y);
 };
