@@ -3,6 +3,8 @@
 #include "Engine/Input.h"
 #include "Engine/Model.h"
 
+#include "resource.h"
+
 Stage::Stage(GameObject* parent)
 	: GameObject(parent, "Stage")
 {
@@ -81,4 +83,33 @@ void Stage::SetBlock(int x, int z, MODEL_TYPE _type)
 void Stage::SetHeight(int x, int z, int _height)
 {
 	table_[x][z].height = _height;
+}
+
+BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		//ラジオボタンの初期値
+		SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
+
+		//コンボボックスの初期値
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"石");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"草");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"土");
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
+		
+
+		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_SETCURSEL, 0, 0);
+
+		return TRUE;
+
+	case WM_COMMAND:
+		mode_ = LOWORD(wp) - IDC_RADIO_UP;
+		
+		select_ = SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0);
+		return TRUE;
+	}
+	return FALSE;
 }

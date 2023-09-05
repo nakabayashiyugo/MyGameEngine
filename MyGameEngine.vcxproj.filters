@@ -12,11 +12,11 @@
     <Filter Include="ソース ファイル\Engine">
       <UniqueIdentifier>{5f43871b-5b95-44ab-a48d-34cc2d7426af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\ヘッダー ファイル">
+    <Filter Include="ヘッダー ファイル">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\ヘッダー ファイル\Engine">
+    <Filter Include="ヘッダー ファイル\Engine">
       <UniqueIdentifier>{03687954-8d9f-439d-aefe-1092bd45e760}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -82,55 +82,55 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Camera.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Direct3D.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Fbx.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Input.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Quad.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Sprite.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Texture.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Transform.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GameObject.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\RootJob.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Model.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SceneManager.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SphereCollider.h">
-      <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
+      <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
     <ClInclude Include="TestScene.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Stage.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>ソース ファイル\ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

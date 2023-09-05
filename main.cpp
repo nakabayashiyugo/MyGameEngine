@@ -10,6 +10,7 @@
 #include "DirectXCollision.h"
 
 #include "resource.h"
+#include "Stage.h"
 
 //ƒŠƒ“ƒJ
 #pragma comment(lib, "d3d11.lib")
@@ -197,9 +198,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch (msg)
-    {
-
-    }
-    return FALSE;
+    return ((Stage*)pRootJob->FindObject("Stage"))->DialogProc(hDlg, msg, wp, lp);
 }
