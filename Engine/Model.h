@@ -2,8 +2,7 @@
 #include <string>
 #include <vector>
 #include "Transform.h"
-
-class Fbx;
+#include "Fbx.h"
 
 namespace Model
 {
@@ -11,4 +10,6 @@ namespace Model
 	int Load(std::string filename);
 	void Draw(int hModel);
 	void Release();
+
+	void RayCast(int hModel, RayCastData& rayData);
 }
