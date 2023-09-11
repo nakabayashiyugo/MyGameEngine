@@ -70,5 +70,27 @@ void Model::Release()
 
 void Model::RayCast(int hModel, RayCastData& rayData)
 {
+	modelList[hModel]->transform_.Calclation();
+	//‡@ƒ[ƒ‹ƒhs—ñ‚Ì‹ts—ñ
+	XMMATRIX wInv = XMMatrixInverse(nullptr, modelList[hModel]->transform_.GetWorldMatrix());
+	//‡AƒŒƒC‚Ì’Ê‰ß“_‚ğ‹‚ß‚é
+	XMVECTOR vpass{ rayData.start.x + rayData.dir.x,
+					rayData.start.y + rayData.dir.y,
+					rayData.start.z + rayData.dir.z,
+					rayData.start.w + rayData.dir.w };
+	//‡BrayData.start‚ğƒ‚ƒfƒ‹‹óŠÔ‚É•ÏŠ·
+	XMVECTOR vstart = XMLoadFloat4(&rayData.start);
+	vstart = XMVector3TransformCoord(vstart, wInv);
+	XMStoreFloat4(&rayData.start, vstart);
+	//‡C(n“_‚©‚ç•ûŒüƒxƒNƒgƒ‹‚ğL‚Î‚µ‚½æ)’Ê‰ß“_(‡A)‚É‡@‚ğ‚©‚¯‚é
+	vpass = XMVector3TransformCoord(vpass, wInv);
+	//‡DrayData.dir‚ğ‡B‚©‚ç‡C‚ÉŒü‚©‚¤ƒxƒNƒgƒ‹
+	vpass = vpass - vstart;
+	XMStoreFloat4(&rayData.dir, vpass);
+
+
+
+
+	//w’è‚³‚ê‚½ƒ‚ƒfƒ‹”Ô†‚ÌFBX‚ÉƒŒƒCƒLƒƒƒXƒg
 	modelList[hModel]->pFbx_->RayCast(rayData);
 }

@@ -23,19 +23,18 @@ namespace Input
 		pKeyDevice->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
 
 		pDInput->CreateDevice(GUID_SysMouse, &pMouseDevice, nullptr); //pDInputをnewするみたいな感じ
-		pMouseDevice->SetDataFormat(&c_dfDIKeyboard); //デバイスの種類を指定
+		pMouseDevice->SetDataFormat(&c_dfDIMouse); //デバイスの種類を指定
 		pMouseDevice->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
 	}
 
 	void Update()
 	{
 		memcpy(prevKeyState, keyState, sizeof(BYTE) * 256);
-
 		pKeyDevice->Acquire();
 		pKeyDevice->GetDeviceState(sizeof(keyState), &keyState);
 
-		prevMouseState = mouseState;
 		//マウス
+		memcpy(&prevMouseState, &mouseState, sizeof(mouseState));
 		pMouseDevice->Acquire();
 		pMouseDevice->GetDeviceState(sizeof(mouseState), &mouseState);
 	}
