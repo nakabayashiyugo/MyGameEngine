@@ -18,7 +18,10 @@ Stage::Stage(GameObject* parent)
 		for (int z = 0; z < ZSIZE; z++)
 		{
 			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
-			SetHeight(x, z, (z / 3));
+			SetHeight(x, z, 1);
+			table_[x][z].IsColRay = false;
+
+			//model_Hit_In_Ray[x][z] = XMFLOAT3(0, 0, 0);
 		}
 	}
 }
@@ -85,6 +88,10 @@ void Stage::Update()
 		vMouseFront = XMVector3TransformCoord(vMouseFront, invVp * invProj * invView);
 		XMVECTOR  vMouseBack = XMLoadFloat3(&mousePosBack);
 		vMouseBack = XMVector3TransformCoord(vMouseBack, invVp * invProj * invView);
+
+		float prevDist = 999, Dist = 999;
+		int actPosX = 0, actPosZ = 0;
+		bool Israycol = false;
 		for (int x = 0; x < XSIZE; x++)
 		{
 			for (int z = 0; z < ZSIZE; z++)
@@ -104,14 +111,29 @@ void Stage::Update()
 
 					if (data.hit)
 					{
-
-						table_[x][z].height++;
+						if (table_[x][z].rayDist > data.dist)
+							table_[x][z].rayDist = data.dist;
+						table_[x][z].IsColRay = true;
+						Israycol = true;
 						break;
-
 					}
+				}
+				if (table_[x][z].IsColRay)
+				{
+					Dist = table_[x][z].rayDist;
+					if (prevDist > Dist)
+					{
+						actPosX = x;
+						actPosZ = z;
+
+						prevDist = Dist;
+					}
+					table_[x][z].IsColRay = false;
 				}
 			}
 		}
+		if(Israycol)
+			table_[actPosX][actPosZ].height++;
 	}
 }
 
