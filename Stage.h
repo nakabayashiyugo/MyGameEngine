@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include <Windows.h>
+#include <iostream>
 
 namespace
 {
@@ -19,21 +20,17 @@ namespace
 	
 }
 
-struct
-{
-	MODEL_TYPE modelType;
-	int height;
-	float rayDist;
-	bool IsColRay;
-}table_[XSIZE][ZSIZE];
-
 class Stage
 	:public GameObject
 {
 	int hModel_[MODEL_NUM];
 	
+	bool returnButton;
 	int mode_;		//0: up   1: down  2: change
 	int select_;	//syurui
+	int end_;
+	
+	XMFLOAT3 actPos;
 
 public:
 	Stage(GameObject* parent);

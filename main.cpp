@@ -91,7 +91,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     HRESULT hr;
 
     //Direct3Dèâä˙âª
-    hr = Direct3D::Initialize(winW, winH, hWnd);
+    hr = Direct3D::Initialize(WINDOW_WIDTH, WINDOW_HEIGHT, hWnd);
     if (FAILED(hr))
     {
         //é∏îsÇµÇΩÇ∆Ç´ÇÃèàóù
@@ -106,7 +106,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     Camera::Initialize();
 
     //Camera::SetPosition(XMFLOAT3(0, 0, -10));
-    Camera::SetTarget(XMFLOAT3(0, 0, 0));
     
 
     HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);

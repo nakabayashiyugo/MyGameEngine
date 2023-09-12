@@ -14,7 +14,8 @@ void Camera::Initialize()
 {
 
 	//プロジェクション行列
-	projMatrix_ = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)800 / (FLOAT)600, 0.1f, 100.0f);
+	projMatrix_ = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)800.0 / (FLOAT)600.0, 0.1f, 100.0f);
+	viewMatrix_ = XMMatrixLookAtLH(position_, target_, XMVectorSet(0, 1, 0, 0));
 }
 
 //更新

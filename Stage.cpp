@@ -1,13 +1,29 @@
 #include <string>
 #include "Stage.h"
 #include "Engine/Input.h"
+#include <vector>
 #include "Engine/Model.h"
 #include "Engine/Direct3D.h"
 
 #include "resource.h"
 
+namespace
+{
+	struct tableStruct
+	{
+		MODEL_TYPE modelType;
+		int height;
+		float rayDist;
+		bool IsColRay;
+	};
+
+	tableStruct table_[XSIZE][ZSIZE];
+
+	tableStruct table_History[20][XSIZE][ZSIZE];
+}
+
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage")
+	: GameObject(parent, "Stage"), returnButton(false), end_(0)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -57,6 +73,13 @@ void Stage::Update()
 	
 	if (Input::IsMouseButtonDown(0))
 	{
+		for (int x = 0; x < XSIZE; x++)
+		{
+			for (int z = 0; z < ZSIZE; z++)
+			{
+				table_[x][z].rayDist = 999;
+			}
+		}
 		float w = (float)(Direct3D::scrWidth / 2);
 		float h = (float)(Direct3D::scrHeight / 2);
 		XMMATRIX vp =
@@ -89,9 +112,9 @@ void Stage::Update()
 		XMVECTOR  vMouseBack = XMLoadFloat3(&mousePosBack);
 		vMouseBack = XMVector3TransformCoord(vMouseBack, invVp * invProj * invView);
 
-		float prevDist = 999, Dist = 999;
-		int actPosX = 0, actPosZ = 0;
-		bool Israycol = false;
+		float prevDist = 999;
+		actPos = XMFLOAT3(0, 0, 0);
+		bool isRayCol = false;
 		for (int x = 0; x < XSIZE; x++)
 		{
 			for (int z = 0; z < ZSIZE; z++)
@@ -114,26 +137,66 @@ void Stage::Update()
 						if (table_[x][z].rayDist > data.dist)
 							table_[x][z].rayDist = data.dist;
 						table_[x][z].IsColRay = true;
-						Israycol = true;
+						isRayCol = true;
 						break;
 					}
 				}
 				if (table_[x][z].IsColRay)
 				{
-					Dist = table_[x][z].rayDist;
-					if (prevDist > Dist)
+					if (prevDist > table_[x][z].rayDist)
 					{
-						actPosX = x;
-						actPosZ = z;
+						actPos.x = x;
+						actPos.z = z;
 
-						prevDist = Dist;
+						prevDist = table_[x][z].rayDist;
 					}
 					table_[x][z].IsColRay = false;
 				}
+				
 			}
 		}
-		if(Israycol)
-			table_[actPosX][actPosZ].height++;
+		if (isRayCol)
+		{
+			
+			//table_History‚É—š—ð‚ð“ü‚ê‚é
+
+			for (int x = 0; x < XSIZE; x++)
+			{
+				for (int z = 0; z < ZSIZE; z++)
+				{
+					table_History[end_][x][z] = table_[x][z];
+				}
+			}
+			end_++;
+			switch (mode_)
+			{
+			case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
+			case 1:
+				if (table_[(int)actPos.x][(int)actPos.z].height > 1)
+					table_[(int)actPos.x][(int)actPos.z].height--;
+				break;
+			case 2: 
+				SetBlock((int)actPos.x, (int)actPos.z, (MODEL_TYPE)select_);
+				break;
+			}
+		}
+	}
+	if (end_)
+	{
+		if (returnButton)
+		{
+
+			int prevTableID = end_ - 1;
+			for (int x = 0; x < XSIZE; x++)
+			{
+				for (int z = 0; z < ZSIZE; z++)
+				{
+					table_[x][z] = table_History[prevTableID][x][z];
+				}
+			}
+			end_--;
+			returnButton = false;
+		}
 	}
 }
 
@@ -191,9 +254,18 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		return TRUE;
 
 	case WM_COMMAND:
-		mode_ = LOWORD(wp) - IDC_RADIO_UP;
+		switch (LOWORD(wp))
+		{
+		case 1018: mode_ = 0; break;
+		case 1019: mode_ = 1; break;
+		case 1020: mode_ = 2; break;
+		case 1022: returnButton = true; break;
+		default: break;
+		}
 		
 		select_ = (int)(SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0));
+
+
 		return TRUE;
 	}
 	return FALSE;

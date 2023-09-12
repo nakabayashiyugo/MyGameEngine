@@ -24,7 +24,7 @@ namespace Input
 
 		pDInput->CreateDevice(GUID_SysMouse, &pMouseDevice, nullptr); //pDInputをnewするみたいな感じ
 		pMouseDevice->SetDataFormat(&c_dfDIMouse); //デバイスの種類を指定
-		pMouseDevice->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
+		pMouseDevice->SetCooperativeLevel(hWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
 	}
 
 	void Update()

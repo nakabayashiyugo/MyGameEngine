@@ -89,8 +89,6 @@ void Model::RayCast(int hModel, RayCastData& rayData)
 	XMStoreFloat4(&rayData.dir, vpass);
 
 
-
-
 	//指定されたモデル番号のFBXにレイキャスト
 	modelList[hModel]->pFbx_->RayCast(rayData);
 }
