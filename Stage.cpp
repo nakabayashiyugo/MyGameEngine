@@ -7,23 +7,9 @@
 
 #include "resource.h"
 
-namespace
-{
-	struct tableStruct
-	{
-		MODEL_TYPE modelType;
-		int height;
-		float rayDist;
-		bool IsColRay;
-	};
-
-	tableStruct table_[XSIZE][ZSIZE];
-
-	tableStruct table_History[20][XSIZE][ZSIZE];
-}
 
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"), returnButton(false), end_(0)
+	: GameObject(parent, "Stage"), returnButton(false), hisEnd_(0)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -157,17 +143,29 @@ void Stage::Update()
 		}
 		if (isRayCol)
 		{
-			
+			if (hisEnd_ >= RET_CNT_LIMIT)
+			{
+				for (int hisCnt = 1; hisCnt < RET_CNT_LIMIT; hisCnt++)
+				{
+					for (int x = 0; x < XSIZE; x++)
+					{
+						for (int z = 0; z < ZSIZE; z++)
+						{
+							table_History[hisCnt - 1][x][z] = table_History[hisCnt][x][z];
+						}
+					}
+				}
+				hisEnd_--;
+			}
 			//table_History‚É—š—ð‚ð“ü‚ê‚é
-
 			for (int x = 0; x < XSIZE; x++)
 			{
 				for (int z = 0; z < ZSIZE; z++)
 				{
-					table_History[end_][x][z] = table_[x][z];
+					table_History[hisEnd_][x][z] = table_[x][z];
 				}
 			}
-			end_++;
+			hisEnd_++;
 			switch (mode_)
 			{
 			case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
@@ -181,12 +179,12 @@ void Stage::Update()
 			}
 		}
 	}
-	if (end_)
+	if (hisEnd_)
 	{
 		if (returnButton)
 		{
 
-			int prevTableID = end_ - 1;
+			int prevTableID = hisEnd_ - 1;
 			for (int x = 0; x < XSIZE; x++)
 			{
 				for (int z = 0; z < ZSIZE; z++)
@@ -194,7 +192,7 @@ void Stage::Update()
 					table_[x][z] = table_History[prevTableID][x][z];
 				}
 			}
-			end_--;
+			hisEnd_--;
 			returnButton = false;
 		}
 	}
@@ -231,6 +229,11 @@ void Stage::SetBlock(int x, int z, MODEL_TYPE _type)
 void Stage::SetHeight(int x, int z, int _height)
 {
 	table_[x][z].height = _height;
+}
+
+void Stage::TransTableHis(int _x, int _z, tableStruct* tabHis)
+{
+	
 }
 
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
