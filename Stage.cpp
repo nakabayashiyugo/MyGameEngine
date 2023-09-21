@@ -9,7 +9,7 @@
 
 
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"), returnButton(false), hisEnd_(0)
+	: GameObject(parent, "Stage"), isRetturn_(false), retTgt_(0)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -145,7 +145,7 @@ void Stage::Update()
 		if (isRayCol)
 		{
 			//table_History‚ª‚¢‚Á‚Ï‚¢‚É‚È‚Á‚½ŽžÅ‰‚Ì‚ðÁ‚µ‚Ä‘O‚É‹l‚ß‚éì‹Æ
-			if (hisEnd_ >= RET_CNT_LIMIT)
+			if (retTgt_ >= RET_CNT_LIMIT)
 			{
 				for (int hisCnt = 1; hisCnt < RET_CNT_LIMIT; hisCnt++)
 				{
@@ -157,17 +157,17 @@ void Stage::Update()
 						}
 					}
 				}
-				hisEnd_--;
+				retTgt_--;
 			}
 			//table_History‚É—š—ð‚ð“ü‚ê‚é
 			for (int x = 0; x < XSIZE; x++)
 			{
 				for (int z = 0; z < ZSIZE; z++)
 				{
-					table_History[hisEnd_][x][z] = table_[x][z];
+					table_History[retTgt_][x][z] = table_[x][z];
 				}
 			}
-			hisEnd_++;
+			retTgt_++;
 			switch (mode_)
 			{
 			case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
@@ -181,12 +181,12 @@ void Stage::Update()
 			}
 		}
 	}
-	if (hisEnd_)
+	if (retTgt_)
 	{
-		if (returnButton)
+		if (isRetturn_)
 		{
 
-			int prevTableID = hisEnd_ - 1;
+			int prevTableID = retTgt_ - 1;
 			for (int x = 0; x < XSIZE; x++)
 			{
 				for (int z = 0; z < ZSIZE; z++)
@@ -194,8 +194,8 @@ void Stage::Update()
 					table_[x][z] = table_History[prevTableID][x][z];
 				}
 			}
-			hisEnd_--;
-			returnButton = false;
+			retTgt_--;
+			isRetturn_ = false;
 		}
 	}
 }
@@ -264,7 +264,7 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		case 1018: mode_ = 0; break;
 		case 1019: mode_ = 1; break;
 		case 1020: mode_ = 2; break;
-		case 1022: returnButton = true; break;
+		case 1022: isRetturn_ = true; break;
 		default: break;
 		}
 		

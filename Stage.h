@@ -26,11 +26,11 @@ class Stage
 {
 	int hModel_[MODEL_NUM];
 	
-	bool returnButton;
+	bool isRetturn_;
 	int mode_;		//0: up   1: down  2: change
 	int select_;	//syurui
 	//table_History‚Ìˆê”ÔÅŒã‚Ì—v‘f
-	int hisEnd_;
+	int retTgt_;
 	
 	XMFLOAT3 actPos;
 
