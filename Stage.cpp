@@ -100,6 +100,7 @@ void Stage::Update()
 
 		float prevDist = 999;
 		actPos = XMFLOAT3(0, 0, 0);
+		//‚·‚×‚Ä‚Ìtable_History‚Ì—v‘f‚ÌIsColRay‚Ì’†‚Étrue‚ª‚ ‚é‚©‚Ç‚¤‚©
 		bool isRayCol = false;
 		for (int x = 0; x < XSIZE; x++)
 		{
@@ -143,6 +144,7 @@ void Stage::Update()
 		}
 		if (isRayCol)
 		{
+			//table_History‚ª‚¢‚Á‚Ï‚¢‚É‚È‚Á‚½ŽžÅ‰‚Ì‚ðÁ‚µ‚Ä‘O‚É‹l‚ß‚éì‹Æ
 			if (hisEnd_ >= RET_CNT_LIMIT)
 			{
 				for (int hisCnt = 1; hisCnt < RET_CNT_LIMIT; hisCnt++)

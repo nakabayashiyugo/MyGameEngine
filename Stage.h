@@ -29,6 +29,7 @@ class Stage
 	bool returnButton;
 	int mode_;		//0: up   1: down  2: change
 	int select_;	//syurui
+	//table_History‚Ìˆê”ÔÅŒã‚Ì—v‘f
 	int hisEnd_;
 	
 	XMFLOAT3 actPos;
@@ -43,6 +44,7 @@ class Stage
 
 	tableStruct table_[XSIZE][ZSIZE];
 
+	//“®“I”z—ñ‚É‚µ‚½‚©‚Á‚½...!!
 	tableStruct table_History[RET_CNT_LIMIT][XSIZE][ZSIZE];
 
 public:
