@@ -57,7 +57,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     wc.hIcon = LoadIcon(NULL, IDI_QUESTION);        //アイコン
     wc.hIconSm = LoadIcon(NULL, IDI_QUESTION);   //小さいアイコン
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);   //マウスカーソル
-    wc.lpszMenuName = NULL;                     //メニュー（なし）
+    wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1); //メニュー（なし）
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //背景（白）
@@ -66,7 +66,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
     //ウィンドウサイズの計算
     RECT winRect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
-    AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, FALSE);
+    AdjustWindowRect(&winRect, WS_OVERLAPPEDWINDOW, TRUE);
     int winW = winRect.right - winRect.left;     //ウィンドウ幅
     int winH = winRect.bottom - winRect.top;     //ウィンドウ高さ
 
@@ -190,10 +190,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
     case WM_MOUSEMOVE:
         Input::SetMousePosition(LOWORD(lParam), HIWORD(lParam));
-        return 0;
+        break;
     case WM_DESTROY:
         PostQuitMessage(0);  //プログラム終了
-        return 0;
+        break;
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case ID_MENU_NEW:
+            OutputDebugString("new FILE");
+            break;
+        case ID_MENU_OPEN:
+            OutputDebugString("open FILE");
+            break;
+        case ID_MENU_SAVE:
+            OutputDebugString("Save FILE");
+
+
+            return 0;
+        }
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
