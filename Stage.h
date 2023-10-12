@@ -2,6 +2,7 @@
 #include "Engine/GameObject.h"
 #include <Windows.h>
 #include <iostream>
+#include <fstream>
 
 namespace
 {
@@ -31,6 +32,8 @@ class Stage
 	int select_;	//syurui
 	//table_Historyの一番最後の要素
 	int retTgt_;
+
+	std::string savefile_;  //読み込むファイルの指定
 	
 	XMFLOAT3 actPos;
 
@@ -68,6 +71,12 @@ public:
 	void TransTableHis(int _x, int _z, tableStruct* tabHis);
 
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
+	void CreateNewTable();
+
+	void Write();
+	void Read();
+	void SaveAs();
 
 };
 

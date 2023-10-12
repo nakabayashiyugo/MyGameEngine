@@ -9,7 +9,8 @@
 
 
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"), isRetturn_(false), retTgt_(0)
+	: GameObject(parent, "Stage"), isRetturn_(false), retTgt_(0), 
+	savefile_("default_Save")
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -274,4 +275,115 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		return TRUE;
 	}
 	return FALSE;
+}
+
+void Stage::CreateNewTable()
+{
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
+			SetHeight(x, z, 1);
+			table_[x][z].IsColRay = false;
+		}
+	}
+}
+
+void Stage::Write()
+{
+	std::ofstream write;
+	write.open(savefile_, std::ios::out | std::ios::binary);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile_ << " が開けません";
+		return;
+	}
+
+	for (int i = 0; i < XSIZE; i++) {
+		for (int j = 0; j < ZSIZE; j++)
+		{
+			write.write((char*)&table_[i][j].modelType, sizeof(table_[i]->modelType));
+			write.write((char*)&table_[i][j].height, sizeof(table_[i]->height));
+			//文字列ではないデータをかきこむ
+		}
+	}
+
+	write.close();  //ファイルを閉じる
+}
+
+void Stage::Read()
+{
+	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+
+	//「ファイルを保存」ダイアログの設定
+	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("マップデータ(*.dat)\0*.dat\0")        //─┬ファイルの種類
+		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+	ofn.lpstrFile = fileName;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_FILEMUSTEXIST;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "dat";                  	//デフォルト拡張子
+
+	//「ファイルを保存」ダイアログ
+	BOOL selFile;
+	selFile = GetOpenFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
+
+	savefile_ = fileName;
+
+
+	//modelTypeファイル読み込み
+	std::ifstream read(savefile_, std::ios::in | std::ios::binary);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+	if (!read) {
+		std::cout << "ファイル " << savefile_ << " が開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+
+	int i = 0;
+	while (!read.eof()) {  //ファイルの最後まで続ける
+		
+		read.read((char*)&table_[i / XSIZE][i % ZSIZE].modelType, sizeof(table_[i / XSIZE][i % ZSIZE].modelType));
+		read.read((char*)&table_[i / XSIZE][i % ZSIZE].height, sizeof(table_[i / XSIZE][i % ZSIZE].height));
+		//文字列ではないデータを読みこむ
+		
+		i++;
+	}
+	read.close();  //ファイルを閉じる
+}
+
+void Stage::SaveAs()
+{
+	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
+
+	//「ファイルを保存」ダイアログの設定
+	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
+	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
+	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
+	ofn.lpstrFilter = TEXT("マップデータ(*.dat)\0*.dat\0")        //─┬ファイルの種類
+		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
+	ofn.lpstrFile = fileName;               	//ファイル名
+	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
+	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
+	ofn.lpstrDefExt = "dat";                  	//デフォルト拡張子
+
+	//「ファイルを保存」ダイアログ
+	BOOL selFile;
+	selFile = GetSaveFileName(&ofn);
+
+	//キャンセルしたら中断
+	if (selFile == FALSE) return;
+
+	savefile_ = fileName;
+
+	Write();
 }

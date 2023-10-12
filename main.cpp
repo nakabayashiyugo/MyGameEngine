@@ -199,13 +199,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
         case ID_MENU_NEW:
             OutputDebugString("new FILE");
+            ((Stage*)pRootJob->FindChildObject("Stage"))->CreateNewTable();
             break;
         case ID_MENU_OPEN:
             OutputDebugString("open FILE");
+            ((Stage*)pRootJob->FindChildObject("Stage"))->Read();
             break;
         case ID_MENU_SAVE:
             OutputDebugString("Save FILE");
-
+            ((Stage*)pRootJob->FindChildObject("Stage"))->Write();
+            break;
+        case ID_MENU_SAVEAS:
+            OutputDebugString("SaveAs FILE");
+            ((Stage*)pRootJob->FindChildObject("Stage"))->SaveAs();
 
             return 0;
         }
