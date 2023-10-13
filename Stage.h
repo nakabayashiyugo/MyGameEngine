@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 namespace
 {
@@ -47,8 +48,7 @@ class Stage
 
 	tableStruct table_[XSIZE][ZSIZE];
 
-	//“®“I”z—ñ‚É‚µ‚½‚©‚Á‚½...!!
-	tableStruct table_History[RET_CNT_LIMIT][XSIZE][ZSIZE];
+	std::vector<tableStruct[XSIZE][ZSIZE]> table_History_;
 
 public:
 	Stage(GameObject* parent);

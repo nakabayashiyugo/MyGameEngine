@@ -23,8 +23,6 @@ Stage::Stage(GameObject* parent)
 			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
 			SetHeight(x, z, 1);
 			table_[x][z].IsColRay = false;
-
-			//model_Hit_In_Ray[x][z] = XMFLOAT3(0, 0, 0);
 		}
 	}
 }
@@ -113,9 +111,9 @@ void Stage::Update()
 					XMStoreFloat4(&data.start, vMouseFront);
 					XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
 					Transform trans;
-					trans.position_.x = x;
-					trans.position_.y = y;
-					trans.position_.z = z;
+					trans.position_.x = (float)x;
+					trans.position_.y = (float)y;
+					trans.position_.z = (float)z;
 					Model::SetTransform(hModel_[0], trans);
 
 					Model::RayCast(hModel_[0], data);
@@ -133,8 +131,8 @@ void Stage::Update()
 				{
 					if (prevDist > table_[x][z].rayDist)
 					{
-						actPos.x = x;
-						actPos.z = z;
+						actPos.x = (float)x;
+						actPos.z = (float)z;
 
 						prevDist = table_[x][z].rayDist;
 					}
@@ -145,30 +143,15 @@ void Stage::Update()
 		}
 		if (isRayCol)
 		{
-			//table_History‚ª‚¢‚Á‚Ï‚¢‚É‚È‚Á‚½ŽžÅ‰‚Ì‚ðÁ‚µ‚Ä‘O‚É‹l‚ß‚éì‹Æ
-			if (retTgt_ >= RET_CNT_LIMIT)
+			std::vector<int[3][3]> a;
+			a.resize(3);
+			for(int i = 0; i < XSIZE; i++)
 			{
-				for (int hisCnt = 1; hisCnt < RET_CNT_LIMIT; hisCnt++)
+				for (int j = 0; j < ZSIZE; j++)
 				{
-					for (int x = 0; x < XSIZE; x++)
-					{
-						for (int z = 0; z < ZSIZE; z++)
-						{
-							table_History[hisCnt - 1][x][z] = table_History[hisCnt][x][z];
-						}
-					}
-				}
-				retTgt_--;
-			}
-			//table_History‚É—š—ð‚ð“ü‚ê‚é
-			for (int x = 0; x < XSIZE; x++)
-			{
-				for (int z = 0; z < ZSIZE; z++)
-				{
-					table_History[retTgt_][x][z] = table_[x][z];
+					table_History_.at(table_History_.size() - 1)[i][j] = table_[i][j];
 				}
 			}
-			retTgt_++;
 			switch (mode_)
 			{
 			case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
@@ -182,23 +165,6 @@ void Stage::Update()
 			}
 		}
 	}
-	if (retTgt_)
-	{
-		if (isRetturn_)
-		{
-
-			int prevTableID = retTgt_ - 1;
-			for (int x = 0; x < XSIZE; x++)
-			{
-				for (int z = 0; z < ZSIZE; z++)
-				{
-					table_[x][z] = table_History[prevTableID][x][z];
-				}
-			}
-			retTgt_--;
-			isRetturn_ = false;
-		}
-	}
 }
 
 void Stage::Draw()
@@ -209,7 +175,7 @@ void Stage::Draw()
 		{
 			for (int y = 0; y < table_[x][z].height; y++)
 			{
-				transform_.position_ = XMFLOAT3((float)x, y, (float)z);
+				transform_.position_ = XMFLOAT3((float)x, (float)y, (float)z);
 				int type = table_[x][z].modelType;
 				Model::SetTransform(hModel_[type], transform_);
 				Model::Draw(hModel_[type]);
