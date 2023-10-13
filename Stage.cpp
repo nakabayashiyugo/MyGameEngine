@@ -186,7 +186,6 @@ void Stage::Update()
 	{
 		if (isRetturn_)
 		{
-
 			int prevTableID = retTgt_ - 1;
 			for (int x = 0; x < XSIZE; x++)
 			{
