@@ -25,7 +25,8 @@ Stage::Stage(GameObject* parent)
 			SetHeight(x, z, 1);
 			table_[x][z].isRayHit = false;
 
-			//model_Hit_In_Ray[x][z] = XMFLOAT3(0, 0, 0);
+			table_History[0][x][z].modelType = table_[x][z].modelType;
+			table_History[0][x][z].height = table_[x][z].height;
 		}
 	}
 }
@@ -60,12 +61,20 @@ void Stage::Update()
 {
 	switch (mode_)
 	{
-
+	case 0:
+	case 1:
+		if (Input::IsMouseButtonDown(0))
+		{
+			TableChange();
+		}
+		break;
+	case 2:
+		if (Input::IsMouseButton(0))
+		{
+			TableChange();
+		}
 	}
-	if (Input::IsMouseButtonDown(0))
-	{
-		
-	}
+	
 	//table_Historyの最後の要素をtableに入れる
 	if (retTgt_)
 	{
@@ -130,7 +139,6 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_INITDIALOG:
 		//ラジオボタンの初期値
 		SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
-
 		//コンボボックスの初期値
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
 		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"石");
@@ -264,12 +272,15 @@ void Stage::TableChange()
 			}
 			retTgt_--;
 		}
+
+
 		//table_Historyに履歴を入れる
 		for (int x = 0; x < XSIZE; x++)
 		{
 			for (int z = 0; z < ZSIZE; z++)
 			{
-				table_History[retTgt_][x][z] = table_[x][z];
+				table_History[retTgt_][x][z].modelType = table_[x][z].modelType;
+				table_History[retTgt_][x][z].height = table_[x][z].height;
 			}
 		}
 		retTgt_++;
@@ -285,6 +296,24 @@ void Stage::TableChange()
 			SetBlock((int)actPos.x, (int)actPos.z, (MODEL_TYPE)select_);
 			break;
 		}
+
+		bool isDifferent_AllBlocks = false;
+
+		for (int x = 0; x < XSIZE; x++)
+		{
+			for (int z = 0; z < ZSIZE; z++)
+			{
+				if (table_History[retTgt_ - 1][x][z].modelType != table_[x][z].modelType)// ||
+					//table_History[retTgt_][x][z].height != table_[x][z].height)
+				{
+					OutputDebugString("open FILE\n");
+					isDifferent_AllBlocks = true;
+					break;
+				}
+			}
+		}
+		if(!isDifferent_AllBlocks) 
+			retTgt_--;
 	}
 }
 
