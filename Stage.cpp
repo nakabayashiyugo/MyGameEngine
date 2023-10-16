@@ -127,11 +127,6 @@ void Stage::SetHeight(int x, int z, int _height)
 	table_[x][z].height = _height;
 }
 
-void Stage::TransTableHis(int _x, int _z, tableStruct* tabHis)
-{
-	
-}
-
 BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg)
@@ -303,8 +298,8 @@ void Stage::TableChange()
 		{
 			for (int z = 0; z < ZSIZE; z++)
 			{
-				if (table_History[retTgt_ - 1][x][z].modelType != table_[x][z].modelType)// ||
-					//table_History[retTgt_][x][z].height != table_[x][z].height)
+				if (table_History[retTgt_ - 1][x][z].modelType != table_[x][z].modelType ||
+					table_History[retTgt_ - 1][x][z].height != table_[x][z].height)
 				{
 					OutputDebugString("open FILE\n");
 					isDifferent_AllBlocks = true;
