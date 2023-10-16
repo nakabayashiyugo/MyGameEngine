@@ -42,7 +42,7 @@ class Stage
 		MODEL_TYPE modelType;
 		int height;
 		float rayDist;
-		bool IsColRay;
+		bool isRayHit;
 	};
 
 	tableStruct table_[XSIZE][ZSIZE];
@@ -71,6 +71,8 @@ public:
 	void TransTableHis(int _x, int _z, tableStruct* tabHis);
 
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
+	void TableChange();
 
 	void CreateNewTable();
 

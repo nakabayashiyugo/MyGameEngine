@@ -1,7 +1,8 @@
 #include <string>
+#include <vector>
+#include <array>
 #include "Stage.h"
 #include "Engine/Input.h"
-#include <vector>
 #include "Engine/Model.h"
 #include "Engine/Direct3D.h"
 
@@ -22,7 +23,7 @@ Stage::Stage(GameObject* parent)
 		{
 			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
 			SetHeight(x, z, 1);
-			table_[x][z].IsColRay = false;
+			table_[x][z].isRayHit = false;
 
 			//model_Hit_In_Ray[x][z] = XMFLOAT3(0, 0, 0);
 		}
@@ -57,131 +58,15 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-	
+	switch (mode_)
+	{
+
+	}
 	if (Input::IsMouseButtonDown(0))
 	{
-		for (int x = 0; x < XSIZE; x++)
-		{
-			for (int z = 0; z < ZSIZE; z++)
-			{
-				table_[x][z].rayDist = 999;
-			}
-		}
-		float w = (float)(Direct3D::scrWidth / 2);
-		float h = (float)(Direct3D::scrHeight / 2);
-		XMMATRIX vp =
-		{
-			w,  0, 0, 0,
-			0, -h, 0, 0,
-			0,  0, 1, 0,
-			w,  h, 0, 1
-		};
-
-		//ビューポート
-		XMMATRIX invVp = XMMatrixInverse(nullptr, vp);
-		//プロジェクション変換
-		XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
-		//ビュー変換
-		XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
-		XMFLOAT3 mousePosFront = Input::GetMousePosition();
-		mousePosFront.z = 0.0f;
-		XMFLOAT3 mousePosBack = Input::GetMousePosition();
-		mousePosBack.z = 1.0f;
-		//①　mousePosFront をベクトルに変換
-		//②　①にinvVp, invProj, invViewをかける
-		//③　mousePosBackをベクトルに変換
-		//④　③にinvVp, invProj, invViewをかける
-		//⑤　②から④に向かってレイをうつ(とりあえずモデル番号はhModel_[0]
-		//⑥　レイが当たったらブレークポイントで止める
-
-		XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
-		vMouseFront = XMVector3TransformCoord(vMouseFront, invVp * invProj * invView);
-		XMVECTOR  vMouseBack = XMLoadFloat3(&mousePosBack);
-		vMouseBack = XMVector3TransformCoord(vMouseBack, invVp * invProj * invView);
-
-		float prevDist = 999;
-		actPos = XMFLOAT3(0, 0, 0);
-		//すべてのtable_Historyの要素のIsColRayの中にtrueがあるかどうか
-		bool isRayCol = false;
-		for (int x = 0; x < XSIZE; x++)
-		{
-			for (int z = 0; z < ZSIZE; z++)
-			{
-				for (int y = 0; y < table_[x][z].height; y++)
-				{
-					RayCastData data;
-					XMStoreFloat4(&data.start, vMouseFront);
-					XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
-					Transform trans;
-					trans.position_.x = x;
-					trans.position_.y = y;
-					trans.position_.z = z;
-					Model::SetTransform(hModel_[0], trans);
-
-					Model::RayCast(hModel_[0], data);
-
-					if (data.hit)
-					{
-						if (table_[x][z].rayDist > data.dist)
-							table_[x][z].rayDist = data.dist;
-						table_[x][z].IsColRay = true;
-						isRayCol = true;
-						break;
-					}
-				}
-				if (table_[x][z].IsColRay)
-				{
-					if (prevDist > table_[x][z].rayDist)
-					{
-						actPos.x = x;
-						actPos.z = z;
-
-						prevDist = table_[x][z].rayDist;
-					}
-					table_[x][z].IsColRay = false;
-				}
-				
-			}
-		}
-		if (isRayCol)
-		{
-			//table_Historyがいっぱいになった時最初のを消して前に詰める作業
-			if (retTgt_ >= RET_CNT_LIMIT)
-			{
-				for (int hisCnt = 1; hisCnt < RET_CNT_LIMIT; hisCnt++)
-				{
-					for (int x = 0; x < XSIZE; x++)
-					{
-						for (int z = 0; z < ZSIZE; z++)
-						{
-							table_History[hisCnt - 1][x][z] = table_History[hisCnt][x][z];
-						}
-					}
-				}
-				retTgt_--;
-			}
-			//table_Historyに履歴を入れる
-			for (int x = 0; x < XSIZE; x++)
-			{
-				for (int z = 0; z < ZSIZE; z++)
-				{
-					table_History[retTgt_][x][z] = table_[x][z];
-				}
-			}
-			retTgt_++;
-			switch (mode_)
-			{
-			case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
-			case 1:
-				if (table_[(int)actPos.x][(int)actPos.z].height > 1)
-					table_[(int)actPos.x][(int)actPos.z].height--;
-				break;
-			case 2: 
-				SetBlock((int)actPos.x, (int)actPos.z, (MODEL_TYPE)select_);
-				break;
-			}
-		}
+		
 	}
+	//table_Historyの最後の要素をtableに入れる
 	if (retTgt_)
 	{
 		if (isRetturn_)
@@ -276,6 +161,133 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	return FALSE;
 }
 
+void Stage::TableChange()
+{
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			table_[x][z].rayDist = 999;
+		}
+	}
+	float w = (float)(Direct3D::scrWidth / 2);
+	float h = (float)(Direct3D::scrHeight / 2);
+	XMMATRIX vp =
+	{
+		w,  0, 0, 0,
+		0, -h, 0, 0,
+		0,  0, 1, 0,
+		w,  h, 0, 1
+	};
+
+	//ビューポート
+	XMMATRIX invVp = XMMatrixInverse(nullptr, vp);
+	//プロジェクション変換
+	XMMATRIX invProj = XMMatrixInverse(nullptr, Camera::GetProjectionMatrix());
+	//ビュー変換
+	XMMATRIX invView = XMMatrixInverse(nullptr, Camera::GetViewMatrix());
+	XMFLOAT3 mousePosFront = Input::GetMousePosition();
+	mousePosFront.z = 0.0f;
+	XMFLOAT3 mousePosBack = Input::GetMousePosition();
+	mousePosBack.z = 1.0f;
+	//①　mousePosFront をベクトルに変換
+	//②　①にinvVp, invProj, invViewをかける
+	//③　mousePosBackをベクトルに変換
+	//④　③にinvVp, invProj, invViewをかける
+	//⑤　②から④に向かってレイをうつ(とりあえずモデル番号はhModel_[0]
+	//⑥　レイが当たったらブレークポイントで止める
+
+	XMVECTOR vMouseFront = XMLoadFloat3(&mousePosFront);
+	vMouseFront = XMVector3TransformCoord(vMouseFront, invVp * invProj * invView);
+	XMVECTOR  vMouseBack = XMLoadFloat3(&mousePosBack);
+	vMouseBack = XMVector3TransformCoord(vMouseBack, invVp * invProj * invView);
+
+	float prevDist = 999;
+	actPos = XMFLOAT3(0, 0, 0);
+	//すべてのtable_Historyの要素のisRayHitの中にtrueがあるかどうか
+	bool isRayHit_AllBlocks = false;
+
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			for (int y = 0; y < table_[x][z].height; y++)
+			{
+				RayCastData data;
+				XMStoreFloat4(&data.start, vMouseFront);
+				XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
+				Transform trans;
+				trans.position_.x = x;
+				trans.position_.y = y;
+				trans.position_.z = z;
+				Model::SetTransform(hModel_[0], trans);
+
+				Model::RayCast(hModel_[0], data);
+
+				if (data.hit)
+				{
+					if (table_[x][z].rayDist > data.dist)
+						table_[x][z].rayDist = data.dist;
+					table_[x][z].isRayHit = true;
+					isRayHit_AllBlocks = true;
+					break;
+				}
+			}
+			if (table_[x][z].isRayHit)
+			{
+				if (prevDist > table_[x][z].rayDist)
+				{
+					actPos.x = x;
+					actPos.z = z;
+
+					prevDist = table_[x][z].rayDist;
+				}
+				table_[x][z].isRayHit = false;
+			}
+
+		}
+	}
+	if (isRayHit_AllBlocks)
+	{
+		//table_Historyがいっぱいになった時最初のを消して前に詰める作業
+		if (retTgt_ >= RET_CNT_LIMIT)
+		{
+			for (int hisCnt = 1; hisCnt < RET_CNT_LIMIT; hisCnt++)
+			{
+				for (int x = 0; x < XSIZE; x++)
+				{
+					for (int z = 0; z < ZSIZE; z++)
+					{
+						table_History[hisCnt - 1][x][z] = table_History[hisCnt][x][z];
+					}
+				}
+			}
+			retTgt_--;
+		}
+		//table_Historyに履歴を入れる
+		for (int x = 0; x < XSIZE; x++)
+		{
+			for (int z = 0; z < ZSIZE; z++)
+			{
+				table_History[retTgt_][x][z] = table_[x][z];
+			}
+		}
+		retTgt_++;
+
+		switch (mode_)
+		{
+		case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
+		case 1:
+			if (table_[(int)actPos.x][(int)actPos.z].height > 1)
+				table_[(int)actPos.x][(int)actPos.z].height--;
+			break;
+		case 2:
+			SetBlock((int)actPos.x, (int)actPos.z, (MODEL_TYPE)select_);
+			break;
+		}
+	}
+}
+
 void Stage::CreateNewTable()
 {
 	for (int x = 0; x < XSIZE; x++)
@@ -284,7 +296,7 @@ void Stage::CreateNewTable()
 		{
 			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
 			SetHeight(x, z, 1);
-			table_[x][z].IsColRay = false;
+			table_[x][z].isRayHit = false;
 		}
 	}
 }
@@ -316,7 +328,6 @@ void Stage::Read()
 {
 	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
 
-	//「ファイルを保存」ダイアログの設定
 	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
 	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
 	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
@@ -327,7 +338,6 @@ void Stage::Read()
 	ofn.Flags = OFN_FILEMUSTEXIST;   		//フラグ（同名ファイルが存在したら上書き確認）
 	ofn.lpstrDefExt = "dat";                  	//デフォルト拡張子
 
-	//「ファイルを保存」ダイアログ
 	BOOL selFile;
 	selFile = GetOpenFileName(&ofn);
 
@@ -350,14 +360,16 @@ void Stage::Read()
 
 	int i = 0;
 	while (!read.eof()) {  //ファイルの最後まで続ける
-		
+
 		read.read((char*)&table_[i / XSIZE][i % ZSIZE].modelType, sizeof(table_[i / XSIZE][i % ZSIZE].modelType));
 		read.read((char*)&table_[i / XSIZE][i % ZSIZE].height, sizeof(table_[i / XSIZE][i % ZSIZE].height));
 		//文字列ではないデータを読みこむ
-		
+
 		i++;
 	}
 	read.close();  //ファイルを閉じる
+
+	retTgt_ = 0;
 }
 
 void Stage::SaveAs()
