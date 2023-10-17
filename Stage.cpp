@@ -52,7 +52,7 @@ void Stage::Initialize()
 	{
 		for (int z = 0; z < ZSIZE; z++)
 		{
-			SetBlock(x, z, (MODEL_TYPE)(x/3));
+			SetBlock(x, z, (MODEL_TYPE)(x % MODEL_NUM));
 		}
 	}
 }

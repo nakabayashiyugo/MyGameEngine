@@ -7,8 +7,8 @@
 namespace
 {
 	const int MODEL_NUM = 5;
-	const int XSIZE = 15;
-	const int ZSIZE = 15;
+	const int XSIZE = 30;
+	const int ZSIZE = 30;
 	const int RET_CNT_LIMIT = 20;
 	enum MODEL_TYPE
 	{
