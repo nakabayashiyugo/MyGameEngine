@@ -292,8 +292,8 @@ void Stage::TableChange()
 			break;
 		}
 
-		bool isDifferent_AllBlocks = false;
-
+		//テーブルが前の状態と変化があるか
+		bool isDifference_AllBlocks = false;
 		for (int x = 0; x < XSIZE; x++)
 		{
 			for (int z = 0; z < ZSIZE; z++)
@@ -302,12 +302,12 @@ void Stage::TableChange()
 					table_History[retTgt_ - 1][x][z].height != table_[x][z].height)
 				{
 					OutputDebugString("open FILE\n");
-					isDifferent_AllBlocks = true;
+					isDifference_AllBlocks = true;
 					break;
 				}
 			}
 		}
-		if(!isDifferent_AllBlocks) 
+		if(!isDifference_AllBlocks) 
 			retTgt_--;
 	}
 }
