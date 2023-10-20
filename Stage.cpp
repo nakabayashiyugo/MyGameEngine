@@ -305,8 +305,18 @@ void Stage::TableChange()
 	}
 }
 
+void Stage::DeleteTableHistory()
+{
+	curHistory_Target_ = 0;
+	for (auto itr = table_History.begin(); itr != table_History.end(); itr++)
+	{
+		itr = table_History.erase(itr);
+	}
+}
+
 void Stage::CreateNewTable()
 {
+	DeleteTableHistory();
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int z = 0; z < ZSIZE; z++)
@@ -343,6 +353,7 @@ void Stage::Write()
 
 void Stage::Read()
 {
+	DeleteTableHistory();
 	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
 
 	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
