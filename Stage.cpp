@@ -24,9 +24,6 @@ Stage::Stage(GameObject* parent)
 			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
 			SetHeight(x, z, 1);
 			table_[x][z].isRayHit = false;
-
-			table_History[0][x][z].modelType = table_[x][z].modelType;
-			table_History[0][x][z].height = table_[x][z].height;
 		}
 	}
 }
@@ -74,23 +71,15 @@ void Stage::Update()
 			TableChange();
 		}
 	}
-	
-	//table_Historyの最後の要素をtableに入れる
-	if (retTgt_)
+	if (isRetturn_ && table_History.size() != 0)
 	{
-		if (isRetturn_)
-		{
-			int prevTableID = retTgt_ - 1;
-			for (int x = 0; x < XSIZE; x++)
-			{
-				for (int z = 0; z < ZSIZE; z++)
-				{
-					table_[x][z] = table_History[prevTableID][x][z];
-				}
-			}
-			retTgt_--;
-			isRetturn_ = false;
-		}
+		table_[table_History[table_History.size() - 1].pos.x]
+			[table_History[table_History.size() - 1].pos.y].modelType = table_History[table_History.size() - 1].modelType;
+
+		table_[table_History[table_History.size() - 1].pos.x]
+			[table_History[table_History.size() - 1].pos.y].height = table_History[table_History.size() - 1].height;
+
+		table_History.erase(table_History.end() - 1);
 	}
 }
 
@@ -252,34 +241,11 @@ void Stage::TableChange()
 	}
 	if (isRayHit_AllBlocks)
 	{
-		//table_Historyがいっぱいになった時最初のを消して前に詰める作業
-		if (retTgt_ >= RET_CNT_LIMIT)
-		{
-			for (int hisCnt = 1; hisCnt < RET_CNT_LIMIT; hisCnt++)
-			{
-				for (int x = 0; x < XSIZE; x++)
-				{
-					for (int z = 0; z < ZSIZE; z++)
-					{
-						table_History[hisCnt - 1][x][z] = table_History[hisCnt][x][z];
-					}
-				}
-			}
-			retTgt_--;
-		}
-
-
-		//table_Historyに履歴を入れる
-		for (int x = 0; x < XSIZE; x++)
-		{
-			for (int z = 0; z < ZSIZE; z++)
-			{
-				table_History[retTgt_][x][z].modelType = table_[x][z].modelType;
-				table_History[retTgt_][x][z].height = table_[x][z].height;
-			}
-		}
-		retTgt_++;
-
+		table_History.resize(table_History.size() + 1);
+		table_History[table_History.size() - 1].modelType = table_[(int)actPos.x][(int)actPos.z].modelType;
+		table_History[table_History.size() - 1].height = table_[(int)actPos.x][(int)actPos.z].height;
+		table_History[table_History.size() - 1].pos.x = actPos.x;
+		table_History[table_History.size() - 1].pos.y = actPos.y;
 		switch (mode_)
 		{
 		case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
@@ -291,24 +257,7 @@ void Stage::TableChange()
 			SetBlock((int)actPos.x, (int)actPos.z, (MODEL_TYPE)select_);
 			break;
 		}
-
-		//テーブルが前の状態と変化があるか
-		bool isDifference_AllBlocks = false;
-		for (int x = 0; x < XSIZE; x++)
-		{
-			for (int z = 0; z < ZSIZE; z++)
-			{
-				if (table_History[retTgt_ - 1][x][z].modelType != table_[x][z].modelType ||
-					table_History[retTgt_ - 1][x][z].height != table_[x][z].height)
-				{
-					OutputDebugString("open FILE\n");
-					isDifference_AllBlocks = true;
-					break;
-				}
-			}
-		}
-		if(!isDifference_AllBlocks) 
-			retTgt_--;
+		
 	}
 }
 

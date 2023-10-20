@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 namespace
 {
@@ -21,6 +22,12 @@ namespace
 	};
 	
 }
+
+struct vec
+{
+	int x;
+	int y;
+};
 
 class Stage
 	:public GameObject
@@ -45,10 +52,16 @@ class Stage
 		bool isRayHit;
 	};
 
+	struct tableHistory
+	{
+		MODEL_TYPE modelType;
+		int height;
+		vec pos;
+	};
+
 	tableStruct table_[XSIZE][ZSIZE];
 
-	//“®“I”z—ñ‚É‚µ‚½‚©‚Á‚½...!!
-	tableStruct table_History[RET_CNT_LIMIT][XSIZE][ZSIZE];
+	std::vector<tableHistory> table_History;
 
 public:
 	Stage(GameObject* parent);
