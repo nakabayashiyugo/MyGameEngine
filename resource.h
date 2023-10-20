@@ -11,6 +11,9 @@
 #define IDC_COMBO2                      1021
 #define IDC_BUTTON1                     1022
 #define IDC_RETURN                      1022
+#define IDC_UNDO                        1022
+#define IDC_RETURN2                     1023
+#define IDC_REDO                        1023
 #define ID_40001                        40001
 #define ID_40002                        40002
 #define ID_40003                        40003

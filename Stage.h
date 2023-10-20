@@ -26,7 +26,7 @@ namespace
 struct vec
 {
 	int x;
-	int y;
+	int z;
 };
 
 class Stage
@@ -34,11 +34,10 @@ class Stage
 {
 	int hModel_[MODEL_NUM];
 	
-	bool isRetturn_;
+	bool isRedo_, isUndo_;
+	int curHistory_Target_;
 	int mode_;		//0: up   1: down  2: change
 	int select_;	//syurui
-	//table_Historyの一番最後の要素
-	int retTgt_;
 
 	std::string savefile_;  //読み込むファイルの指定
 	

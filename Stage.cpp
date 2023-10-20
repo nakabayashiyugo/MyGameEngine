@@ -10,7 +10,7 @@
 
 
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"), isRetturn_(false), retTgt_(0), 
+	: GameObject(parent, "Stage"), isRedo_(false), isUndo_(false), curHistory_Target_(0),
 	savefile_("default_Save")
 {
 	for (int i = 0; i < 5; i++)
@@ -70,16 +70,45 @@ void Stage::Update()
 		{
 			TableChange();
 		}
+		break;
 	}
-	if (isRetturn_ && table_History.size() != 0)
+	if (isRedo_ && curHistory_Target_ != 0)
 	{
-		table_[table_History[table_History.size() - 1].pos.x]
-			[table_History[table_History.size() - 1].pos.y].modelType = table_History[table_History.size() - 1].modelType;
+		MODEL_TYPE tmpMT;
+		int tmpHI;
+		tmpMT = table_[table_History[curHistory_Target_ - 1].pos.x]
+			[table_History[curHistory_Target_ - 1].pos.z].modelType;
+		table_[table_History[curHistory_Target_ - 1].pos.x]
+			[table_History[curHistory_Target_ - 1].pos.z].modelType = table_History[curHistory_Target_ - 1].modelType;
+		table_History[curHistory_Target_ - 1].modelType = tmpMT;
 
-		table_[table_History[table_History.size() - 1].pos.x]
-			[table_History[table_History.size() - 1].pos.y].height = table_History[table_History.size() - 1].height;
+		tmpHI = table_[table_History[curHistory_Target_ - 1].pos.x]
+			[table_History[curHistory_Target_ - 1].pos.z].height;
+		table_[table_History[curHistory_Target_ - 1].pos.x]
+			[table_History[curHistory_Target_ - 1].pos.z].height = table_History[curHistory_Target_ - 1].height;
+		table_History[curHistory_Target_ - 1].height = tmpHI;
 
-		table_History.erase(table_History.end() - 1);
+		curHistory_Target_--;
+		isRedo_ = false;
+	}
+	if (isUndo_ && curHistory_Target_ < table_History.size())
+	{
+		MODEL_TYPE tmpMT;
+		int tmpHI;
+		tmpMT = table_[table_History[curHistory_Target_].pos.x]
+			[table_History[curHistory_Target_].pos.z].modelType;
+		table_[table_History[curHistory_Target_].pos.x]
+			[table_History[curHistory_Target_].pos.z].modelType = table_History[curHistory_Target_].modelType;
+		table_History[curHistory_Target_].modelType = tmpMT;
+
+		tmpHI = table_[table_History[curHistory_Target_].pos.x]
+			[table_History[curHistory_Target_].pos.z].height;
+		table_[table_History[curHistory_Target_].pos.x]
+			[table_History[curHistory_Target_].pos.z].height = table_History[curHistory_Target_].height;
+		table_History[curHistory_Target_].height = tmpHI;
+
+		curHistory_Target_++;
+		isUndo_ = false;
 	}
 }
 
@@ -141,7 +170,8 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		case 1018: mode_ = 0; break;
 		case 1019: mode_ = 1; break;
 		case 1020: mode_ = 2; break;
-		case 1022: isRetturn_ = true; break;
+		case 1022: isUndo_ = true; break;
+		case 1023: isRedo_ = true; break;
 		default: break;
 		}
 		
@@ -241,11 +271,18 @@ void Stage::TableChange()
 	}
 	if (isRayHit_AllBlocks)
 	{
+		int eraseNum = table_History.size();
+		for (int i = curHistory_Target_; i < eraseNum; i++)
+		{
+			table_History.erase(table_History.end() - 1);
+		}
+		curHistory_Target_++;
 		table_History.resize(table_History.size() + 1);
 		table_History[table_History.size() - 1].modelType = table_[(int)actPos.x][(int)actPos.z].modelType;
 		table_History[table_History.size() - 1].height = table_[(int)actPos.x][(int)actPos.z].height;
 		table_History[table_History.size() - 1].pos.x = actPos.x;
-		table_History[table_History.size() - 1].pos.y = actPos.y;
+		table_History[table_History.size() - 1].pos.z = actPos.z;
+		
 		switch (mode_)
 		{
 		case 0: table_[(int)actPos.x][(int)actPos.z].height++; break;
@@ -257,7 +294,14 @@ void Stage::TableChange()
 			SetBlock((int)actPos.x, (int)actPos.z, (MODEL_TYPE)select_);
 			break;
 		}
-		
+		if (table_History[table_History.size() - 1].modelType == table_[(int)actPos.x][(int)actPos.z].modelType &&
+			table_History[table_History.size() - 1].height == table_[(int)actPos.x][(int)actPos.z].height &&
+			table_History[table_History.size() - 1].pos.x == actPos.x &&
+			table_History[table_History.size() - 1].pos.z == actPos.z)
+		{
+			curHistory_Target_--;
+			table_History.erase(table_History.end() - 1);
+		}
 	}
 }
 
@@ -341,8 +385,6 @@ void Stage::Read()
 		i++;
 	}
 	read.close();  //ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
-
-	retTgt_ = 0;
 }
 
 void Stage::SaveAs()
