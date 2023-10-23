@@ -10,10 +10,19 @@ Sprite::~Sprite()
 	Release();
 }
 
-HRESULT Sprite::Initialize(int winH, int winW)
+HRESULT Sprite::Load(std::string _filename)
 {
 	HRESULT hr;
-	InitVertexData(winH, winW);
+	pTexture_ = new Texture;
+	hr = pTexture_->Load(_filename);
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "テクスチャのロードに失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+
+	InitVertexData();
 	hr = CreateVertexBuffer();
 	if (FAILED(hr))
 	{
@@ -34,13 +43,6 @@ HRESULT Sprite::Initialize(int winH, int winW)
 	{
 		//エラー処理
 		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
-		return hr;
-	}
-	hr = LoadTexture();
-	if (FAILED(hr))
-	{
-		//エラー処理
-		MessageBox(nullptr, "テクスチャのロードに失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 
@@ -66,26 +68,15 @@ void Sprite::Release()
 	SAFE_RELEASE(pVertexBuffer_);
 }
 
-void Sprite::InitVertexData(int winH, int winW)
+void Sprite::InitVertexData()
 {
 	vertices_ = {
-	{ XMVectorSet(200.0, 300.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
-	{ XMVectorSet(600.0, 300.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
-	{ XMVectorSet(600.0, 500.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
-	{ XMVectorSet(200.0, 500.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
+	{ XMVectorSet(-1.0f,  1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
+	{ XMVectorSet(1.0f,  1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
+	{ XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
+	{ XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
 	};
 	vertexNum_ = vertices_.size();
-
-	CalcVertexData(winH, winW);
-}
-
-void Sprite::CalcVertexData(int winH, int winW)
-{
-	for (int i = 0; i < vertexNum_; i++)
-	{
-		vertices_[i].position.m128_f32[0] = vertices_[i].position.m128_f32[0] / winW * 2.0f - 1.0f;
-		vertices_[i].position.m128_f32[1] = - (vertices_[i].position.m128_f32[1] / winH * 2.0f) + 1.0f;
-	}
 }
 
 HRESULT Sprite::CreateVertexBuffer()
@@ -163,21 +154,6 @@ HRESULT Sprite::CreateConstantBuffer()
 	{
 		//エラー処理
 		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
-		return hr;
-	}
-
-	return S_OK;
-}
-
-HRESULT Sprite::LoadTexture()
-{
-	HRESULT hr;
-	pTexture_ = new Texture;
-	hr = pTexture_->Load("Assets\\dice.png");
-	if (FAILED(hr))
-	{
-		//エラー処理
-		MessageBox(nullptr, "テクスチャのロードに失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 
