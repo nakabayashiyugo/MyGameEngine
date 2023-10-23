@@ -123,7 +123,7 @@ void Stage::Draw()
 		{
 			for (int y = 0; y < table_[x][z].height; y++)
 			{
-				transform_.position_ = XMFLOAT3((float)x, y, (float)z);
+				transform_.position_ = XMFLOAT3((float)x, (float)y, (float)z);
 				int type = table_[x][z].modelType;
 				Model::SetTransform(hModel_[type], transform_);
 				Model::Draw(hModel_[type]);
@@ -261,9 +261,9 @@ void Stage::TableChange()
 				XMStoreFloat4(&data.start, vMouseFront);
 				XMStoreFloat4(&data.dir, vMouseBack - vMouseFront);
 				Transform trans;
-				trans.position_.x = x;
-				trans.position_.y = y;
-				trans.position_.z = z;
+				trans.position_.x = (float)x;
+				trans.position_.y = (float)y;
+				trans.position_.z = (float)z;
 				Model::SetTransform(hModel_[0], trans);
 
 				Model::RayCast(hModel_[0], data);
@@ -281,8 +281,8 @@ void Stage::TableChange()
 			{
 				if (prevDist > table_[x][z].rayDist)
 				{
-					actPos.x = x;
-					actPos.z = z;
+					actPos.x = (float)x;
+					actPos.z = (float)z;
 
 					prevDist = table_[x][z].rayDist;
 				}
@@ -293,7 +293,7 @@ void Stage::TableChange()
 	}
 	if (isRayHit_AllBlocks)
 	{
-		int eraseNum = table_History.size();
+		int eraseNum = (int)table_History.size();
 		for (int i = curHistory_Target_; i < eraseNum; i++)
 		{
 			table_History.erase(table_History.end() - 1);
@@ -302,8 +302,8 @@ void Stage::TableChange()
 		table_History.resize(table_History.size() + 1);
 		table_History[table_History.size() - 1].modelType = table_[(int)actPos.x][(int)actPos.z].modelType;
 		table_History[table_History.size() - 1].height = table_[(int)actPos.x][(int)actPos.z].height;
-		table_History[table_History.size() - 1].pos.x = actPos.x;
-		table_History[table_History.size() - 1].pos.z = actPos.z;
+		table_History[table_History.size() - 1].pos.x = (int)actPos.x;
+		table_History[table_History.size() - 1].pos.z = (int)actPos.z;
 		
 		switch (mode_)
 		{
