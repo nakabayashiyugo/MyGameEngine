@@ -24,9 +24,12 @@ const int WINDOW_HEIGHT = 600; //ウィンドウの高さ
 
 RootJob* pRootJob = nullptr;
 
+HINSTANCE ghInstance;
+
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+BOOL CALLBACK CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 ID3D11Device*           pDevice_;		//デバイス
 ID3D11DeviceContext*    pContext_;		//デバイスコンテキスト
@@ -36,6 +39,7 @@ ID3D11RenderTargetView* pRenderTargetView_;	//レンダーターゲットビュー
 //エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow)
 {
+    ghInstance = hInstance;
     //XMVECTOR beginP = XMVectorSet(10, 5, 1, 0);
     //XMVECTOR dir = XMVectorSet(0, -1, 0, 0);
     //XMVECTOR p0 = XMVectorSet(0, 0, 0, 0);
@@ -186,6 +190,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 //ウィンドウプロシージャ（何かあった時によばれる関数）
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    HWND hDlg;
     switch (msg)
     {
     case WM_MOUSEMOVE:
@@ -199,7 +204,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
         case ID_MENU_NEW:
             OutputDebugString("new FILE");
+            hDlg = CreateDialog(ghInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, (DLGPROC)CreateTableDialogProc);
             ((Stage*)pRootJob->FindChildObject("Stage"))->CreateNewTable();
+            
             break;
         case ID_MENU_OPEN:
             OutputDebugString("open FILE");
@@ -222,4 +229,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
     return ((Stage*)pRootJob->FindObject("Stage"))->DialogProc(hDlg, msg, wp, lp);
+}
+
+BOOL CALLBACK CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+    return ((Stage*)pRootJob->FindObject("Stage"))->CreateTableDialogProc(hDlg, msg, wp, lp);
 }

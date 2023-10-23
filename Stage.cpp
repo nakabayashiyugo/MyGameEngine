@@ -5,6 +5,7 @@
 #include "Engine/Input.h"
 #include "Engine/Model.h"
 #include "Engine/Direct3D.h"
+#include "TestScene.h"
 
 #include "resource.h"
 
@@ -19,8 +20,10 @@ Stage::Stage(GameObject* parent)
 	}
 	for (int x = 0; x < XSIZE; x++)
 	{
+		table_.resize(x + 1);
 		for (int z = 0; z < ZSIZE; z++)
 		{
+			table_.at(x).resize(z + 1);
 			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
 			SetHeight(x, z, 1);
 			table_[x][z].isRayHit = false;
@@ -136,7 +139,7 @@ void Stage::Release()
 
 void Stage::SetBlock(int x, int z, MODEL_TYPE _type)
 {
-	table_[x][z].modelType = _type;
+	table_.at(x).at(z).modelType = _type;
 	assert(_type <= MODEL_TYPE::MODEL_MAX);
 }
 
@@ -178,6 +181,25 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		select_ = (int)(SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0));
 
 
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		SendMessage(GetDlgItem(hDlg, IDC_EDIT_X_MATHNUM), CB_ADDSTRING, 0,15);
+		SendMessage(GetDlgItem(hDlg, IDC_EDIT_Z_MATHNUM), CB_ADDSTRING, 0, 15);
+		return TRUE;
+
+	case WM_COMMAND:
+		switch (LOWORD(wp))
+		{
+		case 1027: return TRUE;
+		}
 		return TRUE;
 	}
 	return FALSE;
@@ -308,7 +330,7 @@ void Stage::TableChange()
 void Stage::DeleteTableHistory()
 {
 	curHistory_Target_ = 0;
-	for (auto itr = table_History.begin(); itr != table_History.end(); itr++)
+	for (auto itr = table_History.begin(); itr != table_History.end();)
 	{
 		itr = table_History.erase(itr);
 	}
@@ -317,15 +339,9 @@ void Stage::DeleteTableHistory()
 void Stage::CreateNewTable()
 {
 	DeleteTableHistory();
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int z = 0; z < ZSIZE; z++)
-		{
-			SetBlock(x, z, MODEL_TYPE::MODEL_DEFAULT);
-			SetHeight(x, z, 1);
-			table_[x][z].isRayHit = false;
-		}
-	}
+	TestScene* pTest = (TestScene*)FindObject("TestScene");
+	pTest->SetCreateNewTable(true);
+	KillMe();
 }
 
 void Stage::Write()
@@ -342,8 +358,8 @@ void Stage::Write()
 	for (int i = 0; i < XSIZE; i++) {
 		for (int j = 0; j < ZSIZE; j++)
 		{
-			write.write((char*)&table_[i][j].modelType, sizeof(table_[i]->modelType));
-			write.write((char*)&table_[i][j].height, sizeof(table_[i]->height));
+			write.write((char*)&table_[i][j].modelType, sizeof(table_.at(i).at(j).modelType));
+			write.write((char*)&table_[i][j].height, sizeof(table_.at(i).at(j).height));
 			//文字列ではないデータをかきこむ
 		}
 	}
@@ -386,14 +402,16 @@ void Stage::Read()
 	}
 	//  ファイルが開けなかったときの対策
 
-	int i = 0;
-	while (!read.eof()) {  //ファイルの最後まで続ける
+	//ファイルの最後まで続ける
+	for (int i = 0; i < XSIZE; i++) 
+	{
+		for (int j = 0; j < ZSIZE; j++)
+		{
+			read.read((char*)&table_[i][j].modelType, sizeof(table_.at(i).at(j).modelType));
+			read.read((char*)&table_[i][j].height, sizeof(table_.at(i).at(j).height));
+			//文字列ではないデータを読みこむ
 
-		read.read((char*)&table_[i / XSIZE][i % ZSIZE].modelType, sizeof(table_[i / XSIZE][i % ZSIZE].modelType));
-		read.read((char*)&table_[i / XSIZE][i % ZSIZE].height, sizeof(table_[i / XSIZE][i % ZSIZE].height));
-		//文字列ではないデータを読みこむ
-
-		i++;
+		}
 	}
 	read.close();  //ファイルを閉じる
 }
