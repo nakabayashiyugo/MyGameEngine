@@ -58,7 +58,7 @@ class Stage
 		vec pos;
 	};
 
-	tableStruct table_[XSIZE][ZSIZE];
+	std::vector<std::vector<tableStruct>> table_;
 
 	std::vector<tableHistory> table_History;
 
@@ -81,6 +81,7 @@ public:
 	void SetHeight(int x, int z, int _height);
 
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+	BOOL CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 	void TableChange();
 

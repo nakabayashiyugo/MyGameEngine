@@ -4,6 +4,7 @@
 class TestScene
 	:public GameObject
 {
+	bool isCreate_newTable_;
 public:
 	TestScene(GameObject* parent);
 
@@ -18,5 +19,7 @@ public:
 
 	//ŠJ•ú
 	void Release() override;
+
+	void SetCreateNewTable(bool _isCreate);
 };
 
