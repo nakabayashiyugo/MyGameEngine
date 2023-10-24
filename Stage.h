@@ -5,11 +5,11 @@
 #include <fstream>
 #include <vector>
 
+class TestScene;
+
 namespace
 {
 	const int MODEL_NUM = 5;
-	const int XSIZE = 15;
-	const int ZSIZE = 15;
 	const int RET_CNT_LIMIT = 20;
 	enum MODEL_TYPE
 	{
@@ -38,6 +38,11 @@ class Stage
 	int curHistory_Target_;
 	int mode_;		//0: up   1: down  2: change
 	int select_;	//syurui
+
+	TestScene* pTest;
+
+	int XSIZE;
+	int ZSIZE;
 
 	std::string savefile_;  //読み込むファイルの指定
 	

@@ -113,7 +113,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     
 
     HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
-
+    
   //メッセージループ（何か起きるのを待つ）
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
@@ -190,7 +190,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 //ウィンドウプロシージャ（何かあった時によばれる関数）
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    HWND hDlg;
+    HWND hCTDlg;
     switch (msg)
     {
     case WM_MOUSEMOVE:
@@ -204,8 +204,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
         case ID_MENU_NEW:
             OutputDebugString("new FILE");
-            hDlg = CreateDialog(ghInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, (DLGPROC)CreateTableDialogProc);
-            ((Stage*)pRootJob->FindChildObject("Stage"))->CreateNewTable();
+            hCTDlg = CreateDialog(ghInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, (DLGPROC)CreateTableDialogProc);
             
             break;
         case ID_MENU_OPEN:

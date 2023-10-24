@@ -6,9 +6,9 @@
 #include "Engine/Model.h"
 #include "Engine/Direct3D.h"
 #include "TestScene.h"
+#include "Engine/RootJob.h"
 
 #include "resource.h"
-
 
 Stage::Stage(GameObject* parent)
 	: GameObject(parent, "Stage"), isRedo_(false), isUndo_(false), curHistory_Target_(0),
@@ -18,6 +18,9 @@ Stage::Stage(GameObject* parent)
 	{
 		hModel_[i] = -1;
 	}
+	pTest = (TestScene*)FindObject("TestScene");
+	XSIZE = pTest->GetTableXSIZE();
+	ZSIZE = pTest->GetTableZSIZE();
 	for (int x = 0; x < XSIZE; x++)
 	{
 		table_.resize(x + 1);
@@ -191,14 +194,16 @@ BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	switch (msg)
 	{
 	case WM_INITDIALOG:
-		SendMessage(GetDlgItem(hDlg, IDC_EDIT_X_MATHNUM), CB_ADDSTRING, 0,15);
-		SendMessage(GetDlgItem(hDlg, IDC_EDIT_Z_MATHNUM), CB_ADDSTRING, 0, 15);
 		return TRUE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wp))
 		{
-		case 1027: return TRUE;
+		case 1027: 
+			CreateNewTable(); 
+			EndDialog(hDlg, 0);
+			return TRUE;
+		case 1028: EndDialog(hDlg, 0); return FALSE;
 		}
 		return TRUE;
 	}
