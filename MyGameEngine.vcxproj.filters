@@ -69,7 +69,7 @@
     <ClCompile Include="Engine\SphereCollider.cpp">
       <Filter>ソース ファイル\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\MyGameEngine\Engine\Image.cpp">
+    <ClCompile Include="Engine\Image.cpp">
       <Filter>ソース ファイル\Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -126,7 +126,7 @@
     <ClInclude Include="Engine\SphereCollider.h">
       <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\MyGameEngine\Engine\Image.h">
+    <ClInclude Include="Engine\Image.h">
       <Filter>ソース ファイル\ヘッダー ファイル\Engine</Filter>
     </ClInclude>
   </ItemGroup>

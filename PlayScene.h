@@ -5,7 +5,7 @@
 class PlayScene 
 	: public GameObject
 {
-
+	int hPict_;
 public:
 	//コンストラクタ
 	//引数：parent  親オブジェクト（SceneManager）
