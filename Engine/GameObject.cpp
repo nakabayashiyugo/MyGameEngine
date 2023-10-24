@@ -95,6 +95,14 @@ void GameObject::RoundRobin(GameObject* pTarget)
 	}
 }
 
+//子オブジェクトを追加（リストの最後へ）
+void GameObject::PushBackChild(GameObject* obj)
+{
+	assert(obj != nullptr);
+
+	obj->pParent_ = this;
+	childList_.push_back(obj);
+}
 GameObject* GameObject::FindChildObject(std::string _objName)
 {
 	if (_objName == this->objectName_)

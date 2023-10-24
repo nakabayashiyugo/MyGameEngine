@@ -1,5 +1,6 @@
 #include "SceneManager.h"
 #include "../TestScene.h"
+#include "../SpriteTest.h"
 #include "Model.h"
 
 SceneManager::SceneManager(GameObject* parent)
@@ -13,9 +14,9 @@ SceneManager::~SceneManager()
 
 void SceneManager::Initialize()
 {
-	currentSceneID_ = SCENE_ID_TEST;
+	currentSceneID_ = SCENE_ID_SPRITE;
 	nextSceneID_ = currentSceneID_;
-	Instantiate<TestScene>(this);
+	Instantiate<SpriteTest>(this);
 }
 
 void SceneManager::Update()
@@ -36,6 +37,9 @@ void SceneManager::Update()
 		case SCENE_ID_TEST:
 			Instantiate<TestScene>(this);
 				break;
+		case SCENE_ID_SPRITE:
+			Instantiate<SpriteTest>(this);
+			break;
 		}
 		currentSceneID_ = nextSceneID_;
 	}
