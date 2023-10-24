@@ -49,12 +49,12 @@ HRESULT Sprite::Load(std::string _filename)
 	return S_OK;
 }
 
-void Sprite::Draw(Transform& transform)
+void Sprite::Draw(Transform& transform, RECT _rect)
 {
 	Direct3D::SetShader(SHADER_2D);
 	transform.Calclation();//トランスフォームを計算
 
-	PassDataToCB(transform);
+	PassDataToCB(transform, _rect);
 	SetBufferToPipeline();
 }
 
@@ -160,11 +160,29 @@ HRESULT Sprite::CreateConstantBuffer()
 	return S_OK;
 }
 
-void Sprite::PassDataToCB(Transform& transform)
+void Sprite::PassDataToCB(Transform& transform, RECT _rect)
 {
+	//表示するサイズに合わせる
+	XMMATRIX cut = XMMatrixScaling((float)_rect.right, (float)_rect.bottom, 1);
+
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
-	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
+	//cb.matW = XMMatrixTranspose(cut * transform.GetWorldMatrix());
+
+	//画面に合わせる
+	XMMATRIX view = XMMatrixScaling(1.0f / Direct3D::screenWidth_, 1.0f / Direct3D::screenHeight_, 1.0f);
+
+	//最終的な行列
+	XMMATRIX world = cut * transform.matScale_ * transform.matRotate_ * view * transform.matTranslate_;
+	cb.matW = XMMatrixTranspose(world);
+
+	// テクスチャ座標変換行列を渡す
+	XMMATRIX mTexTrans = XMMatrixTranslation((float)_rect.left / (float)pTexture_->GetSize().x,
+		(float)_rect.top / (float)pTexture_->GetSize().y, 0.0f);
+	XMMATRIX mTexScale = XMMatrixScaling((float)_rect.right / (float)pTexture_->GetSize().x,
+		(float)_rect.bottom / (float)pTexture_->GetSize().y, 1.0f);
+	XMMATRIX mTexel = mTexScale * mTexTrans;
+	cb.uvTrans = XMMatrixTranspose(mTexel);
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める

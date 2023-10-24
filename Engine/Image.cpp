@@ -8,6 +8,7 @@ namespace Image
 		Sprite* pSprite_;
 		Transform transform_;
 		std::string fileName_;
+		RECT rect_;
 	};
 
 	//モデルのポインタを入れておくポインタ
@@ -17,6 +18,14 @@ namespace Image
 void Image::SetTransform(int hImage, Transform transform)
 {
 	imageList[hImage]->transform_ = transform;
+}
+
+void Image::SetRect(int hImage, int x, int y, int width, int height)
+{
+	imageList[hImage]->rect_.left = x;
+	imageList[hImage]->rect_.top = y;
+	imageList[hImage]->rect_.right = width;
+	imageList[hImage]->rect_.bottom = height;
 }
 
 int Image::Load(std::string filename)
@@ -43,7 +52,7 @@ int Image::Load(std::string filename)
 
 void Image::Draw(int hImage)
 {
-	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_);
+	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_, imageList[hImage]->rect_);
 }
 
 void Image::Release()

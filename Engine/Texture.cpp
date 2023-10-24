@@ -56,6 +56,29 @@ HRESULT Texture::Load(std::string fileName)
 		return E_FAIL;
 	}
 
+	// テクスチャを読み込む
+	CoInitialize(NULL);
+	IWICImagingFactory* pFactory = NULL;
+	IWICBitmapDecoder* pDecoder = NULL;
+	IWICBitmapFrameDecode* pFrame = NULL;
+	IWICFormatConverter* pFormatConverter = NULL;
+	CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, reinterpret_cast<void**>(&pFactory));
+	hr = pFactory->CreateDecoderFromFilename(wtext, NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &pDecoder);
+	if (FAILED(hr))
+	{
+		char message[256];
+		wsprintf(message, "「%s」が見つかりまん", fileName.c_str());
+		MessageBox(0, message, "画像ファイルの読み込みに失敗", MB_OK);
+		return hr;
+	}
+	pDecoder->GetFrame(0, &pFrame);
+	pFactory->CreateFormatConverter(&pFormatConverter);
+	pFormatConverter->Initialize(pFrame, GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, NULL, 1.0f, WICBitmapPaletteTypeMedianCut);
+	UINT imgWidth;
+	UINT imgHeight;
+	pFormatConverter->GetSize(&imgWidth, &imgHeight);
+	size_ = XMFLOAT3((float)imgWidth, (float)imgHeight, 0);
+
 	return S_OK;
 }
 

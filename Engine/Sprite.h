@@ -18,6 +18,7 @@ class Sprite
 	struct CONSTANT_BUFFER
 	{
 		XMMATRIX	matW;
+		XMMATRIX	uvTrans;	// テクスチャ座標変換行列
 	};
 
 	struct VERTEX
@@ -44,7 +45,7 @@ public:
 	Sprite();
 	~Sprite();
 	HRESULT Load(std::string _filename);
-	void Draw(Transform& transform);
+	void Draw(Transform& transform, RECT _rect);
 	void Release();
 
 private:
@@ -57,7 +58,7 @@ private:
 
 	HRESULT CreateConstantBuffer();
 
-	void PassDataToCB(Transform& transform);
+	void PassDataToCB(Transform& transform, RECT _rect);
 	void SetBufferToPipeline();
 };
 

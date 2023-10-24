@@ -20,6 +20,7 @@ void PlayScene::Update()
 void PlayScene::Draw()
 {
 	Image::SetTransform(hPict_, transform_);
+	Image::SetRect(hPict_, 1, 1, 1, 1);
 	Image::Draw(hPict_);
 }
 
