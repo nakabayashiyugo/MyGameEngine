@@ -14,9 +14,9 @@ SceneManager::~SceneManager()
 
 void SceneManager::Initialize()
 {
-	currentSceneID_ = SCENE_ID_SPRITE;
+	currentSceneID_ = SCENE_ID_TEST;
 	nextSceneID_ = currentSceneID_;
-	Instantiate<SpriteTest>(this);
+	Instantiate<TestScene>(this);
 }
 
 void SceneManager::Update()

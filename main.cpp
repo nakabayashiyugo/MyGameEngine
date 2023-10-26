@@ -190,7 +190,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 //ウィンドウプロシージャ（何かあった時によばれる関数）
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    HWND hCTDlg;
     switch (msg)
     {
     case WM_MOUSEMOVE:
@@ -204,7 +203,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
         case ID_MENU_NEW:
             OutputDebugString("new FILE");
-            hCTDlg = CreateDialog(ghInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, (DLGPROC)CreateTableDialogProc);
+            DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, (DLGPROC)CreateTableDialogProc);
             
             break;
         case ID_MENU_OPEN:
