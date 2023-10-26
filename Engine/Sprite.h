@@ -46,6 +46,9 @@ public:
 private:
 	virtual void InitVertexData();
 
+	//‰´‚ªŸè‚Éì‚Á‚½‚â‚Â‚Å‚·B
+	void CalcVertexData();
+
 	HRESULT CreateVertexBuffer();
 
 	virtual void InitIndexData();
