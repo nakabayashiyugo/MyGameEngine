@@ -191,8 +191,8 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-	char* X_MathNum = NULL;
-	char* Z_MathNum = NULL;
+	char X_MathNum[3] = { '0', '0', '\0' };
+	char Z_MathNum[3] = { '0', '0', '\0' };
 	char bufX[3], bufZ[3];
 	for (int i = 0; i < 3; i++)
 	{
@@ -209,14 +209,18 @@ BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_COMMAND:
 		switch (LOWORD(wp))
 		{
-		case 1027: 
-			GetDlgItemText(hDlg, IDC_EDIT_X_MATHNUM,(LPTSTR)X_MathNum, (int)sizeof(X_MathNum));
-			GetDlgItemText(hDlg, IDC_EDIT_Z_MATHNUM,(LPTSTR)Z_MathNum, (int)sizeof(Z_MathNum));
+		case 1027:
+
+			GetDlgItemText(hDlg, IDC_EDIT1, (LPTSTR)X_MathNum, 3);
+			GetDlgItemText(hDlg, IDC_EDIT2, (LPTSTR)Z_MathNum, 3);
 			strncpy_s(bufX, X_MathNum, (int)sizeof(X_MathNum));
 			strncpy_s(bufZ, Z_MathNum, (int)sizeof(Z_MathNum));
 			xmathnum = std::atoi(bufX);
 			zmathnum = std::atoi(bufZ);
-			CreateNewTable(xmathnum, zmathnum);
+			if ((xmathnum != 0 && zmathnum != 0))
+			{
+				CreateNewTable(xmathnum, zmathnum);
+			}
 			EndDialog(hDlg, 0);
 			return TRUE;
 		case 1028: EndDialog(hDlg, 0); return FALSE;
