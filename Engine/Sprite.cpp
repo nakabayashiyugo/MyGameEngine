@@ -10,10 +10,10 @@ Sprite::~Sprite()
 	Release();
 }
 
-HRESULT Sprite::Initialize(int winH, int winW)
+HRESULT Sprite::Initialize()
 {
 	HRESULT hr;
-	InitVertexData(winH, winW);
+	InitVertexData();
 	hr = CreateVertexBuffer();
 	if (FAILED(hr))
 	{
@@ -66,25 +66,25 @@ void Sprite::Release()
 	SAFE_RELEASE(pVertexBuffer_);
 }
 
-void Sprite::InitVertexData(int winH, int winW)
+void Sprite::InitVertexData()
 {
 	vertices_ = {
-	{ XMVectorSet(200.0, 300.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
-	{ XMVectorSet(600.0, 300.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
-	{ XMVectorSet(600.0, 500.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
-	{ XMVectorSet(200.0, 500.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
+	{ XMVectorSet(0.0f, 60.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
+	{ XMVectorSet(60.0f, 60.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
+	{ XMVectorSet(60.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
+	{ XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
 	};
 	vertexNum_ = vertices_.size();
 
-	CalcVertexData(winH, winW);
+	CalcVertexData();
 }
 
-void Sprite::CalcVertexData(int winH, int winW)
+void Sprite::CalcVertexData()
 {
 	for (int i = 0; i < vertexNum_; i++)
 	{
-		vertices_[i].position.m128_f32[0] = vertices_[i].position.m128_f32[0] / winW * 2.0f - 1.0f;
-		vertices_[i].position.m128_f32[1] = - (vertices_[i].position.m128_f32[1] / winH * 2.0f) + 1.0f;
+		vertices_[i].position.m128_f32[0] = (vertices_[i].position.m128_f32[0] / 800 * 2.0f) - 1.0f;
+		vertices_[i].position.m128_f32[1] = (vertices_[i].position.m128_f32[1] / 600 * 2.0f) - 1.0f;
 	}
 }
 
@@ -173,7 +173,7 @@ HRESULT Sprite::LoadTexture()
 {
 	HRESULT hr;
 	pTexture_ = new Texture;
-	hr = pTexture_->Load("Assets\\dice.png");
+	hr = pTexture_->Load("Assets\\math.png");
 	if (FAILED(hr))
 	{
 		//エラー処理
@@ -192,6 +192,7 @@ void Sprite::PassDataToCB(Transform& transform)
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
+	
 	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
 
 	ID3D11SamplerState* pSampler = pTexture_->GetSampler();

@@ -19,6 +19,9 @@
 #define ID_CANCEL                       1028
 #define IDC_EDIT_X_MATHNUM              1029
 #define IDC_EDIT_Z_MATHNUM              1030
+#define IDC_EDIT1                       1032
+#define IDC_EDIT2                       1033
+#define IDC_SPIN3                       1036
 #define ID_40001                        40001
 #define ID_40002                        40002
 #define ID_40003                        40003
@@ -37,7 +40,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40012
-#define _APS_NEXT_CONTROL_VALUE         1031
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

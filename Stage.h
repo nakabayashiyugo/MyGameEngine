@@ -92,7 +92,7 @@ public:
 
 	void DeleteTableHistory();
 
-	void CreateNewTable();
+	void CreateNewTable(int _xmath, int _zmath);
 
 	void Write();
 	void Read();

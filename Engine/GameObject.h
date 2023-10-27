@@ -40,16 +40,22 @@ public:
 	virtual void OnCollision(GameObject* pTarget) {};
 	void RoundRobin(GameObject* pTarget);
 
+	//子オブジェクトを追加（リストの最後へ）
+	//引数：追加するオブジェクト
+	void PushBackChild(GameObject* obj);
+
 public:
 	//テンプレートの定義
 	template <class T>
 	GameObject* Instantiate(GameObject* parent)
 	{
-		T* pObject;
-		pObject = new T(parent);
-		pObject->Initialize();
-		childList_.push_back(pObject);
-		return pObject;
+		T* pNewObject = new T(parent);
+		if (parent != nullptr)
+		{
+			parent->PushBackChild(pNewObject);
+		}
+		pNewObject->Initialize();
+		return pNewObject;
 	}
 
 public:

@@ -191,6 +191,16 @@ BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 
 BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
+	char* X_MathNum = NULL;
+	char* Z_MathNum = NULL;
+	char bufX[3], bufZ[3];
+	for (int i = 0; i < 3; i++)
+	{
+		bufX[i] = '0';
+		bufZ[i] = '0';
+	}
+	int xmathnum;
+	int zmathnum;
 	switch (msg)
 	{
 	case WM_INITDIALOG:
@@ -200,7 +210,13 @@ BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		switch (LOWORD(wp))
 		{
 		case 1027: 
-			CreateNewTable(); 
+			GetDlgItemText(hDlg, IDC_EDIT_X_MATHNUM,(LPTSTR)X_MathNum, (int)sizeof(X_MathNum));
+			GetDlgItemText(hDlg, IDC_EDIT_Z_MATHNUM,(LPTSTR)Z_MathNum, (int)sizeof(Z_MathNum));
+			strncpy_s(bufX, X_MathNum, (int)sizeof(X_MathNum));
+			strncpy_s(bufZ, Z_MathNum, (int)sizeof(Z_MathNum));
+			xmathnum = std::atoi(bufX);
+			zmathnum = std::atoi(bufZ);
+			CreateNewTable(xmathnum, zmathnum);
 			EndDialog(hDlg, 0);
 			return TRUE;
 		case 1028: EndDialog(hDlg, 0); return FALSE;
@@ -341,10 +357,11 @@ void Stage::DeleteTableHistory()
 	}
 }
 
-void Stage::CreateNewTable()
+void Stage::CreateNewTable(int _xmath, int _zmath)
 {
 	DeleteTableHistory();
 	TestScene* pTest = (TestScene*)FindObject("TestScene");
+	pTest->SetTableSize(_xmath, _zmath);
 	pTest->SetCreateNewTable(true);
 	KillMe();
 }
