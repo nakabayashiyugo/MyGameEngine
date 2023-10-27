@@ -2,10 +2,32 @@
 #include "Engine/GameObject.h"
 class Sprite;
 
+const int XSIZE = 15;
+const int YSIZE = 15;
+const int MATHSIZE = 30;
+
+enum MATHTYPE
+{
+	MATH_FLOOR,		//è∞
+	MATH_WALL,		//ï«
+	MATH_HOLL,		//åä
+	MATH_CONVEYOR,	//ÉRÉìÉxÉA
+	MATH_TOGETOGE,	//Ç∆Ç∞Ç∆Ç∞ÇÃÇ‚Ç¬
+	MATH_PITFALL,	//óéÇ∆Çµåä
+	MATH_MAX,
+};
+
+struct MATHDEDAIL
+{
+	MATHTYPE mathType_;
+	Transform mathPos_;
+};
+
 class SpriteTest
 	:public GameObject
 {
-	int hPict_;
+	int hPict_[MATH_MAX];
+	MATHDEDAIL math_[XSIZE][YSIZE];
 public:
 	SpriteTest(GameObject* parent);
 
