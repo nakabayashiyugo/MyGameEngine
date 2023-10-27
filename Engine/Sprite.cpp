@@ -10,9 +10,17 @@ Sprite::~Sprite()
 	Release();
 }
 
-HRESULT Sprite::Initialize()
+HRESULT Sprite::Load(std::string filename)
 {
 	HRESULT hr;
+	pTexture_ = new Texture;
+	hr = pTexture_->Load("Assets\\math.png");
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "テクスチャのロードに失敗しました", "エラー", MB_OK);
+		return hr;
+	}
 	InitVertexData();
 	hr = CreateVertexBuffer();
 	if (FAILED(hr))
@@ -34,13 +42,6 @@ HRESULT Sprite::Initialize()
 	{
 		//エラー処理
 		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
-		return hr;
-	}
-	hr = LoadTexture();
-	if (FAILED(hr))
-	{
-		//エラー処理
-		MessageBox(nullptr, "テクスチャのロードに失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 
@@ -69,23 +70,13 @@ void Sprite::Release()
 void Sprite::InitVertexData()
 {
 	vertices_ = {
-	{ XMVectorSet(0.0f, 60.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
-	{ XMVectorSet(60.0f, 60.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
-	{ XMVectorSet(60.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
-	{ XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
+	{ XMVectorSet(-1.0f, 1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
+	{ XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
+	{ XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
+	{ XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
 	};
 	vertexNum_ = vertices_.size();
 
-	CalcVertexData();
-}
-
-void Sprite::CalcVertexData()
-{
-	for (int i = 0; i < vertexNum_; i++)
-	{
-		vertices_[i].position.m128_f32[0] = (vertices_[i].position.m128_f32[0] / 800 * 2.0f) - 1.0f;
-		vertices_[i].position.m128_f32[1] = (vertices_[i].position.m128_f32[1] / 600 * 2.0f) - 1.0f;
-	}
 }
 
 HRESULT Sprite::CreateVertexBuffer()
@@ -163,21 +154,6 @@ HRESULT Sprite::CreateConstantBuffer()
 	{
 		//エラー処理
 		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
-		return hr;
-	}
-
-	return S_OK;
-}
-
-HRESULT Sprite::LoadTexture()
-{
-	HRESULT hr;
-	pTexture_ = new Texture;
-	hr = pTexture_->Load("Assets\\math.png");
-	if (FAILED(hr))
-	{
-		//エラー処理
-		MessageBox(nullptr, "テクスチャのロードに失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 

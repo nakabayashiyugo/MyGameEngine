@@ -1,16 +1,17 @@
 #include "SpriteTest.h"
 #include "Engine/Sprite.h"
 #include "Engine/SceneManager.h"
+#include "Engine/Image.h"
 
 SpriteTest::SpriteTest(GameObject* parent)
-	: GameObject(parent, "SpriteTest")
+	: GameObject(parent, "SpriteTest"), hPict_(-1)
 {
-	pSprite = new Sprite();
 }
 
 void SpriteTest::Initialize()
 {
-	pSprite->Initialize();
+	hPict_ = Image::Load("Asetts\\math.png");
+	assert(hPict_ >= 0);
 }
 
 void SpriteTest::Update()
@@ -24,11 +25,12 @@ void SpriteTest::Draw()
 		for (int y = 0; y < 15; y++)
 		{
 			Transform sprPos;
-			sprPos.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
-			sprPos.position_.x = ((float)x / 800) * 60;
-			sprPos.position_.y = ((float)y / 600) * 60;
+			sprPos.scale_ = XMFLOAT3(1.0f/800.0f * 30.0f, 1.0f / 600.0f * 30.0f, 1);
+			sprPos.position_.x = ((float)x / 800) * 60 + (((float)x - (15 / 2)) / 800) * 60;
+			sprPos.position_.y = ((float)y / 600) * 60 + (((float)y - (15 / 2)) / 800) * 60;
 			
-			pSprite->Draw(sprPos);
+			Image::SetTransform(hPict_, sprPos);
+			Image::Draw(hPict_);
 		}
 	}
 	

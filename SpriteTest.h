@@ -5,7 +5,7 @@ class Sprite;
 class SpriteTest
 	:public GameObject
 {
-	Sprite *pSprite;
+	int hPict_;
 public:
 	SpriteTest(GameObject* parent);
 

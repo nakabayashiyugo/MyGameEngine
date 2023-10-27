@@ -39,15 +39,12 @@ public:
 	/// </summary>
 	Sprite();
 	~Sprite();
-	HRESULT Initialize();
+	HRESULT Load(std::string filename);
 	void Draw(Transform& transform);
 	void Release();
 
 private:
 	virtual void InitVertexData();
-
-	//â¥Ç™èüéËÇ…çÏÇ¡ÇΩÇ‚Ç¬Ç≈Ç∑ÅB
-	void CalcVertexData();
 
 	HRESULT CreateVertexBuffer();
 
@@ -55,8 +52,6 @@ private:
 	HRESULT CreateIndexBuffer();
 
 	HRESULT CreateConstantBuffer();
-
-	HRESULT LoadTexture();
 
 	void PassDataToCB(Transform& transform);
 	void SetBufferToPipeline();

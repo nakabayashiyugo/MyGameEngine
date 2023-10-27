@@ -5,7 +5,7 @@
 #pragma comment(lib, "DirectXTex.lib")
 
 Texture::Texture()
-	: pSampler_(nullptr), pSRV_(nullptr)
+	: pSampler_(nullptr), pSRV_(nullptr), size_(XMFLOAT3(0, 0, 0))
 {
 }
 
@@ -31,6 +31,48 @@ HRESULT Texture::Load(std::string fileName)
 	{
 		return E_FAIL;
 	}
+
+	// テクスチャを読み込む
+	CoInitialize(NULL);
+	IWICImagingFactory* pFactory = NULL;
+	IWICBitmapDecoder* pDecoder = NULL;
+	IWICBitmapFrameDecode* pFrame = NULL;
+	IWICFormatConverter* pFormatConverter = NULL;
+	CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, reinterpret_cast<void**>(&pFactory));
+	hr = pFactory->CreateDecoderFromFilename(wtext, NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &pDecoder);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+	pDecoder->GetFrame(0, &pFrame);
+	pFactory->CreateFormatConverter(&pFormatConverter);
+	pFormatConverter->Initialize(pFrame, GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, NULL, 1.0f, WICBitmapPaletteTypeMedianCut);
+	UINT imgWidth;
+	UINT imgHeight;
+	pFormatConverter->GetSize(&imgWidth, &imgHeight);
+	size_ = XMFLOAT3((float)imgWidth, (float)imgHeight, 0);
+
+	// テクスチャの設定
+	ID3D11Texture2D* pTexture;			// テクスチャデータ
+	D3D11_TEXTURE2D_DESC texdec;
+	texdec.Width = imgWidth;
+	texdec.Height = imgHeight;
+	texdec.MipLevels = 1;
+	texdec.ArraySize = 1;
+	texdec.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texdec.SampleDesc.Count = 1;
+	texdec.SampleDesc.Quality = 0;
+	texdec.Usage = D3D11_USAGE_DYNAMIC;
+	texdec.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texdec.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	texdec.MiscFlags = 0;
+	Direct3D::pDevice_->CreateTexture2D(&texdec, NULL, &pTexture);
+
+	// テクスチャを送る
+	D3D11_MAPPED_SUBRESOURCE hMappedres;
+	Direct3D::pContext_->Map(pTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &hMappedres);
+	pFormatConverter->CopyPixels(NULL, imgWidth * 4, imgWidth * imgHeight * 4, (BYTE*)hMappedres.pData);
+	Direct3D::pContext_->Unmap(pTexture, 0);
 	
 
 	D3D11_SAMPLER_DESC  SamDesc;
