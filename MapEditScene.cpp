@@ -3,6 +3,7 @@
 #include "Engine/Image.h"
 #include "Engine/Input.h"
 #include "resource.h"
+#include "SceneTransition.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"), mathtype_(0)
@@ -27,9 +28,24 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 void MapEditScene::Initialize()
 {
-	hPict_[0] = Image::Load("Assets\\Math_Floor.png");
-	hPict_[1] = Image::Load("Assets\\Math_Wall.png");
-	assert(hPict_[0] >= 0);
+	std::string filename[MATH_MAX] =
+	{
+		"Math_Floor.png",
+		"Math_Wall.png",
+		"Math_Holl.png",
+		"Math_Conveyor.png",
+		"Math_Togetoge.png",
+		"Math_PitFall.png",
+		"Math_Start.png",
+		"Math_Goal.png"
+	};
+	for (int i = 0; i < MATH_MAX; i++)
+	{
+		filename[i] = "Assets\\" + filename[i];
+		hPict_[i] = Image::Load(filename[i]);
+		assert(hPict_[i] >= 0);
+	}
+	
 }
 
 void MapEditScene::Update()
@@ -62,6 +78,33 @@ void MapEditScene::Update()
 
 	if (Input::IsMouseButton(0) && selectMath.x != -1 && selectMath.y != -1)
 	{
+		//
+		if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_START)
+		{
+			for (int x = 0; x < XSIZE; x++)
+			{
+				for (int y = 0; y < YSIZE; y++)
+				{
+					if (math_[x][y].mathType_ == MATH_START)
+					{
+						math_[x][y].mathType_ = MATH_FLOOR;
+					}
+				}
+			}
+		}
+		if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_GOAL)
+		{
+			for (int x = 0; x < XSIZE; x++)
+			{
+				for (int y = 0; y < YSIZE; y++)
+				{
+					if (math_[x][y].mathType_ == MATH_GOAL)
+					{
+						math_[x][y].mathType_ = MATH_FLOOR;
+					}
+				}
+			}
+		}
 		math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 	}
 }
@@ -102,10 +145,40 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		case IDC_MAPEDIT_CONVEYOR:	mathtype_ = 3; break;
 		case IDC_MAPEDIT_TOGETOGE:	mathtype_ = 4; break;
 		case IDC_MAPEDIT_PITFALL:	mathtype_ = 5; break;
+		case IDC_MAPEDIT_START:		mathtype_ = 6; break;
+		case IDC_MAPEDIT_GOAL:		mathtype_ = 7; break;
+		case IDC_MAPEDIT_COMPLETE:	Write(); break;
 		default: break;
 		}
 
 		return TRUE;
 	}
 	return FALSE;
+}
+
+void MapEditScene::Write()
+{
+	std::ofstream write;
+	std::string savefile = "mathSave";
+	write.open(savefile, std::ios::out | std::ios::binary);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+
+	for (int i = 0; i < XSIZE; i++) {
+		for (int j = 0; j < YSIZE; j++)
+		{
+			write.write((char*)&math_[i][j].mathType_, sizeof(math_[i][j].mathType_));
+			//文字列ではないデータをかきこむ
+		}
+	}
+
+	write.close();  //ファイルを閉じる
+
+	//SceneTransition* ptrans = (SceneTransition*)FindObject("SceneTransition");
+	//ptrans->SetIsFinished(true);
+	KillMe();
 }

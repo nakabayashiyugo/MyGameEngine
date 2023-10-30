@@ -151,45 +151,6 @@ void Stage::SetHeight(int x, int z, int _height)
 	table_[x][z].height = _height;
 }
 
-
-
-BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-	char* X_MathNum = NULL;
-	char* Z_MathNum = NULL;
-	char bufX[3], bufZ[3];
-	for (int i = 0; i < 3; i++)
-	{
-		bufX[i] = '0';
-		bufZ[i] = '0';
-	}
-	int xmathnum;
-	int zmathnum;
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		return TRUE;
-
-	case WM_COMMAND:
-		switch (LOWORD(wp))
-		{
-		case 1027: 
-			GetDlgItemText(hDlg, IDC_EDIT_X_MATHNUM,(LPTSTR)X_MathNum, (int)sizeof(X_MathNum));
-			GetDlgItemText(hDlg, IDC_EDIT_Z_MATHNUM,(LPTSTR)Z_MathNum, (int)sizeof(Z_MathNum));
-			strncpy_s(bufX, X_MathNum, (int)sizeof(X_MathNum));
-			strncpy_s(bufZ, Z_MathNum, (int)sizeof(Z_MathNum));
-			xmathnum = std::atoi(bufX);
-			zmathnum = std::atoi(bufZ);
-			CreateNewTable(xmathnum, zmathnum);
-			EndDialog(hDlg, 0);
-			return TRUE;
-		case 1028: EndDialog(hDlg, 0); return FALSE;
-		}
-		return TRUE;
-	}
-	return FALSE;
-}
-
 void Stage::TableChange()
 {
 	for (int x = 0; x < XSIZE; x++)
@@ -312,50 +273,8 @@ void Stage::TableChange()
 	}
 }
 
-void Stage::DeleteTableHistory()
-{
-	curHistory_Target_ = 0;
-	for (auto itr = table_History.begin(); itr != table_History.end();)
-	{
-		itr = table_History.erase(itr);
-	}
-}
-
-void Stage::CreateNewTable(int _xmath, int _zmath)
-{
-	DeleteTableHistory();
-	TestScene* pTest = (TestScene*)FindObject("TestScene");
-	pTest->SetTableSize(_xmath, _zmath);
-	pTest->SetCreateNewTable(true);
-	KillMe();
-}
-
-void Stage::Write()
-{
-	std::ofstream write;
-	write.open(savefile_, std::ios::out | std::ios::binary);
-
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile_ << " が開けません";
-		return;
-	}
-
-	for (int i = 0; i < XSIZE; i++) {
-		for (int j = 0; j < ZSIZE; j++)
-		{
-			write.write((char*)&table_[i][j].modelType, sizeof(table_.at(i).at(j).modelType));
-			write.write((char*)&table_[i][j].height, sizeof(table_.at(i).at(j).height));
-			//文字列ではないデータをかきこむ
-		}
-	}
-
-	write.close();  //ファイルを閉じる
-}
-
 void Stage::Read()
 {
-	DeleteTableHistory();
 	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
 
 	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
@@ -400,31 +319,4 @@ void Stage::Read()
 		}
 	}
 	read.close();  //ファイルを閉じる
-}
-
-void Stage::SaveAs()
-{
-	char fileName[MAX_PATH] = "無題.map";  //ファイル名を入れる変数
-
-	//「ファイルを保存」ダイアログの設定
-	OPENFILENAME ofn;                         	//名前をつけて保存ダイアログの設定用構造体
-	ZeroMemory(&ofn, sizeof(ofn));            	//構造体初期化
-	ofn.lStructSize = sizeof(OPENFILENAME);   	//構造体のサイズ
-	ofn.lpstrFilter = TEXT("マップデータ(*.dat)\0*.dat\0")        //─┬ファイルの種類
-		TEXT("すべてのファイル(*.*)\0*.*\0\0");     //─┘
-	ofn.lpstrFile = fileName;               	//ファイル名
-	ofn.nMaxFile = MAX_PATH;               	//パスの最大文字数
-	ofn.Flags = OFN_OVERWRITEPROMPT;   		//フラグ（同名ファイルが存在したら上書き確認）
-	ofn.lpstrDefExt = "dat";                  	//デフォルト拡張子
-
-	//「ファイルを保存」ダイアログ
-	BOOL selFile;
-	selFile = GetSaveFileName(&ofn);
-
-	//キャンセルしたら中断
-	if (selFile == FALSE) return;
-
-	savefile_ = fileName;
-
-	Write();
 }

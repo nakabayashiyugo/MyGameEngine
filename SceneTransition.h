@@ -4,10 +4,10 @@
 class SceneTransition
 	:public GameObject
 {
-	bool isCreate_newTable_;
+	bool isFinished_;
 
-	int table_xsize_;
-	int table_zsize_;
+	int math_xsize_;
+	int math_ysize_;
 public:
 	SceneTransition(GameObject* parent);
 
@@ -22,5 +22,6 @@ public:
 
 	//ŠJ•ú
 	void Release() override;
-};
+
+	void SetIsFinished(bool _isFinished) { isFinished_ = _isFinished; };
 

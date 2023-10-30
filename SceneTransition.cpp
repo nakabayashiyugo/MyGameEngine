@@ -3,7 +3,7 @@
 #include "Engine/SceneManager.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
-	: GameObject(parent, "SceneTransition")
+	: GameObject(parent, "SceneTransition"), isFinished(false), math_xsize_(15), math_ysize(15)
 {
 }
 
@@ -14,6 +14,10 @@ void SceneTransition::Initialize()
 
 void SceneTransition::Update()
 {
+	if (isFinished)
+	{
+		int a = 0;
+	}
 }
 
 void SceneTransition::Draw()

@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include <Windows.h>
+#include <fstream>
+#include <iostream>
 class Sprite;
 
 const int XSIZE = 15;
@@ -15,6 +17,8 @@ enum MATHTYPE
 	MATH_CONVEYOR,	//コンベア
 	MATH_TOGETOGE,	//とげとげのやつ
 	MATH_PITFALL,	//落とし穴
+	MATH_START,		//スタートマス
+	MATH_GOAL,		//ゴールマス
 	MATH_MAX,
 };
 
@@ -47,5 +51,7 @@ public:
 	void Release() override;
 
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
+	void Write();
 };
 
