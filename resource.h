@@ -9,6 +9,7 @@
 #define IDC_RADIO_DOWN                  1019
 #define IDC_RADIO6                      1020
 #define IDC_RADIO_CHANGE                1020
+#define IDC_MAPEDIT_CONVEYOR            1020
 #define IDC_COMBO2                      1021
 #define IDC_BUTTON1                     1022
 #define IDC_RETURN                      1022
@@ -22,6 +23,12 @@
 #define IDC_EDIT1                       1032
 #define IDC_EDIT2                       1033
 #define IDC_SPIN3                       1036
+#define IDC_MAPEDIT_WALL                1040
+#define IDC_MAPEDIT_HOLL                1041
+#define IDC_MAPEDIT_FLOOR               1042
+#define IDC_MAPEDIT_PITFALL             1043
+#define IDC_RADIO5                      1044
+#define IDC_MAPEDIT_TOGETOGE            1044
 #define ID_40001                        40001
 #define ID_40002                        40002
 #define ID_40003                        40003
@@ -40,7 +47,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40012
-#define _APS_NEXT_CONTROL_VALUE         1040
+#define _APS_NEXT_CONTROL_VALUE         1041
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

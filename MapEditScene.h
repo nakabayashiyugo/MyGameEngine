@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include <Windows.h>
 class Sprite;
 
 const int XSIZE = 15;
@@ -28,6 +29,8 @@ class MapEditScene
 {
 	int hPict_[MATH_MAX];
 	MATHDEDAIL math_[XSIZE][YSIZE];
+
+	int mathtype_;
 public:
 	MapEditScene(GameObject* parent);
 
@@ -42,5 +45,7 @@ public:
 
 	//ŠJ•ú
 	void Release() override;
+
+	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 };
 

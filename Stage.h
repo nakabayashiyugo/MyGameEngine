@@ -85,7 +85,7 @@ public:
 	void SetBlock(int x, int z, MODEL_TYPE _type);
 	void SetHeight(int x, int z, int _height);
 
-	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+	
 	BOOL CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 	void TableChange();

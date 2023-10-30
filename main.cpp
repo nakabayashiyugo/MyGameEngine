@@ -10,6 +10,7 @@
 #include "DirectXCollision.h"
 
 #include "resource.h"
+#include "MapEditScene.h"
 #include "Stage.h"
 
 //リンカ
@@ -29,7 +30,6 @@ HINSTANCE ghInstance;
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
-BOOL CALLBACK CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 ID3D11Device*           pDevice_;		//デバイス
 ID3D11DeviceContext*    pContext_;		//デバイスコンテキスト
@@ -203,7 +203,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
         case ID_MENU_NEW:
             OutputDebugString("new FILE");
-            DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, (DLGPROC)CreateTableDialogProc);
             
             break;
         case ID_MENU_OPEN:
@@ -226,10 +225,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
-    return ((Stage*)pRootJob->FindObject("Stage"))->DialogProc(hDlg, msg, wp, lp);
-}
-
-BOOL CALLBACK CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-    return ((Stage*)pRootJob->FindObject("Stage"))->CreateTableDialogProc(hDlg, msg, wp, lp);
+    return ((MapEditScene*)pRootJob->FindObject("MapEditScene"))->DialogProc(hDlg, msg, wp, lp);
 }

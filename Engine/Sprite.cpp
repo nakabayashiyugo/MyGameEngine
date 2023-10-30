@@ -14,7 +14,7 @@ HRESULT Sprite::Load(std::string filename)
 {
 	HRESULT hr;
 	pTexture_ = new Texture;
-	hr = pTexture_->Load("Assets\\math.png");
+	hr = pTexture_->Load(filename);
 	if (FAILED(hr))
 	{
 		//ƒGƒ‰[ˆ—

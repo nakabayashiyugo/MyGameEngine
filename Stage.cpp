@@ -151,43 +151,7 @@ void Stage::SetHeight(int x, int z, int _height)
 	table_[x][z].height = _height;
 }
 
-BOOL Stage::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		//ラジオボタンの初期値
-		SendMessage(GetDlgItem(hDlg, IDC_RADIO_UP), BM_SETCHECK, BST_CHECKED, 0);
-		//コンボボックスの初期値
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"デフォルト");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"石");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"草");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"土");
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_ADDSTRING, 0, (LPARAM)"水");
-		
 
-		SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_SETCURSEL, 0, 0);
-
-		return TRUE;
-
-	case WM_COMMAND:
-		switch (LOWORD(wp))
-		{
-		case 1018: mode_ = 0; break;
-		case 1019: mode_ = 1; break;
-		case 1020: mode_ = 2; break;
-		case 1022: isUndo_ = true; break;
-		case 1023: isRedo_ = true; break;
-		default: break;
-		}
-		
-		select_ = (int)(SendMessage(GetDlgItem(hDlg, IDC_COMBO2), CB_GETCURSEL, 0, 0));
-
-
-		return TRUE;
-	}
-	return FALSE;
-}
 
 BOOL Stage::CreateTableDialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 {
