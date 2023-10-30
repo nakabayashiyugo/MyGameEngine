@@ -23,13 +23,13 @@ struct MATHDEDAIL
 	Transform mathPos_;
 };
 
-class SpriteTest
+class MapEditScene
 	:public GameObject
 {
 	int hPict_[MATH_MAX];
 	MATHDEDAIL math_[XSIZE][YSIZE];
 public:
-	SpriteTest(GameObject* parent);
+	MapEditScene(GameObject* parent);
 
 	//èâä˙âª
 	void Initialize() override;

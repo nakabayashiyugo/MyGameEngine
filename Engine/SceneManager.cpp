@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "../TestScene.h"
-#include "../SpriteTest.h"
+#include "../MapEditScene.h"
+#include "../SceneTransition.h"
 #include "Model.h"
 
 SceneManager::SceneManager(GameObject* parent)
@@ -14,9 +15,9 @@ SceneManager::~SceneManager()
 
 void SceneManager::Initialize()
 {
-	currentSceneID_ = SCENE_ID_SPRITE;
+	currentSceneID_ = SCENE_ID_TRANSITION;
 	nextSceneID_ = currentSceneID_;
-	Instantiate<SpriteTest>(this);
+	Instantiate<SceneTransition>(this);
 }
 
 void SceneManager::Update()
@@ -37,8 +38,11 @@ void SceneManager::Update()
 		case SCENE_ID_TEST:
 			Instantiate<TestScene>(this);
 				break;
-		case SCENE_ID_SPRITE:
-			Instantiate<SpriteTest>(this);
+		case SCENE_ID_EDIT:
+			Instantiate<MapEditScene>(this);
+			break;
+		case SCENE_ID_TRANSITION:
+			Instantiate<SceneTransition>(this);
 			break;
 		}
 		currentSceneID_ = nextSceneID_;

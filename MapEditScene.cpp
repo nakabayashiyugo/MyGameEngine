@@ -1,11 +1,12 @@
-#include "SpriteTest.h"
+#include <stdio.h>
+#include "MapEditScene.h"
 #include "Engine/Sprite.h"
 #include "Engine/SceneManager.h"
 #include "Engine/Image.h"
 #include "Engine/Input.h"
 
-SpriteTest::SpriteTest(GameObject* parent)
-	: GameObject(parent, "SpriteTest")
+MapEditScene::MapEditScene(GameObject* parent)
+	: GameObject(parent, "MapEditScene")
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -25,22 +26,35 @@ SpriteTest::SpriteTest(GameObject* parent)
 	}
 }
 
-void SpriteTest::Initialize()
+void MapEditScene::Initialize()
 {
 	hPict_[0] = Image::Load("Asetts\\math.png");
 	assert(hPict_[0] >= 0);
 }
 
-void SpriteTest::Update()
+void MapEditScene::Update()
 {
-	float mousePos = Input::GetMousePosition().x;
-	if (mousePos >= (math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2)
+	//debugèoóÕó·
+	/*std::string resStr = std::to_string(mousePosX) + '\n';
+	OutputDebugString(resStr.c_str());*/
+
+
+	float mousePosX = Input::GetMousePosition().x;
+	float mousePosY = Input::GetMousePosition().y;
+	static XMFLOAT3 selectMath;
+	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2) - MATHSIZE / 2;
+	mousePosY -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
+	
+	if (mousePosX >= 0 && mousePosY >= 0)
 	{
-		int a = 0;
+		selectMath.x = mousePosX / MATHSIZE;
+		selectMath.y = mousePosY / MATHSIZE;
 	}
+	std::string resStr = "ç¿ïW : " + std::to_string((int)selectMath.x) + ", " + std::to_string((int)selectMath.y) + '\n';
+	OutputDebugString(resStr.c_str());
 }
 
-void SpriteTest::Draw()
+void MapEditScene::Draw()
 {
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -53,6 +67,6 @@ void SpriteTest::Draw()
 	
 }
 
-void SpriteTest::Release()
+void MapEditScene::Release()
 {
 }
