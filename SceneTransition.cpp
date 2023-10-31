@@ -3,8 +3,10 @@
 #include "Engine/SceneManager.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
-	: GameObject(parent, "SceneTransition"), isFinished(false), math_xsize_(15), math_ysize(15)
+	: GameObject(parent, "SceneTransition"), isFinished_(false), mathSize_{0, 0, 0}, mapEdit_Num_(0)
 {
+	mathSize_.x = (rand() % 15) + 5;
+	mathSize_.y = (rand() % 15) + 5;
 }
 
 void SceneTransition::Initialize()
@@ -14,9 +16,11 @@ void SceneTransition::Initialize()
 
 void SceneTransition::Update()
 {
-	if (isFinished)
+	if (isFinished_)
 	{
-		int a = 0;
+		Instantiate<MapEditScene>(this);
+		mapEdit_Num_ = 1;
+		isFinished_ = true;
 	}
 }
 

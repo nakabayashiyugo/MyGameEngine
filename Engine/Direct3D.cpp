@@ -138,7 +138,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 void Direct3D::BeginDraw()
 {
     //”wŒi‚ÌF
-    float clearColor[4] = { 0.0f, 0.8f, 0.0f, 1.0f };//R,G,B,A
+    float clearColor[4] = { 0.8f, 1.0f, 0.8f, 1.0f };//R,G,B,A
     pContext_->ClearRenderTargetView(pRenderTargetView_, clearColor);
 
     Camera::Update();

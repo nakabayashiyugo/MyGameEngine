@@ -3,10 +3,9 @@
 #include <Windows.h>
 #include <fstream>
 #include <iostream>
-class Sprite;
+#include <vector>
+class SceneTransition;
 
-const int XSIZE = 15;
-const int YSIZE = 15;
 const int MATHSIZE = 30;
 
 enum MATHTYPE
@@ -31,8 +30,13 @@ struct MATHDEDAIL
 class MapEditScene
 	:public GameObject
 {
+	int XSIZE = 10;
+	int YSIZE = 10;
+
+	SceneTransition* pTrans_;
+
 	int hPict_[MATH_MAX];
-	MATHDEDAIL math_[XSIZE][YSIZE];
+	std::vector<std::vector<MATHDEDAIL>> math_;
 
 	int mathtype_;
 public:

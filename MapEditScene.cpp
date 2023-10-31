@@ -12,9 +12,14 @@ MapEditScene::MapEditScene(GameObject* parent)
 	{
 		hPict_[i] = -1;
 	}
+	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
+	XSIZE = (int)pTrans_->GetMathSize().x;
+	YSIZE = (int)pTrans_->GetMathSize().y;
 
+	math_.resize(XSIZE);
 	for (int x = 0; x < XSIZE; x++)
 	{
+		math_.at(x).resize(YSIZE);
 		for (int y = 0; y < YSIZE; y++)
 		{
 			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / Direct3D::scrHeight * MATHSIZE, 1);
@@ -160,6 +165,7 @@ void MapEditScene::Write()
 {
 	std::ofstream write;
 	std::string savefile = "mathSave";
+	savefile += std::to_string(pTrans_->GetMapEditNum());
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -178,7 +184,7 @@ void MapEditScene::Write()
 
 	write.close();  //ファイルを閉じる
 
-	//SceneTransition* ptrans = (SceneTransition*)FindObject("SceneTransition");
-	//ptrans->SetIsFinished(true);
+	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
+	pTrans_->SetIsFinished(true);
 	KillMe();
 }

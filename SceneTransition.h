@@ -6,8 +6,9 @@ class SceneTransition
 {
 	bool isFinished_;
 
-	int math_xsize_;
-	int math_ysize_;
+	XMFLOAT3 mathSize_;
+
+	int mapEdit_Num_;
 public:
 	SceneTransition(GameObject* parent);
 
@@ -25,3 +26,7 @@ public:
 
 	void SetIsFinished(bool _isFinished) { isFinished_ = _isFinished; };
 
+	XMFLOAT3 GetMathSize() { return mathSize_; };
+
+	int GetMapEditNum() { return mapEdit_Num_; };
+};

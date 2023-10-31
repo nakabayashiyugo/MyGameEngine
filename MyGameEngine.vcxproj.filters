@@ -87,9 +87,6 @@
     <FxCompile Include="Simple2D.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Engine\Camera.h">
       <Filter>ヘッダー ファイル\Engine</Filter>
     </ClInclude>
@@ -155,5 +152,8 @@
     <ResourceCompile Include="MapEditor.rc">
       <Filter>リソース ファイル</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
