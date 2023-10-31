@@ -25,6 +25,7 @@ struct MATHDEDAIL
 {
 	MATHTYPE mathType_;
 	Transform mathPos_;
+	int converyor_rotate_;
 };
 
 class MapEditScene
@@ -35,7 +36,7 @@ class MapEditScene
 
 	SceneTransition* pTrans_;
 
-	int hPict_[MATH_MAX];
+	int hPict_[MATH_MAX + 1];
 	std::vector<std::vector<MATHDEDAIL>> math_;
 
 	int mathtype_;

@@ -27,13 +27,14 @@ MapEditScene::MapEditScene(GameObject* parent)
 			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
 
 			math_[x][y].mathType_ = MATH_FLOOR;
+			math_[x][y].converyor_rotate_ = 0;
 		}
 	}
 }
 
 void MapEditScene::Initialize()
 {
-	std::string filename[MATH_MAX] =
+	std::string filename[MATH_MAX + 1] =
 	{
 		"Math_Floor.png",
 		"Math_Wall.png",
@@ -42,9 +43,10 @@ void MapEditScene::Initialize()
 		"Math_Togetoge.png",
 		"Math_PitFall.png",
 		"Math_Start.png",
-		"Math_Goal.png"
+		"Math_Goal.png",
+		"Math_Rotate.png"
 	};
-	for (int i = 0; i < MATH_MAX; i++)
+	for (int i = 0; i < MATH_MAX + 1; i++)
 	{
 		filename[i] = "Assets\\" + filename[i];
 		hPict_[i] = Image::Load(filename[i]);
@@ -65,7 +67,7 @@ void MapEditScene::Update()
 	static XMFLOAT3 selectMath;
 	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2) - MATHSIZE / 2;
 	mousePosY -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
-	
+
 	if (mousePosX >= 0 && mousePosY >= 0 &&
 		mousePosX <= MATHSIZE * XSIZE &&
 		mousePosY <= MATHSIZE * YSIZE)
@@ -80,37 +82,75 @@ void MapEditScene::Update()
 	std::string resStr = "À•W : " + std::to_string((int)selectMath.x) + ", " + std::to_string((int)selectMath.y) + '\n';
 	OutputDebugString(resStr.c_str());
 
+	static int prevMathRotate;
+	static bool math_Change = false;
+	static XMFLOAT3 converyorMath;
+		if (Input::IsMouseButtonDown(0) && selectMath.x != -1 && selectMath.y != -1 &&
+			math_Change == false)
+		{
+			//
+			if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_START)
+			{
+				for (int x = 0; x < XSIZE; x++)
+				{
+					for (int y = 0; y < YSIZE; y++)
+					{
+						if (math_[x][y].mathType_ == MATH_START)
+						{
+							math_[x][y].mathType_ = MATH_FLOOR;
+						}
+					}
+				}
+			}
+			if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_GOAL)
+			{
+				for (int x = 0; x < XSIZE; x++)
+				{
+					for (int y = 0; y < YSIZE; y++)
+					{
+						if (math_[x][y].mathType_ == MATH_GOAL)
+						{
+							math_[x][y].mathType_ = MATH_FLOOR;
+						}
+					}
+				}
+			}
+			if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_CONVEYOR &&
+				math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+			{
+				converyorMath = selectMath;
+				math_Change = true;
+			}
+			else
+			{
+				math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+			}
+		}
+		if (math_Change == true)
+		{
+		if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_CONVEYOR &&
+			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+		{
+			float mathSin = abs(sin(XMConvertToRadians(math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z)));
+			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.scale_ = 
+				XMFLOAT3(1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * 
+					mathSin)* MATHSIZE,
 
-	if (Input::IsMouseButton(0) && selectMath.x != -1 && selectMath.y != -1)
-	{
-		//
-		if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_START)
-		{
-			for (int x = 0; x < XSIZE; x++)
+					1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) *
+						mathSin) * MATHSIZE, 1);
+
+
+			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z += 5;
+
+			if (math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z -
+				math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].converyor_rotate_ * 90
+				>= 90)
 			{
-				for (int y = 0; y < YSIZE; y++)
-				{
-					if (math_[x][y].mathType_ == MATH_START)
-					{
-						math_[x][y].mathType_ = MATH_FLOOR;
-					}
-				}
+				math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].converyor_rotate_++;
+				math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z = math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].converyor_rotate_ * 90;
+				math_Change = false;
 			}
 		}
-		if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_GOAL)
-		{
-			for (int x = 0; x < XSIZE; x++)
-			{
-				for (int y = 0; y < YSIZE; y++)
-				{
-					if (math_[x][y].mathType_ == MATH_GOAL)
-					{
-						math_[x][y].mathType_ = MATH_FLOOR;
-					}
-				}
-			}
-		}
-		math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 	}
 }
 
@@ -120,8 +160,9 @@ void MapEditScene::Draw()
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
-			Image::SetTransform(math_[x][y].mathType_, math_[x][y].mathPos_);
-			Image::Draw(math_[x][y].mathType_);
+			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
+			Image::Draw(hPict_[math_[x][y].mathType_]);
+			
 		}
 	}
 	
