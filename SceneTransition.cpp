@@ -16,11 +16,11 @@ void SceneTransition::Initialize()
 
 void SceneTransition::Update()
 {
-	if (isFinished_)
+	if (isFinished_ && mapEdit_Num_ == 0)
 	{
 		Instantiate<MapEditScene>(this);
 		mapEdit_Num_ = 1;
-		isFinished_ = true;
+		isFinished_ = false;
 	}
 }
 
