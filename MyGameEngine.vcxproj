@@ -170,6 +170,7 @@
     <ClCompile Include="MapEditScene.cpp" />
     <ClCompile Include="SceneTransition.cpp" />
     <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="StageOrigin.cpp" />
     <ClCompile Include="TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -210,6 +211,7 @@
     <ClInclude Include="MapEditScene.h" />
     <ClInclude Include="SceneTransition.h" />
     <ClInclude Include="Stage.h" />
+    <ClInclude Include="StageOrigin.h" />
     <ClInclude Include="TestScene.h" />
   </ItemGroup>
   <ItemGroup>

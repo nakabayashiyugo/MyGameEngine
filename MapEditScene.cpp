@@ -16,6 +16,8 @@ MapEditScene::MapEditScene(GameObject* parent)
 	XSIZE = (int)pTrans_->GetMathSize().x;
 	YSIZE = (int)pTrans_->GetMathSize().y;
 
+	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+
 	math_.resize(XSIZE);
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -205,8 +207,8 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 void MapEditScene::Write()
 {
 	std::ofstream write;
-	std::string savefile = "mathSave";
-	savefile += std::to_string(pTrans_->GetMapEditNum());
+	std::string savefile = "saveMath";
+	savefile += std::to_string((int)pTrans_->GetSceneState());
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -225,7 +227,27 @@ void MapEditScene::Write()
 
 	write.close();  //ファイルを閉じる
 
-	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	pTrans_->SetIsFinished(true);
+	savefile = "saveConvRot";
+	savefile += std::to_string((int)pTrans_->GetSceneState());
+	write.open(savefile, std::ios::out | std::ios::binary);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+
+	for (int i = 0; i < XSIZE; i++) {
+		for (int j = 0; j < YSIZE; j++)
+		{
+			write.write((char*)&math_[i][j].converyor_rotate_, sizeof(math_[i][j].converyor_rotate_));
+			//文字列ではないデータをかきこむ
+		}
+	}
+
+	write.close();  //ファイルを閉じる
+
+	
+	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	KillMe();
 }

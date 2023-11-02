@@ -1,9 +1,10 @@
 #include "SceneTransition.h"
 #include "MapEditScene.h"
 #include "Engine/SceneManager.h"
+#include "TestScene.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
-	: GameObject(parent, "SceneTransition"), isFinished_(false), mathSize_{0, 0, 0}, mapEdit_Num_(0)
+	: GameObject(parent, "SceneTransition"), mathSize_{0, 0, 0}, sceneState_(SCENE_MAPEDIT1)
 {
 	mathSize_.x = (rand() % 15) + 5;
 	mathSize_.y = (rand() % 15) + 5;
@@ -11,17 +12,20 @@ SceneTransition::SceneTransition(GameObject* parent)
 
 void SceneTransition::Initialize()
 {
-	Instantiate<MapEditScene>(this);
+	
 }
 
 void SceneTransition::Update()
 {
-	if (isFinished_ && mapEdit_Num_ == 0)
+	switch (sceneState_)
 	{
-		Instantiate<MapEditScene>(this);
-		mapEdit_Num_ = 1;
-		isFinished_ = false;
+	case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this);break;
+	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
+	case SCENE_STAGE:Instantiate<TestScene>(this); break;
+	default:
+		break;
 	}
+
 }
 
 void SceneTransition::Draw()
