@@ -5,6 +5,8 @@ class Controller
 	:public GameObject
 {
 	XMVECTOR velocity_;
+
+	int hModel_;
 public:
 	Controller(GameObject* parent);
 

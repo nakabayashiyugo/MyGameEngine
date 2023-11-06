@@ -29,22 +29,39 @@ Stage::Stage(GameObject* parent)
 		table_.at(x).resize(ZSIZE);
 	}
 	Read();
+	TestScene* pTest = (TestScene*)FindObject("TestScene");
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			if (table_[x][z].mathType_ == MATH_START)
+			{
+				pTest->SetStartPos(XMFLOAT3(x, 1, z));
+			}
+			if (table_[x][z].mathType_ == MATH_GOAL)
+			{
+				pTest->SetGoalPos(XMFLOAT3(x, 1, z));
+			}
+		}
+	}
 }
 
 void Stage::Initialize()
 {
-	std::string modelName[5] =
+	std::string modelName[MATH_MAX] =
 	{
 		"Block_Floor.fbx",
 		"Block_Wall.fbx",
 		"Block_Floor.fbx",
 		"Block_Converyor.fbx",
 		"Block_Togetoge.fbx",
-
+		"Block_Floor.fbx",
+		"Block_Start.fbx",
+		"Block_Goal.fbx"
 	};
 	std::string fname_base = "Assets\\";
 	//モデルデータのロード
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < MATH_MAX; i++)
 	{
 		hModel_[i] = Model::Load(fname_base + modelName[i]);
 		assert(hModel_[i] >= 0);
@@ -65,6 +82,7 @@ void Stage::Draw()
 		{
 			Transform mathTrans;
 			mathTrans.position_ = XMFLOAT3(x, 0, z);
+			static float togedir = 0;
 			switch (table_[x][z].mathType_)
 			{
 			case MATH_FLOOR:
@@ -79,6 +97,7 @@ void Stage::Draw()
 				Model::Draw(hModel_[table_[x][z].mathType_]);
 				break;
 			case MATH_CONVEYOR:
+				mathTrans.rotate_.y = -(table_[x][z].converyor_rotate_ * 90);
 				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[table_[x][z].mathType_]);
 				break;
@@ -86,10 +105,26 @@ void Stage::Draw()
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
 				mathTrans.position_.y = 1;
+				mathTrans.position_.x = sin(togedir);
+				togedir += 0.01f;
 				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[table_[x][z].mathType_]);
 				break;
 			case MATH_PITFALL:
+				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
+				Model::Draw(hModel_[table_[x][z].mathType_]);
+				break;
+			case MATH_START:
+				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
+				Model::Draw(hModel_[MATH_FLOOR]);
+				mathTrans.position_.y = 1;
+				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
+				Model::Draw(hModel_[table_[x][z].mathType_]);
+				break;
+			case MATH_GOAL:
+				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
+				Model::Draw(hModel_[MATH_FLOOR]);
+				mathTrans.position_.y = 1;
 				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[table_[x][z].mathType_]);
 				break;

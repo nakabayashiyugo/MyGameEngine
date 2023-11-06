@@ -8,6 +8,9 @@ class TestScene
 
 	int table_xsize_;
 	int table_zsize_;
+
+	XMFLOAT3 startPos_;
+	XMFLOAT3 goalPos_;
 public:
 	TestScene(GameObject* parent);
 
@@ -23,7 +26,10 @@ public:
 	//ŠJ•ú
 	void Release() override;
 
-	int GetTableXSIZE();
-	int GetTableZSIZE();
+	void SetStartPos(XMFLOAT3 _startPos) { startPos_ = _startPos; }
+	void SetGoalPos(XMFLOAT3 _goalPos) { goalPos_ = _goalPos; }
+
+	XMFLOAT3 GetStartPos() { return startPos_; }
+	XMFLOAT3 GetGoalPos() { return goalPos_; }
 };
 

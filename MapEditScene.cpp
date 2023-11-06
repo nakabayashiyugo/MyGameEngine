@@ -87,8 +87,9 @@ void MapEditScene::Update()
 	static int prevMathRotate;
 	static bool math_Change = false;
 	static XMFLOAT3 converyorMath;
-		if (Input::IsMouseButtonDown(0) && selectMath.x != -1 && selectMath.y != -1 &&
-			math_Change == false)
+	if (selectMath.x != -1 && selectMath.y != -1)
+	{
+		if (Input::IsMouseButtonDown(0) &&math_Change == false)
 		{
 			//
 			if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_START)
@@ -128,15 +129,17 @@ void MapEditScene::Update()
 				math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 			}
 		}
-		if (math_Change == true)
-		{
+
+	}
+	if (math_Change == true)
+	{
 		if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_CONVEYOR &&
 			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 		{
 			float mathSin = abs(sin(XMConvertToRadians(math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z)));
-			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.scale_ = 
-				XMFLOAT3(1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * 
-					mathSin)* MATHSIZE,
+			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.scale_ =
+				XMFLOAT3(1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) *
+					mathSin) * MATHSIZE,
 
 					1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) *
 						mathSin) * MATHSIZE, 1);
