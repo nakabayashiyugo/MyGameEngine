@@ -23,10 +23,6 @@ public:
 	//ŠJ•ú
 	void Release() override;
 
-	void SetCreateNewTable(bool _isCreate);
-
-	void SetTableSize(int _xsize, int _zsize);
-
 	int GetTableXSIZE();
 	int GetTableZSIZE();
 };

@@ -185,6 +185,7 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		return TRUE;
 
 	case WM_COMMAND:
+		bool startFlg = false, goalFlg = false;
 		switch (LOWORD(wp))
 		{
 		case IDC_MAPEDIT_FLOOR:		mathtype_ = 0; break;
@@ -195,7 +196,23 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		case IDC_MAPEDIT_PITFALL:	mathtype_ = 5; break;
 		case IDC_MAPEDIT_START:		mathtype_ = 6; break;
 		case IDC_MAPEDIT_GOAL:		mathtype_ = 7; break;
-		case IDC_MAPEDIT_COMPLETE:	Write(); break;
+		case IDC_MAPEDIT_COMPLETE:	
+			for (int x = 0; x < XSIZE; x++)
+			{
+				for (int y = 0; y < YSIZE; y++)
+				{
+					if (math_[x][y].mathType_ == MATH_START)
+					{
+						startFlg = true;
+					}
+					if (math_[x][y].mathType_ == MATH_GOAL)
+					{
+						goalFlg = true;
+					}
+				}
+			}
+			if(startFlg && goalFlg)	Write(); 
+			break;
 		default: break;
 		}
 

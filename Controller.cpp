@@ -12,7 +12,7 @@ Controller::Controller(GameObject* parent)
 void Controller::Initialize()
 {
 	transform_.position_ = XMFLOAT3(7, 1, 7);
-	Camera::SetPosition(XMFLOAT3(7, 1, 7));
+	Camera::SetPosition(transform_.position_);
 
 }
 

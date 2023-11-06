@@ -8,6 +8,7 @@
 #include "TestScene.h"
 #include "SceneTransition.h"
 #include "Engine/RootJob.h"
+#include "Engine/Camera.h"
 
 #include "resource.h"
 
@@ -63,23 +64,35 @@ void Stage::Draw()
 		for (int z = 0; z < ZSIZE; z++)
 		{
 			Transform mathTrans;
-			mathTrans.position_.x = x;
-			mathTrans.position_.z = z;
-			if (table_[x][z].mathType_ != MATH_CONVEYOR)
+			mathTrans.position_ = XMFLOAT3(x, 0, z);
+			switch (table_[x][z].mathType_)
 			{
-				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
-				Model::Draw(hModel_[MATH_FLOOR]);
-			}
-			else
-			{
+			case MATH_FLOOR:
 				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[table_[x][z].mathType_]);
-			}
-
-			if (table_[x][z].mathType_ != MATH_FLOOR)
-			{
+				break;
+			case MATH_WALL :
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
+				mathTrans.position_.y = 1;
+				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
+				Model::Draw(hModel_[table_[x][z].mathType_]);
+				break;
+			case MATH_CONVEYOR:
+				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
+				Model::Draw(hModel_[table_[x][z].mathType_]);
+				break;
+			case MATH_TOGETOGE:
+				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
+				Model::Draw(hModel_[MATH_FLOOR]);
+				mathTrans.position_.y = 1;
+				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
+				Model::Draw(hModel_[table_[x][z].mathType_]);
+				break;
+			case MATH_PITFALL:
+				Model::SetTransform(hModel_[table_[x][z].mathType_], mathTrans);
+				Model::Draw(hModel_[table_[x][z].mathType_]);
+				break;
 			}
 		}
 	}
