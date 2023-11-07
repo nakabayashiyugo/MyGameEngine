@@ -3,10 +3,21 @@
 #include "Controller.h"
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
+#include "SceneTransition.h"
 
 TestScene::TestScene(GameObject* parent)
-	: GameObject(parent, "TestScene"), isCreate_newTable_(false), table_xsize_(15), table_zsize_(15)
+	: GameObject(parent, "TestScene")
 {
+	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
+	XSIZE = (int)pTrans_->GetMathSize().x;
+	ZSIZE = (int)pTrans_->GetMathSize().y;
+	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+	math_.resize(XSIZE);
+	for (int x = 0; x < XSIZE; x++)
+	{
+		math_.at(x).resize(ZSIZE);
+	}
+	Read();
 }
 
 void TestScene::Initialize()
@@ -25,4 +36,52 @@ void TestScene::Draw()
 
 void TestScene::Release()
 {
+}
+
+void TestScene::Read()
+{
+	std::ifstream read;
+	read.open("saveMath1", std::ios::in | std::ios::binary);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+
+	//ファイルの最後まで続ける
+	for (int i = 0; i < XSIZE; i++)
+	{
+		for (int j = 0; j < ZSIZE; j++)
+		{
+			read.read((char*)&math_[i][j].mathType_, sizeof(math_.at(i).at(j).mathType_));
+			//文字列ではないデータを読みこむ
+
+		}
+	}
+	read.close();  //ファイルを閉じる
+
+	read.open("saveConvRot1", std::ios::in | std::ios::binary);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+
+	//ファイルの最後まで続ける
+	for (int i = 0; i < XSIZE; i++)
+	{
+		for (int j = 0; j < ZSIZE; j++)
+		{
+			read.read((char*)&math_[i][j].converyor_rotate_, sizeof(math_.at(i).at(j).converyor_rotate_));
+			//文字列ではないデータを読みこむ
+
+		}
+	}
+	read.close();  //ファイルを閉じる
 }

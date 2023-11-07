@@ -6,7 +6,7 @@
 #include "SceneTransition.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{

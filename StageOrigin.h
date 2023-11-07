@@ -33,9 +33,11 @@ protected:
 		int converyor_rotate_;
 	};
 
+	std::vector<std::vector<MATHDEDAIL>> math_;
+
 	SceneTransition* pTrans_;
 
 	int XSIZE;
-	int YSIZE;
+	int ZSIZE;
 };
 
