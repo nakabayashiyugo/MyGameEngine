@@ -82,6 +82,9 @@ void Controller::PlayUpdate()
 {
 	//èdóÕ
 	static XMFLOAT3 gravity = XMFLOAT3(0, 0, 0);
+
+	static XMFLOAT3 table_hit_point = XMFLOAT3(0, 0, 0);
+	static bool is_table_hit = false;
 	switch (player_state_)
 	{
 	case STATE_WARK:
@@ -94,25 +97,32 @@ void Controller::PlayUpdate()
 		{
 			player_state_ = STATE_FALL;
 		}
+		break;
 	case STATE_FALL:
-		gravity.y += - 0.05f;
-		if (transform_.position_.y < 1.0f)
+		gravity.y += - 0.03f;
+		if (transform_.position_.y < 1.0f && !is_table_hit)
+		{
+			is_table_hit = true;
+			table_hit_point = transform_.position_;
+		}
+		if (math_[table_hit_point.x + 0.5f][table_hit_point.x + 0.5f].mathType_ != MATH_HOLL &&
+			Is_InSide_Table())
 		{
 			player_state_ = STATE_WARK;
+			is_table_hit = false;
 			return;
 		}
 		break;
+	case STATE_DEAD:
+		KillMe();
 	}
 
 	XMFLOAT3 prevPos = transform_.position_;
 	velocity_ = XMVectorSet(0, 0, 0, 0);
 	XMVECTOR cameraBase = XMVectorSet(0, 5, -5, 0);
 
-	if (transform_.position_.x + 0.5f >= 0 && transform_.position_.x + 0.5f < XSIZE &&
-		transform_.position_.z + 0.5f >= 0 && transform_.position_.z + 0.5f < ZSIZE &&
-		transform_.position_.y >= 0.5f)
+	if (Is_InSide_Table() && transform_.position_.y >= 0.5f)
 	{
-
 		switch (math_[(transform_.position_.x + 0.5f)][(transform_.position_.z + 0.5f)].mathType_)
 		{
 		case MATH_WALL:
@@ -188,4 +198,10 @@ void Controller::PlayUpdate()
 
 	velocity_ += XMLoadFloat3(&gravity);
 	transform_.position_ += velocity_;
+}
+
+bool Controller::Is_InSide_Table()
+{
+	return transform_.position_.x + 0.5f >= 0 && transform_.position_.x + 0.5f < XSIZE &&
+		transform_.position_.z + 0.5f >= 0 && transform_.position_.z + 0.5f < ZSIZE;
 }

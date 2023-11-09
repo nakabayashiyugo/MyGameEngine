@@ -2,9 +2,14 @@
 #include "Engine/GameObject.h"
 #include "StageOrigin.h"
 
+class Stage;
+class Controller;
+
 class TestScene
 	:public GameObject, StageOrigin
 {
+	Stage* pStage_;
+	Controller* pCont_;
 public:
 	TestScene(GameObject* parent);
 

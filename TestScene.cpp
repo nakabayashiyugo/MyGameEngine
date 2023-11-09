@@ -22,8 +22,10 @@ TestScene::TestScene(GameObject* parent)
 
 void TestScene::Initialize()
 {
-	Instantiate<Stage>(this);
-	Instantiate<Controller>(this);
+	pStage_ = (Stage*)FindObject("Stage");
+	pCont_ = (Controller*)FindObject("Controller");
+	pStage_->Instantiate<Stage>(this);
+	pCont_->Instantiate<Controller>(this);
 }
 
 void TestScene::Update()

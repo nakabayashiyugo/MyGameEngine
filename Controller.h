@@ -7,6 +7,7 @@ enum PLAYER_STATE
 	STATE_WARK = 0,
 	STATE_JAMP,
 	STATE_FALL,
+	STATE_DEAD,
 };
 
 enum STAGE_STATE
@@ -43,5 +44,7 @@ public:
 	void Release() override;
 
 	void PlayUpdate();
+
+	bool Is_InSide_Table();
 };
 

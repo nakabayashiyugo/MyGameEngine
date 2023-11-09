@@ -215,6 +215,7 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 				}
 			}
 			if(startFlg && goalFlg)	Write(); 
+			if ((int)pTrans_->GetSceneState() >= 3) EndDialog(hDlg, 0);
 			break;
 		default: break;
 		}
