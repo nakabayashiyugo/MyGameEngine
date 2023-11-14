@@ -7,8 +7,9 @@
 #include "SceneTransition.h"
 
 Controller::Controller(GameObject* parent)
-	: GameObject(parent, "Controller"), velocity_(XMVectorSet(0, 0, 0, 0)), hModel_(-1)
-	, camRot_(0, 0, 0), player_state_(STATE_WARK), stage_state_(STATE_PLAY)
+	: GameObject(parent, "Controller"), velocity_(XMVectorSet(0, 0, 0, 0)), hModel_(-1),
+	camRot_(0, 0, 0), player_state_(STATE_WARK), stage_state_(STATE_PLAY),
+	gravity_(0, 0, 0), dec_velocity_(1)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize().x;
@@ -80,53 +81,63 @@ void Controller::Release()
 
 void Controller::PlayUpdate()
 {
-	//重力
-	static XMFLOAT3 gravity = XMFLOAT3(0, 0, 0);
+	XMFLOAT3 prevPos = transform_.position_;
+	PlayerOperation();
 
 	static XMFLOAT3 table_hit_point = XMFLOAT3(0, 0, 0);
 	static bool is_table_hit = false;
+
+	XMVECTOR prev_velocity = XMVectorSet(0, 0, 0, 0);
 	switch (player_state_)
 	{
 	case STATE_WARK:
-		gravity = XMFLOAT3(0, 0, 0);
+		gravity_ = XMFLOAT3(0, 0, 0);
 		transform_.position_.y = 1;
+		dec_velocity_ = 1;
 		break;
 	case STATE_JAMP:
-		gravity.y += 0.1f;
-		if (transform_.position_.y >= 2.0f)
+		prev_velocity = velocity_;
+		gravity_.y = 0.2f;
+		dec_velocity_ = 10;
+		if (transform_.position_.y >= 1.5f)
 		{
 			player_state_ = STATE_FALL;
 		}
 		break;
 	case STATE_FALL:
-		gravity.y += - 0.03f;
+		gravity_.y += -0.01f;
+		dec_velocity_ = 10;
 		if (transform_.position_.y < 1.0f && !is_table_hit)
 		{
 			is_table_hit = true;
 			table_hit_point = transform_.position_;
-		}
-		if (math_[table_hit_point.x + 0.5f][table_hit_point.x + 0.5f].mathType_ != MATH_HOLL &&
-			Is_InSide_Table())
-		{
-			player_state_ = STATE_WARK;
-			is_table_hit = false;
-			return;
+			if (Is_InSide_Table() &&
+				math_[table_hit_point.x + 0.5f][table_hit_point.z + 0.5f].mathType_ != MATH_HOLL)
+			{
+				player_state_ = STATE_WARK;
+				is_table_hit = false;
+				return;
+			}
 		}
 		break;
 	case STATE_DEAD:
 		KillMe();
 	}
 
-	XMFLOAT3 prevPos = transform_.position_;
-	velocity_ = XMVectorSet(0, 0, 0, 0);
-	XMVECTOR cameraBase = XMVectorSet(0, 5, -5, 0);
+	velocity_ += XMLoadFloat3(&gravity_);
+	transform_.position_ += velocity_;
 
+	XMFLOAT3 velo;
 	if (Is_InSide_Table() && transform_.position_.y >= 0.5f)
 	{
 		switch (math_[(transform_.position_.x + 0.5f)][(transform_.position_.z + 0.5f)].mathType_)
 		{
 		case MATH_WALL:
-			transform_.position_ = prevPos;
+			XMStoreFloat3(&velo, velocity_);
+			if(velo.x != 0)		
+				transform_.position_.x = prevPos.x;
+			if(velo.z != 0)		
+				transform_.position_.z = prevPos.z;
 			break;
 		case MATH_GOAL:
 			stage_state_ = STATE_GOAL;
@@ -141,6 +152,19 @@ void Controller::PlayUpdate()
 	{
 		player_state_ = STATE_FALL;
 	}
+}
+
+bool Controller::Is_InSide_Table()
+{
+	return transform_.position_.x + 0.5f >= 0 && transform_.position_.x + 0.5f < XSIZE &&
+		transform_.position_.z + 0.5f >= 0 && transform_.position_.z + 0.5f < ZSIZE;
+}
+
+void Controller::PlayerOperation()
+{
+	velocity_ = XMVectorSet(0, 0, 0, 0);
+
+	XMVECTOR cameraBase = XMVectorSet(0, 5, -5, 0);
 
 	//前後左右移動
 	if (Input::IsKey(DIK_W))
@@ -165,7 +189,7 @@ void Controller::PlayUpdate()
 	}
 	//どの方向も同じスピードにする
 	velocity_ = XMVector4Normalize(velocity_); //正規化して全部1になる
-	velocity_ /= 20; //1じゃ速すぎるから割る
+	velocity_ /= (20 + dec_velocity_); //1じゃ速すぎるから割る
 
 	//回転
 	if (Input::IsKey(DIK_RIGHT))
@@ -178,7 +202,7 @@ void Controller::PlayUpdate()
 	}
 
 	//ジャンプ
-	if (Input::IsKeyDown(DIK_Q))
+	if (Input::IsKeyDown(DIK_SPACE))
 	{
 		player_state_ = STATE_JAMP;
 	}
@@ -195,13 +219,4 @@ void Controller::PlayUpdate()
 
 	//移動方向回転
 	velocity_ = XMVector3Transform(velocity_, yrot);
-
-	velocity_ += XMLoadFloat3(&gravity);
-	transform_.position_ += velocity_;
-}
-
-bool Controller::Is_InSide_Table()
-{
-	return transform_.position_.x + 0.5f >= 0 && transform_.position_.x + 0.5f < XSIZE &&
-		transform_.position_.z + 0.5f >= 0 && transform_.position_.z + 0.5f < ZSIZE;
 }

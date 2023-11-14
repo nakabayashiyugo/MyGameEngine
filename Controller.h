@@ -19,15 +19,21 @@ enum STAGE_STATE
 class Controller
 	:public GameObject, StageOrigin
 {
-	XMVECTOR velocity_;
-
 	int hModel_;
+
+	XMVECTOR velocity_;
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 camRot_;
 
 	PLAYER_STATE player_state_;
 	STAGE_STATE stage_state_;
+
+	//重力
+	XMFLOAT3 gravity_;
+
+	//空中でのスピード減衰
+	int dec_velocity_;
 public:
 	Controller(GameObject* parent);
 
@@ -46,5 +52,7 @@ public:
 	void PlayUpdate();
 
 	bool Is_InSide_Table();
+
+	void PlayerOperation();
 };
 
