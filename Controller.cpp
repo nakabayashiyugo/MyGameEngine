@@ -5,6 +5,7 @@
 #include "Engine/Fbx.h"
 #include "TestScene.h"
 #include "SceneTransition.h"
+#include "Stage.h"
 
 Controller::Controller(GameObject* parent)
 	: GameObject(parent, "Controller"), velocity_(XMVectorSet(0, 0, 0, 0)), hModel_(-1),
@@ -12,14 +13,12 @@ Controller::Controller(GameObject* parent)
 	gravity_(0, 0, 0), dec_velocity_(1)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize().x;
-	ZSIZE = (int)pTrans_->GetMathSize().y;
+	XSIZE = (int)pTrans_->GetMathSize_x();
+	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
-	math_.resize(XSIZE);
-	for (int x = 0; x < XSIZE; x++)
-	{
-		math_.at(x).resize(ZSIZE);
-	}
+
+	Math_Resize(XSIZE, ZSIZE);
+
 	TestScene* pTest = (TestScene*)FindObject("TestScene");
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -28,6 +27,7 @@ Controller::Controller(GameObject* parent)
 			math_.at(x).at(z) = pTest->GetTableMath(x, z);
 		}
 	}
+
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int z = 0; z < ZSIZE; z++)
@@ -58,12 +58,17 @@ void Controller::Initialize()
 
 void Controller::Update()
 {
+	Stage* pStage = (Stage*)FindObject("Stage");
+	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
+	
 	switch (stage_state_)
 	{
 	case STATE_PLAY:
 		PlayUpdate();
 		break;
 	case STATE_GOAL:
+		pTrans_->SetSceneState(0);
+		pStage->KillMe();
 		KillMe();
 		break;
 	}

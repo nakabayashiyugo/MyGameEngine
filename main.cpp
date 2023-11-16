@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "MapEditScene.h"
 #include "Stage.h"
+#include "SceneTransition.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -111,9 +112,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
     //Camera::SetPosition(XMFLOAT3(0, 0, -10));
     
-
-    HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
-    
   //メッセージループ（何か起きるのを待つ）
     MSG msg;
     ZeroMemory(&msg, sizeof(msg));
@@ -129,6 +127,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //メッセージなし
         else
         {
+            if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == 0)
+            {
+                HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
+            }
             timeBeginPeriod(1);
 
             static DWORD countFps = 0;
@@ -198,6 +200,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);  //プログラム終了
         break;
+        
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }

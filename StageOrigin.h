@@ -1,11 +1,11 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include "Engine/Direct3D.h"
 #include <Windows.h>
 #include <fstream>
 #include <iostream>
 #include <vector>
 class SceneTransition;
-
 
 class StageOrigin
 {
@@ -39,5 +39,19 @@ protected:
 
 	int XSIZE;
 	int ZSIZE;
+
+public:
+	void Math_Resize(int _xsize, int _zsize)
+	{
+		math_.resize(_xsize);
+		for (int x = 0; x < _xsize; x++)
+		{
+			math_.at(x).resize(_zsize);
+			for (int y = 0; y < _zsize; y++)
+			{
+
+			}
+		}
+	}
 };
 

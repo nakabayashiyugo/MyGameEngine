@@ -9,8 +9,8 @@ TestScene::TestScene(GameObject* parent)
 	: GameObject(parent, "TestScene")
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize().x;
-	ZSIZE = (int)pTrans_->GetMathSize().y;
+	XSIZE = (int)pTrans_->GetMathSize_x();
+	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	math_.resize(XSIZE);
 	for (int x = 0; x < XSIZE; x++)

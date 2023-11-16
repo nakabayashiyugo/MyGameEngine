@@ -20,14 +20,10 @@ Stage::Stage(GameObject* parent)
 		hModel_[i] = -1;
 	}
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize().x;
-	ZSIZE = (int)pTrans_->GetMathSize().y;
+	XSIZE = (int)pTrans_->GetMathSize_x();
+	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
-	math_.resize(XSIZE);
-	for (int x = 0; x < XSIZE; x++)
-	{
-		math_.at(x).resize(ZSIZE);
-	}
+	Math_Resize(XSIZE, ZSIZE);
 	TestScene* pTest = (TestScene*)FindObject("TestScene");
 	for (int x = 0; x < XSIZE; x++)
 	{
