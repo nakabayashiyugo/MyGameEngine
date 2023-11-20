@@ -127,10 +127,17 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //メッセージなし
         else
         {
-            if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == 0)
+            static bool is_be_daialog = false;
+            if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == 0 && !is_be_daialog)
             {
                 HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
+                is_be_daialog = true;
             }
+            if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != 0)
+            {
+                is_be_daialog = false;
+            }
+
             timeBeginPeriod(1);
 
             static DWORD countFps = 0;

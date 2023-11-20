@@ -9,7 +9,7 @@ SceneTransition::SceneTransition(GameObject* parent)
 	XSIZE = (rand() % 15) + 5;
 	ZSIZE = (rand() % 15) + 5;
 
-	Math_Resize(XSIZE, ZSIZE);
+	Math_Resize(XSIZE, ZSIZE, &math_);
 
 	for (int x = 0; x < XSIZE; x++)
 	{

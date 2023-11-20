@@ -23,7 +23,7 @@ Stage::Stage(GameObject* parent)
 	XSIZE = (int)pTrans_->GetMathSize_x();
 	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
-	Math_Resize(XSIZE, ZSIZE);
+	Math_Resize(XSIZE, ZSIZE, &math_);
 	TestScene* pTest = (TestScene*)FindObject("TestScene");
 	for (int x = 0; x < XSIZE; x++)
 	{

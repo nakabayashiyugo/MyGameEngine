@@ -18,13 +18,15 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 
-	Math_Resize(XSIZE, YSIZE);
+	Math_Resize(XSIZE, YSIZE, &math_);
+	Math_Resize(XSIZE, YSIZE, &math_origin_);
 
 	Read();
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
+			math_origin_[x][y] = math_[x][y];
 			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / Direct3D::scrHeight * MATHSIZE, 1);
 			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
 			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
@@ -89,42 +91,46 @@ void MapEditScene::Update()
 	{
 		if (Input::IsMouseButtonDown(0) &&math_Change == false)
 		{
-			//
-			if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_START)
+			if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ !=
+				math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ ||
+				math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
 			{
-				for (int x = 0; x < XSIZE; x++)
+				if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_START)
 				{
-					for (int y = 0; y < YSIZE; y++)
+					for (int x = 0; x < XSIZE; x++)
 					{
-						if (math_[x][y].mathType_ == MATH_START)
+						for (int y = 0; y < YSIZE; y++)
 						{
-							math_[x][y].mathType_ = MATH_FLOOR;
+							if (math_[x][y].mathType_ == MATH_START)
+							{
+								math_[x][y].mathType_ = MATH_FLOOR;
+							}
 						}
 					}
 				}
-			}
-			if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_GOAL)
-			{
-				for (int x = 0; x < XSIZE; x++)
+				if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_GOAL)
 				{
-					for (int y = 0; y < YSIZE; y++)
+					for (int x = 0; x < XSIZE; x++)
 					{
-						if (math_[x][y].mathType_ == MATH_GOAL)
+						for (int y = 0; y < YSIZE; y++)
 						{
-							math_[x][y].mathType_ = MATH_FLOOR;
+							if (math_[x][y].mathType_ == MATH_GOAL)
+							{
+								math_[x][y].mathType_ = MATH_FLOOR;
+							}
 						}
 					}
 				}
-			}
-			if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_CONVEYOR &&
-				math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
-			{
-				converyorMath = selectMath;
-				math_Change = true;
-			}
-			else
-			{
-				math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+				if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_CONVEYOR &&
+					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+				{
+					converyorMath = selectMath;
+					math_Change = true;
+				}
+				else
+				{
+					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+				}
 			}
 		}
 
@@ -134,35 +140,37 @@ void MapEditScene::Update()
 		if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_CONVEYOR &&
 			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 		{
-			float mathSin = abs(sin(XMConvertToRadians(math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z)));
-			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.scale_ =
-				XMFLOAT3(1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) *
-					mathSin) * MATHSIZE,
-
-					1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) *
-						mathSin) * MATHSIZE, 1);
-
-
-			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z += 5;
-
-			if (math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z -
-				math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].converyor_rotate_ * 90
-				>= 90)
-			{
-				math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].converyor_rotate_++;
-				math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].mathPos_.rotate_.z = math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].converyor_rotate_ * 90;
-				math_Change = false;
-			}
+			math_[(int)converyorMath.x][YSIZE - 1 - (int)converyorMath.y].converyor_rotate_++;
+			math_Change = false;
 		}
 	}
 }
 
 void MapEditScene::Draw()
 {
+	static bool conp_rotate = false;
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
+
+			if (math_[x][YSIZE - 1 - y].mathType_ == MATHTYPE::MATH_CONVEYOR && !conp_rotate)
+			{
+				conp_rotate = true;
+				float mathSin = abs(sin(XMConvertToRadians(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z)));
+				math_[x][YSIZE - 1 - y].mathPos_.scale_ =
+					XMFLOAT3(1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
+					1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE, 
+					1);
+
+				if (math_[x][YSIZE - 1 - y].mathPos_.rotate_.z -
+					math_[x][YSIZE - 1 - y].converyor_rotate_ * 90 >= 90)
+				{
+					math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = math_[x][YSIZE - 1 - y].converyor_rotate_ * 90;
+					conp_rotate = false;
+				}
+				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
+			}
 			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
 			Image::Draw(hPict_[math_[x][y].mathType_]);
 			

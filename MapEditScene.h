@@ -9,6 +9,8 @@ class MapEditScene
 	int YSIZE;
 
 	int mathtype_;
+
+	std::vector<std::vector<MATHDEDAIL>> math_origin_;
 public:
 	MapEditScene(GameObject* parent);
 

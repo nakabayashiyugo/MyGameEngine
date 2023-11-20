@@ -41,16 +41,12 @@ protected:
 	int ZSIZE;
 
 public:
-	void Math_Resize(int _xsize, int _zsize)
+	void Math_Resize(int _xsize, int _zsize, std::vector<std::vector<MATHDEDAIL>> *_math)
 	{
-		math_.resize(_xsize);
+		_math->resize(_xsize);
 		for (int x = 0; x < _xsize; x++)
 		{
-			math_.at(x).resize(_zsize);
-			for (int y = 0; y < _zsize; y++)
-			{
-
-			}
+			_math->at(x).resize(_zsize);
 		}
 	}
 };
