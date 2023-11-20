@@ -6,30 +6,28 @@
 #include "SceneTransition.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
 		hPict_[i] = -1;
 	}
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize().x;
-	YSIZE = (int)pTrans_->GetMathSize().y;
+	XSIZE = (int)pTrans_->GetMathSize_x();
+	YSIZE = (int)pTrans_->GetMathSize_z();
 
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 
-	math_.resize(XSIZE);
+	Math_Resize(XSIZE, YSIZE);
+
+	Read();
 	for (int x = 0; x < XSIZE; x++)
 	{
-		math_.at(x).resize(YSIZE);
 		for (int y = 0; y < YSIZE; y++)
 		{
 			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / Direct3D::scrHeight * MATHSIZE, 1);
 			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
 			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
-
-			math_[x][y].mathType_ = MATH_FLOOR;
-			math_[x][y].converyor_rotate_ = 0;
 		}
 	}
 }
@@ -215,6 +213,7 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 				}
 			}
 			if(startFlg && goalFlg)	Write(); 
+			if ((int)pTrans_->GetSceneState() >= 3) EndDialog(hDlg, 0);
 			break;
 		default: break;
 		}
@@ -270,4 +269,56 @@ void MapEditScene::Write()
 	
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	KillMe();
+}
+
+void MapEditScene::Read()
+{
+	std::ifstream read;
+	std::string savefile = "saveMath";
+	savefile += std::to_string((int)pTrans_->GetSceneState());
+	read.open(savefile, std::ios::in | std::ios::binary);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+
+	//ファイルの最後まで続ける
+	for (int i = 0; i < XSIZE; i++)
+	{
+		for (int j = 0; j < YSIZE; j++)
+		{
+			read.read((char*)&math_[i][j].mathType_, sizeof(math_.at(i).at(j).mathType_));
+			//文字列ではないデータを読みこむ
+
+		}
+	}
+	read.close();  //ファイルを閉じる
+
+	savefile = "saveConvRot";
+	savefile += std::to_string((int)pTrans_->GetSceneState());
+	read.open(savefile, std::ios::in | std::ios::binary);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+
+	//ファイルの最後まで続ける
+	for (int i = 0; i < XSIZE; i++)
+	{
+		for (int j = 0; j < YSIZE; j++)
+		{
+			read.read((char*)&math_[i][j].converyor_rotate_, sizeof(math_.at(i).at(j).converyor_rotate_));
+			//文字列ではないデータを読みこむ
+
+		}
+	}
+	read.close();  //ファイルを閉じる
 }

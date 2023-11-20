@@ -1,16 +1,15 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include "StageOrigin.h"
+
+class Stage;
+class Controller;
 
 class TestScene
-	:public GameObject
+	:public GameObject, StageOrigin
 {
-	bool isCreate_newTable_;
-
-	int table_xsize_;
-	int table_zsize_;
-
-	XMFLOAT3 startPos_;
-	XMFLOAT3 goalPos_;
+	Stage* pStage_;
+	Controller* pCont_;
 public:
 	TestScene(GameObject* parent);
 
@@ -26,10 +25,8 @@ public:
 	//ŠJ•ú
 	void Release() override;
 
-	void SetStartPos(XMFLOAT3 _startPos) { startPos_ = _startPos; }
-	void SetGoalPos(XMFLOAT3 _goalPos) { goalPos_ = _goalPos; }
+	void Read();
 
-	XMFLOAT3 GetStartPos() { return startPos_; }
-	XMFLOAT3 GetGoalPos() { return goalPos_; }
+	MATHDEDAIL GetTableMath(int x, int z) { return math_.at(x).at(z); }
 };
 

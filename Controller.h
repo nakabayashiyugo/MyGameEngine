@@ -1,12 +1,39 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include "StageOrigin.h"
+
+enum PLAYER_STATE
+{
+	STATE_WARK = 0,
+	STATE_JAMP,
+	STATE_FALL,
+	STATE_DEAD,
+};
+
+enum STAGE_STATE
+{
+	STATE_PLAY = 0,
+	STATE_GOAL,
+};
 
 class Controller
-	:public GameObject
+	:public GameObject, StageOrigin
 {
+	int hModel_;
+
 	XMVECTOR velocity_;
 
-	int hModel_;
+	XMFLOAT3 startPos_, goalPos_;
+	XMFLOAT3 camRot_;
+
+	PLAYER_STATE player_state_;
+	STAGE_STATE stage_state_;
+
+	//重力
+	XMFLOAT3 gravity_;
+
+	//空中でのスピード減衰
+	int dec_velocity_;
 public:
 	Controller(GameObject* parent);
 
@@ -21,5 +48,11 @@ public:
 
 	//開放
 	void Release() override;
+
+	void PlayUpdate();
+
+	bool Is_InSide_Table();
+
+	void PlayerOperation();
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include "StageOrigin.h"
 
 enum SCENESTATE
 {
@@ -12,10 +13,8 @@ enum SCENESTATE
 };
 
 class SceneTransition
-	:public GameObject
+	:public GameObject, StageOrigin
 {
-	XMFLOAT3 mathSize_;
-
 	SCENESTATE sceneState_;
 
 public:
@@ -33,8 +32,11 @@ public:
 	//ŠJ•ú
 	void Release() override;
 
-	XMFLOAT3 GetMathSize() { return mathSize_; };
+	int GetMathSize_x() { return XSIZE; };
+	int GetMathSize_z() { return ZSIZE; };
 
 	int GetSceneState() { return (int)sceneState_; };
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
+
+	void Write();
 };
