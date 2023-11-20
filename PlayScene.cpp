@@ -1,12 +1,12 @@
-#include "TestScene.h"
+#include "PlayScene.h"
 #include "Stage.h"
-#include "Controller.h"
+#include "Player.h"
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
 #include "SceneTransition.h"
 
-TestScene::TestScene(GameObject* parent)
-	: GameObject(parent, "TestScene")
+PlayScene::PlayScene(GameObject* parent)
+	: GameObject(parent, "PlayScene")
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -14,29 +14,38 @@ TestScene::TestScene(GameObject* parent)
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	Math_Resize(XSIZE, ZSIZE, &math_);
 	Read();
+	
 }
 
-void TestScene::Initialize()
+void PlayScene::Initialize()
 {
 	pStage_ = (Stage*)FindObject("Stage");
-	pCont_ = (Controller*)FindObject("Controller");
+	pPlayer_ = (Player*)FindObject("Player");
 	pStage_->Instantiate<Stage>(this);
-	pCont_->Instantiate<Controller>(this);
+	pPlayer_->Instantiate<Player>(this);
 }
 
-void TestScene::Update()
+void PlayScene::Update()
+{
+	pStage_ = (Stage*)FindObject("Stage");
+	pPlayer_ = (Player*)FindObject("Player");
+	if (pPlayer_->is_Goal())
+	{
+		pPlayer_->KillMe();
+		pStage_->KillMe();
+		KillMe();
+	}
+}
+
+void PlayScene::Draw()
 {
 }
 
-void TestScene::Draw()
+void PlayScene::Release()
 {
 }
 
-void TestScene::Release()
-{
-}
-
-void TestScene::Read()
+void PlayScene::Read()
 {
 	std::ifstream read;
 	read.open("saveMath1", std::ios::in | std::ios::binary);

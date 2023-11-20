@@ -1,14 +1,14 @@
-#include "Controller.h"
+#include "Player.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
 #include "Engine/Model.h"
 #include "Engine/Fbx.h"
-#include "TestScene.h"
+#include "PlayScene.h"
 #include "SceneTransition.h"
 #include "Stage.h"
 
-Controller::Controller(GameObject* parent)
-	: GameObject(parent, "Controller"), velocity_(XMVectorSet(0, 0, 0, 0)), hModel_(-1),
+Player::Player(GameObject* parent)
+	: GameObject(parent, "Player"), velocity_(XMVectorSet(0, 0, 0, 0)), hModel_(-1),
 	camRot_(0, 0, 0), player_state_(STATE_WARK), stage_state_(STATE_PLAY),
 	gravity_(0, 0, 0), dec_velocity_(1)
 {
@@ -19,7 +19,7 @@ Controller::Controller(GameObject* parent)
 
 	Math_Resize(XSIZE, ZSIZE, &math_);
 
-	TestScene* pTest = (TestScene*)FindObject("TestScene");
+	PlayScene* pTest = (PlayScene*)FindObject("PlayScene");
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int z = 0; z < ZSIZE; z++)
@@ -34,18 +34,18 @@ Controller::Controller(GameObject* parent)
 		{
 			if (math_[x][z].mathType_ == MATH_START)
 			{
-				startPos_ = XMFLOAT3(x, 1, z);
+				startPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
 			}
 			if (math_[x][z].mathType_ == MATH_GOAL)
 			{
-				goalPos_ = XMFLOAT3(x, 1, z);
+				goalPos_ = XMFLOAT3((float)x, 1, (float)z);
 			}
 
 		}
 	}
 }
 
-void Controller::Initialize()
+void Player::Initialize()
 {
 	transform_.position_ = startPos_;
 	XMFLOAT3 camPos = transform_.position_;
@@ -56,7 +56,7 @@ void Controller::Initialize()
 	assert(hModel_ >= 0);
 }
 
-void Controller::Update()
+void Player::Update()
 {
 	Stage* pStage = (Stage*)FindObject("Stage");
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
@@ -68,23 +68,21 @@ void Controller::Update()
 		break;
 	case STATE_GOAL:
 		pTrans_->SetSceneState(0);
-		pStage->KillMe();
-		KillMe();
 		break;
 	}
 }
 
-void Controller::Draw()
+void Player::Draw()
 {
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 }
 
-void Controller::Release()
+void Player::Release()
 {
 }
 
-void Controller::PlayUpdate()
+void Player::PlayUpdate()
 {
 	XMFLOAT3 prevPos = transform_.position_;
 	PlayerOperation();
@@ -117,7 +115,7 @@ void Controller::PlayUpdate()
 			is_table_hit = true;
 			table_hit_point = transform_.position_;
 			if (Is_InSide_Table() &&
-				math_[table_hit_point.x + 0.5f][table_hit_point.z + 0.5f].mathType_ != MATH_HOLL)
+				math_[(int)(table_hit_point.x + 0.5f)][(int)(table_hit_point.z + 0.5f)].mathType_ != MATH_HOLL)
 			{
 				player_state_ = STATE_WARK;
 				is_table_hit = false;
@@ -129,13 +127,12 @@ void Controller::PlayUpdate()
 		KillMe();
 	}
 
-	velocity_ += XMLoadFloat3(&gravity_);
-	transform_.position_ += velocity_;
-
+	//コンベアによって移動する方向
+	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
 	XMFLOAT3 velo;
 	if (Is_InSide_Table() && transform_.position_.y >= 0.5f)
 	{
-		switch (math_[(transform_.position_.x + 0.5f)][(transform_.position_.z + 0.5f)].mathType_)
+		switch (math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].mathType_)
 		{
 		case MATH_WALL:
 			XMStoreFloat3(&velo, velocity_);
@@ -143,6 +140,12 @@ void Controller::PlayUpdate()
 				transform_.position_.x = prevPos.x;
 			if(velo.z != 0)		
 				transform_.position_.z = prevPos.z;
+			break;
+		case MATH_CONVEYOR:
+			XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
+			converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
+			converyor_velocity = converyor_velocity / (float)(20 + dec_velocity_) * 0.8f;
+			if(player_state_ == STATE_WARK)	velocity_ += converyor_velocity;
 			break;
 		case MATH_GOAL:
 			stage_state_ = STATE_GOAL;
@@ -157,15 +160,17 @@ void Controller::PlayUpdate()
 	{
 		player_state_ = STATE_FALL;
 	}
+	velocity_ += XMLoadFloat3(&gravity_);
+	transform_.position_ += velocity_;
 }
 
-bool Controller::Is_InSide_Table()
+bool Player::Is_InSide_Table()
 {
 	return transform_.position_.x + 0.5f >= 0 && transform_.position_.x + 0.5f < XSIZE &&
 		transform_.position_.z + 0.5f >= 0 && transform_.position_.z + 0.5f < ZSIZE;
 }
 
-void Controller::PlayerOperation()
+void Player::PlayerOperation()
 {
 	velocity_ = XMVectorSet(0, 0, 0, 0);
 
@@ -194,7 +199,7 @@ void Controller::PlayerOperation()
 	}
 	//どの方向も同じスピードにする
 	velocity_ = XMVector4Normalize(velocity_); //正規化して全部1になる
-	velocity_ /= (20 + dec_velocity_); //1じゃ速すぎるから割る
+	velocity_ /= (float)(20 + dec_velocity_); //1じゃ速すぎるから割る
 
 	//回転
 	if (Input::IsKey(DIK_RIGHT))
@@ -207,7 +212,7 @@ void Controller::PlayerOperation()
 	}
 
 	//ジャンプ
-	if (Input::IsKeyDown(DIK_SPACE))
+	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WARK)
 	{
 		player_state_ = STATE_JAMP;
 	}

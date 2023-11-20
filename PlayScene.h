@@ -3,15 +3,15 @@
 #include "StageOrigin.h"
 
 class Stage;
-class Controller;
+class Player;
 
-class TestScene
+class PlayScene
 	:public GameObject, StageOrigin
 {
 	Stage* pStage_;
-	Controller* pCont_;
+	Player* pPlayer_;
 public:
-	TestScene(GameObject* parent);
+	PlayScene(GameObject* parent);
 
 	//‰Šú‰»
 	void Initialize() override;

@@ -1,5 +1,5 @@
 #include "SceneManager.h"
-#include "../TestScene.h"
+#include "../PlayScene.h"
 #include "../MapEditScene.h"
 #include "../SceneTransition.h"
 #include "Model.h"
@@ -35,8 +35,8 @@ void SceneManager::Update()
 
 		switch (nextSceneID_)
 		{
-		case SCENE_ID_TEST:
-			Instantiate<TestScene>(this);
+		case SCENE_ID_PLAY:
+			Instantiate<PlayScene>(this);
 				break;
 		case SCENE_ID_EDIT:
 			Instantiate<MapEditScene>(this);

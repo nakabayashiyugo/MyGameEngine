@@ -1,7 +1,7 @@
 #include "SceneTransition.h"
 #include "MapEditScene.h"
 #include "Engine/SceneManager.h"
-#include "TestScene.h"
+#include "PlayScene.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1)
@@ -33,9 +33,9 @@ void SceneTransition::Update()
 {
 	switch (sceneState_)
 	{
-	case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this);break;
+	case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
 	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
-	case SCENE_STAGE:Instantiate<TestScene>(this); break;
+	case SCENE_STAGE:Instantiate<PlayScene>(this); break;
 	default:
 		break;
 	}

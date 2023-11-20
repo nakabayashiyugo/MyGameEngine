@@ -16,7 +16,7 @@ enum STAGE_STATE
 	STATE_GOAL,
 };
 
-class Controller
+class Player
 	:public GameObject, StageOrigin
 {
 	int hModel_;
@@ -35,7 +35,7 @@ class Controller
 	//空中でのスピード減衰
 	int dec_velocity_;
 public:
-	Controller(GameObject* parent);
+	Player(GameObject* parent);
 
 	//初期化
 	void Initialize() override;
@@ -54,5 +54,14 @@ public:
 	bool Is_InSide_Table();
 
 	void PlayerOperation();
+
+	bool is_Goal() 
+	{ 
+		if (stage_state_ == STATE_GOAL)
+		{
+			return true;
+		}
+		return false;
+	};
 };
 

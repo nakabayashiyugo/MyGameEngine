@@ -5,7 +5,7 @@
 #include "Engine/Input.h"
 #include "Engine/Model.h"
 #include "Engine/Direct3D.h"
-#include "TestScene.h"
+#include "PlayScene.h"
 #include "SceneTransition.h"
 #include "Engine/RootJob.h"
 #include "Engine/Camera.h"
@@ -24,7 +24,7 @@ Stage::Stage(GameObject* parent)
 	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	Math_Resize(XSIZE, ZSIZE, &math_);
-	TestScene* pTest = (TestScene*)FindObject("TestScene");
+	PlayScene* pTest = (PlayScene*)FindObject("PlayScene");
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int z = 0; z < ZSIZE; z++)
@@ -70,7 +70,6 @@ void Stage::Draw()
 		{
 			Transform mathTrans;
 			mathTrans.position_ = XMFLOAT3(x, 0, z);
-			static float togedir = 0;
 			switch (math_[x][z].mathType_)
 			{
 			case MATH_FLOOR:
@@ -93,8 +92,6 @@ void Stage::Draw()
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
 				mathTrans.position_.y = 1;
-				mathTrans.position_.x = sin(togedir);
-				togedir += 0.01f;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
