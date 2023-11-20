@@ -10,7 +10,7 @@
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"), velocity_(XMVectorSet(0, 0, 0, 0)), hModel_(-1),
 	camRot_(0, 0, 0), player_state_(STATE_WARK), stage_state_(STATE_PLAY),
-	gravity_(0, 0, 0), dec_velocity_(1)
+	gravity_(0, 0, 0), air_dec_velocity_(1)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -96,12 +96,12 @@ void Player::PlayUpdate()
 	case STATE_WARK:
 		gravity_ = XMFLOAT3(0, 0, 0);
 		transform_.position_.y = 1;
-		dec_velocity_ = 1;
+		air_dec_velocity_ = 1;
 		break;
 	case STATE_JAMP:
 		prev_velocity = velocity_;
 		gravity_.y = 0.2f;
-		dec_velocity_ = 10;
+		//air_dec_velocity_ = 10;
 		if (transform_.position_.y >= 1.5f)
 		{
 			player_state_ = STATE_FALL;
@@ -109,7 +109,7 @@ void Player::PlayUpdate()
 		break;
 	case STATE_FALL:
 		gravity_.y += -0.01f;
-		dec_velocity_ = 10;
+		//air_dec_velocity_ = 10;
 		if (transform_.position_.y < 1.0f && !is_table_hit)
 		{
 			is_table_hit = true;
@@ -144,7 +144,7 @@ void Player::PlayUpdate()
 		case MATH_CONVEYOR:
 			XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
 			converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
-			converyor_velocity = converyor_velocity / (float)(20 + dec_velocity_) * 0.8f;
+			converyor_velocity = converyor_velocity / (float)20 * 0.8f;
 			if(player_state_ == STATE_WARK)	velocity_ += converyor_velocity;
 			break;
 		case MATH_GOAL:
@@ -172,34 +172,48 @@ bool Player::Is_InSide_Table()
 
 void Player::PlayerOperation()
 {
-	velocity_ = XMVectorSet(0, 0, 0, 0);
+	//velocity_ = XMVectorSet(0, 0, 0, 0);
 
-	XMVECTOR cameraBase = XMVectorSet(0, 5, -5, 0);
+	XMVECTOR cameraBase = XMVectorSet(0, 7, -5, 0);
+
+	static int dec_velocity_ = 0;
 
 	//前後左右移動
 	if (Input::IsKey(DIK_W))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
-		velocity_ += XMVectorSet(0.0f, 0.0f, 0.1f, 0.0f);
+		sub_velocity_ += XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+		dec_velocity_ = 0;
 	}
 	if (Input::IsKey(DIK_S))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
-		velocity_ += XMVectorSet(0.0f, 0.0f, -0.1f, 0.0f);
+		sub_velocity_ += XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+		dec_velocity_ = 0;
 	}
 	if (Input::IsKey(DIK_A))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
-		velocity_ += XMVectorSet(-0.1f, 0.0f, 0.0f, 0.0f);
+		sub_velocity_ += XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
+		dec_velocity_ = 0;
 	}
 	if (Input::IsKey(DIK_D))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
-		velocity_ += XMVectorSet(0.1f, 0.0f, 0.0f, 0.0f);
+		sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+		dec_velocity_ = 0;
 	}
 	//どの方向も同じスピードにする
-	velocity_ = XMVector4Normalize(velocity_); //正規化して全部1になる
-	velocity_ /= (float)(20 + dec_velocity_); //1じゃ速すぎるから割る
+	sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
+	velocity_ = sub_velocity_ / (20 + dec_velocity_); //1じゃ速すぎるから割る
+
+	dec_velocity_ += 5;
+
+	if (dec_velocity_ >= 100)
+	{
+		velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+		dec_velocity_ = 0;
+	}
 
 	//回転
 	if (Input::IsKey(DIK_RIGHT))

@@ -21,7 +21,7 @@ class Player
 {
 	int hModel_;
 
-	XMVECTOR velocity_;
+	XMVECTOR sub_velocity_, velocity_;
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 camRot_;
@@ -33,7 +33,7 @@ class Player
 	XMFLOAT3 gravity_;
 
 	//空中でのスピード減衰
-	int dec_velocity_;
+	int air_dec_velocity_;
 public:
 	Player(GameObject* parent);
 
