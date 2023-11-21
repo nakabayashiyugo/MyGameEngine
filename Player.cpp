@@ -8,9 +8,16 @@
 #include "Stage.h"
 
 Player::Player(GameObject* parent)
-	: GameObject(parent, "Player"), velocity_(XMVectorSet(0, 0, 0, 0)), hModel_(-1),
-	camRot_(0, 0, 0), player_state_(STATE_WARK), stage_state_(STATE_PLAY),
-	gravity_(0, 0, 0), air_dec_velocity_(1)
+	: GameObject(parent, "Player"), 
+	hModel_(-1),
+	velocity_(XMVectorSet(0, 0, 0, 0)), 
+	sub_velocity_(XMVectorSet(0, 0, 0, 0)),
+	jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)),
+	camRot_(0, 0, 0), 
+	player_state_(STATE_WARK), 
+	stage_state_(STATE_PLAY),
+	gravity_(0, 0, 0), 
+	air_dec_velocity_(1)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -90,16 +97,16 @@ void Player::PlayUpdate()
 	static XMFLOAT3 table_hit_point = XMFLOAT3(0, 0, 0);
 	static bool is_table_hit = false;
 
-	XMVECTOR prev_velocity = XMVectorSet(0, 0, 0, 0);
 	switch (player_state_)
 	{
 	case STATE_WARK:
 		gravity_ = XMFLOAT3(0, 0, 0);
 		transform_.position_.y = 1;
 		air_dec_velocity_ = 1;
+		jamp_start_velocity_ = XMVectorSet(0, 0, 0, 0);
 		break;
 	case STATE_JAMP:
-		prev_velocity = velocity_;
+		velocity_ = jamp_start_velocity_;
 		gravity_.y = 0.2f;
 		//air_dec_velocity_ = 10;
 		if (transform_.position_.y >= 1.5f)
@@ -108,6 +115,7 @@ void Player::PlayUpdate()
 		}
 		break;
 	case STATE_FALL:
+		velocity_ = jamp_start_velocity_;
 		gravity_.y += -0.01f;
 		//air_dec_velocity_ = 10;
 		if (transform_.position_.y < 1.0f && !is_table_hit)
@@ -145,7 +153,7 @@ void Player::PlayUpdate()
 			XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
 			converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
 			converyor_velocity = converyor_velocity / (float)20 * 0.8f;
-			if(player_state_ == STATE_WARK)	velocity_ += converyor_velocity;
+			if(player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
 			break;
 		case MATH_GOAL:
 			stage_state_ = STATE_GOAL;
@@ -160,6 +168,14 @@ void Player::PlayUpdate()
 	{
 		player_state_ = STATE_FALL;
 	}
+
+	//ジャンプ
+	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WARK)
+	{
+		player_state_ = STATE_JAMP;
+		jamp_start_velocity_ = velocity_;
+	}
+	velocity_ += sub_velocity_;
 	velocity_ += XMLoadFloat3(&gravity_);
 	transform_.position_ += velocity_;
 }
@@ -205,11 +221,11 @@ void Player::PlayerOperation()
 	}
 	//どの方向も同じスピードにする
 	sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-	velocity_ = sub_velocity_ / (20 + dec_velocity_); //1じゃ速すぎるから割る
+	sub_velocity_ = sub_velocity_ / (20 + dec_velocity_); //1じゃ速すぎるから割る
 
 	dec_velocity_ += 5;
 
-	if (dec_velocity_ >= 100)
+	if (XMVector3Length(sub_velocity_).m128_f32[0] <= 0.01f)
 	{
 		velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		dec_velocity_ = 0;
@@ -223,12 +239,6 @@ void Player::PlayerOperation()
 	if (Input::IsKey(DIK_LEFT))
 	{
 		camRot_.y--;
-	}
-
-	//ジャンプ
-	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WARK)
-	{
-		player_state_ = STATE_JAMP;
 	}
 
 	//カメラ回転

@@ -21,7 +21,7 @@ class Player
 {
 	int hModel_;
 
-	XMVECTOR sub_velocity_, velocity_;
+	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 camRot_;
