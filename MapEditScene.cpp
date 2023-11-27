@@ -21,13 +21,15 @@ MapEditScene::MapEditScene(GameObject* parent)
 	Math_Resize(XSIZE, YSIZE, &math_);
 	Math_Resize(XSIZE, YSIZE, &math_origin_);
 
+	Texture* pTexture = (Texture*)FindObject("Texture");
+
 	Read();
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
 			math_origin_[x][y] = math_[x][y];
-			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / Direct3D::scrHeight * MATHSIZE, 1);
+			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / pTexture->GetSize().x * MATHSIZE, 1.0f / pTexture->GetSize().y * MATHSIZE, 1);
 			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
 			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
 		}
