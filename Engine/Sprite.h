@@ -33,6 +33,8 @@ protected:
 	ID3D11Buffer* pConstantBuffer_;	//コンスタントバッファ
 
 	Texture* pTexture_;
+
+	XMFLOAT3 texture_size_;
 public:
 	/// <summary>
 	///  四角形を表すクラスのコンストラクタ

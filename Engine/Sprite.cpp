@@ -1,7 +1,8 @@
 #include "Sprite.h"
 
 Sprite::Sprite()
-	:vertexNum_(0), pVertexBuffer_(nullptr), indexNum_(0), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr)
+	:vertexNum_(0), pVertexBuffer_(nullptr), indexNum_(0), pIndexBuffer_(nullptr), pConstantBuffer_(nullptr),
+	texture_size_(0, 0, 0)
 {
 }
 
@@ -15,6 +16,7 @@ HRESULT Sprite::Load(std::string filename)
 	HRESULT hr;
 	pTexture_ = new Texture;
 	hr = pTexture_->Load(filename);
+	texture_size_ = pTexture_->GetSize();
 	if (FAILED(hr))
 	{
 		//エラー処理
@@ -70,10 +72,10 @@ void Sprite::Release()
 void Sprite::InitVertexData()
 {
 	vertices_ = {
-	{ XMVectorSet(-1.0f, 1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
-	{ XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
-	{ XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
-	{ XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
+	{ XMVectorSet((0				/ Direct3D::scrWidth) * 2 - 1.0f, -(0				/ Direct3D::scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
+	{ XMVectorSet((texture_size_.x  / Direct3D::scrWidth) * 2 - 1.0f, -(0			    / Direct3D::scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
+	{ XMVectorSet((texture_size_.x  / Direct3D::scrWidth) * 2 - 1.0f, -(texture_size_.y / Direct3D::scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
+	{ XMVectorSet((0			    / Direct3D::scrWidth) * 2 - 1.0f, -(texture_size_.y / Direct3D::scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
 	};
 	vertexNum_ = vertices_.size();
 
