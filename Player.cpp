@@ -106,18 +106,16 @@ void Player::PlayUpdate()
 		jamp_start_velocity_ = XMVectorSet(0, 0, 0, 0);
 		break;
 	case STATE_JAMP:
-		velocity_ = jamp_start_velocity_;
 		gravity_.y = 0.2f;
-		//air_dec_velocity_ = 10;
+		air_dec_velocity_ = 3;
 		if (transform_.position_.y >= 1.5f)
 		{
 			player_state_ = STATE_FALL;
 		}
 		break;
 	case STATE_FALL:
-		velocity_ = jamp_start_velocity_;
 		gravity_.y += -0.01f;
-		//air_dec_velocity_ = 10;
+		air_dec_velocity_ = 3;
 		if (transform_.position_.y < 1.0f && !is_table_hit)
 		{
 			is_table_hit = true;
@@ -173,9 +171,8 @@ void Player::PlayUpdate()
 	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WARK)
 	{
 		player_state_ = STATE_JAMP;
-		jamp_start_velocity_ = velocity_;
+		jamp_start_velocity_ = velocity_ / 2;
 	}
-	velocity_ += sub_velocity_;
 	velocity_ += XMLoadFloat3(&gravity_);
 	transform_.position_ += velocity_;
 }
@@ -221,11 +218,11 @@ void Player::PlayerOperation()
 	}
 	//どの方向も同じスピードにする
 	sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-	sub_velocity_ = sub_velocity_ / (20 + dec_velocity_); //1じゃ速すぎるから割る
+	velocity_ = sub_velocity_ / (20 + dec_velocity_) / air_dec_velocity_ + jamp_start_velocity_; //1じゃ速すぎるから割る
 
 	dec_velocity_ += 5;
 
-	if (XMVector3Length(sub_velocity_).m128_f32[0] <= 0.01f)
+	if (dec_velocity_ >= 100)
 	{
 		velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 		dec_velocity_ = 0;
