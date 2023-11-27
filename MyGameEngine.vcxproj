@@ -172,6 +172,7 @@
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="StageOrigin.cpp" />
     <ClCompile Include="PlayScene.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Simple2D.hlsl">
@@ -213,6 +214,7 @@
     <ClInclude Include="Stage.h" />
     <ClInclude Include="StageOrigin.h" />
     <ClInclude Include="PlayScene.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc" />

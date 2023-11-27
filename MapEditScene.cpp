@@ -29,7 +29,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 		for (int y = 0; y < YSIZE; y++)
 		{
 			math_origin_[x][y] = math_[x][y];
-			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / pTexture->GetSize().x * MATHSIZE, 1.0f / pTexture->GetSize().y * MATHSIZE, 1);
+			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / Direct3D::scrHeight * MATHSIZE, 1);
 			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
 			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
 		}
@@ -80,8 +80,8 @@ void MapEditScene::Update()
 	{
 		selectMath = XMFLOAT3(-1, -1, 0);
 	}
-	std::string resStr = "ç¿ïW : " + std::to_string((int)selectMath.x) + ", " + std::to_string((int)selectMath.y) + '\n';
-	OutputDebugString(resStr.c_str());
+	/*std::string resStr = "ç¿ïW : " + std::to_string((int)selectMath.x) + ", " + std::to_string((int)selectMath.y) + '\n';
+	OutputDebugString(resStr.c_str());*/
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
@@ -121,7 +121,6 @@ void MapEditScene::Update()
 					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 				{
 					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_++;
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_ %= 4;
 				}
 				else
 				{
@@ -142,8 +141,8 @@ void MapEditScene::Draw()
 			if (math_[x][YSIZE - 1 - y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 			{
 				float mathSin = abs(sin(XMConvertToRadians(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z)));
-				math_[x][YSIZE - 1 - y].mathPos_.scale_ =
-					XMFLOAT3(1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
+				math_[x][YSIZE - 1 - y].mathPos_.scale_ = XMFLOAT3(
+					1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
 					1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE, 
 					1);
 
@@ -203,6 +202,7 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 					{
 						goalFlg = true;
 					}
+					math_[x][y].converyor_rotate_ %= 4;
 				}
 			}
 			if(startFlg && goalFlg)	Write(); 

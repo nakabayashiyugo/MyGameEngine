@@ -13,6 +13,8 @@ namespace Direct3D
     ID3D11Texture2D* pDepthStencil;			//深度ステンシル
     ID3D11DepthStencilView* pDepthStencilView;		//深度ステンシルビュー
 
+    D3D11_VIEWPORT vp;
+
     struct SHADER_BUNDLE
     {
         ID3D11VertexShader* pVertexShader_ = nullptr;	//頂点シェーダー
@@ -92,7 +94,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
 
     ///////////////////////////ビューポート（描画範囲）設定///////////////////////////////
     //レンダリング結果を表示する範囲
-    D3D11_VIEWPORT vp;
+    
     vp.Width = (float)winW;	//幅
     vp.Height = (float)winH;//高さ
     vp.MinDepth = 0.0f;	//手前

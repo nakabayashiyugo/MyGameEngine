@@ -4,6 +4,7 @@
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
 #include "SceneTransition.h"
+#include "Timer.h"
 
 PlayScene::PlayScene(GameObject* parent)
 	: GameObject(parent, "PlayScene")
@@ -27,9 +28,16 @@ void PlayScene::Initialize()
 
 void PlayScene::Update()
 {
+	static Timer* pTimer = new Timer(30);
 	pStage_ = (Stage*)FindObject("Stage");
 	pPlayer_ = (Player*)FindObject("Player");
 	if (pPlayer_->is_Goal())
+	{
+		pPlayer_->KillMe();
+		pStage_->KillMe();
+		KillMe();
+	}
+	if (pTimer->Time_Update())
 	{
 		pPlayer_->KillMe();
 		pStage_->KillMe();

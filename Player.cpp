@@ -15,7 +15,7 @@ Player::Player(GameObject* parent)
 	jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)),
 	camRot_(0, 0, 0), 
 	player_state_(STATE_WARK), 
-	stage_state_(STATE_PLAY),
+	stage_state_(STATE_START),
 	gravity_(0, 0, 0), 
 	air_dec_velocity_(1)
 {
@@ -54,7 +54,6 @@ Player::Player(GameObject* parent)
 
 void Player::Initialize()
 {
-	transform_.position_ = startPos_;
 	XMFLOAT3 camPos = transform_.position_;
 	camPos.y = 10;
 	Camera::SetPosition(camPos);
@@ -70,6 +69,9 @@ void Player::Update()
 	
 	switch (stage_state_)
 	{
+	case STATE_START:
+		transform_.position_ = startPos_;
+		stage_state_ = STATE_PLAY;
 	case STATE_PLAY:
 		PlayUpdate();
 		break;
@@ -130,7 +132,8 @@ void Player::PlayUpdate()
 		}
 		break;
 	case STATE_DEAD:
-		KillMe();
+		stage_state_ = STATE_START;
+		break;
 	}
 
 	//コンベアによって移動する方向
@@ -152,6 +155,9 @@ void Player::PlayUpdate()
 			converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
 			converyor_velocity = converyor_velocity / (float)20 * 0.8f;
 			if(player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
+			break;
+		case MATH_TOGETOGE:
+			player_state_ = STATE_DEAD;
 			break;
 		case MATH_GOAL:
 			stage_state_ = STATE_GOAL;

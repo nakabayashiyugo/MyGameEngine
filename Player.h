@@ -12,14 +12,19 @@ enum PLAYER_STATE
 
 enum STAGE_STATE
 {
-	STATE_PLAY = 0,
+	STATE_START = 0,
+	STATE_PLAY,
 	STATE_GOAL,
+	STATE_FAILURE,
 };
 
 class Player
 	:public GameObject, StageOrigin
 {
 	int hModel_;
+
+	bool isFailure_;
+	int deadCnt_;
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
 
@@ -63,5 +68,13 @@ public:
 		}
 		return false;
 	};
+	bool is_Failure()
+	{
+		if (stage_state_ == STATE_FAILURE)
+		{
+			return true;
+		}
+		return false;
+	}
 };
 
