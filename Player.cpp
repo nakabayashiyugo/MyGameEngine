@@ -65,18 +65,19 @@ void Player::Initialize()
 void Player::Update()
 {
 	Stage* pStage = (Stage*)FindObject("Stage");
-	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	
 	switch (stage_state_)
 	{
 	case STATE_START:
 		transform_.position_ = startPos_;
 		stage_state_ = STATE_PLAY;
+		player_state_ = STATE_WARK;
+		break;
 	case STATE_PLAY:
 		PlayUpdate();
 		break;
 	case STATE_GOAL:
-		pTrans_->SetSceneState(0);
+		isGoal_ = true;
 		break;
 	}
 }
@@ -109,7 +110,7 @@ void Player::PlayUpdate()
 		break;
 	case STATE_JAMP:
 		gravity_.y = 0.2f;
-		air_dec_velocity_ = 3;
+		air_dec_velocity_ = 2;
 		if (transform_.position_.y >= 1.5f)
 		{
 			player_state_ = STATE_FALL;
@@ -117,7 +118,7 @@ void Player::PlayUpdate()
 		break;
 	case STATE_FALL:
 		gravity_.y += -0.01f;
-		air_dec_velocity_ = 3;
+		air_dec_velocity_ = 2;
 		if (transform_.position_.y < 1.0f && !is_table_hit)
 		{
 			is_table_hit = true;
@@ -195,43 +196,40 @@ void Player::PlayerOperation()
 
 	XMVECTOR cameraBase = XMVectorSet(0, 7, -5, 0);
 
-	static int dec_velocity_ = 0;
+	static int dec_velocity_ = 20;
 
 	//前後左右移動
 	if (Input::IsKey(DIK_W))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 		sub_velocity_ += XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-		dec_velocity_ = 0;
+		dec_velocity_ = 20;
 	}
 	if (Input::IsKey(DIK_S))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 		sub_velocity_ += XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-		dec_velocity_ = 0;
+		dec_velocity_ = 30;
 	}
 	if (Input::IsKey(DIK_A))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 		sub_velocity_ += XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
-		dec_velocity_ = 0;
+		dec_velocity_ = 30;
 	}
 	if (Input::IsKey(DIK_D))
 	{
 		transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 		sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-		dec_velocity_ = 0;
-	}
-	//どの方向も同じスピードにする
-	sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-	velocity_ = sub_velocity_ / (20 + dec_velocity_) / air_dec_velocity_ + jamp_start_velocity_; //1じゃ速すぎるから割る
+		dec_velocity_ = 30;
+	}	
 
 	dec_velocity_ += 5;
 
 	if (dec_velocity_ >= 100)
 	{
 		velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-		dec_velocity_ = 0;
+		dec_velocity_ = 20;
 	}
 
 	//回転
@@ -254,6 +252,13 @@ void Player::PlayerOperation()
 	Camera::SetPosition(vPos + cameraRotVec);
 	Camera::SetTarget(XMFLOAT3(transform_.position_.x, 1, transform_.position_.z));
 
+	sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
+
 	//移動方向回転
-	velocity_ = XMVector3Transform(velocity_, yrot);
+	sub_velocity_ = XMVector3Transform(sub_velocity_, yrot);
+	
+	velocity_ = sub_velocity_ / dec_velocity_ / air_dec_velocity_ + jamp_start_velocity_; //1じゃ速すぎるから割る
+
+	//移動方向回転
+	//velocity_ = XMVector3Transform(velocity_, yrot);
 }

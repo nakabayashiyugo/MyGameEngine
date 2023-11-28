@@ -23,8 +23,7 @@ class Player
 {
 	int hModel_;
 
-	bool isFailure_;
-	int deadCnt_;
+	bool isGoal_;
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
 
@@ -60,21 +59,6 @@ public:
 
 	void PlayerOperation();
 
-	bool is_Goal() 
-	{ 
-		if (stage_state_ == STATE_GOAL)
-		{
-			return true;
-		}
-		return false;
-	};
-	bool is_Failure()
-	{
-		if (stage_state_ == STATE_FAILURE)
-		{
-			return true;
-		}
-		return false;
-	}
+	bool Is_Goal() { return isGoal_; }
 };
 

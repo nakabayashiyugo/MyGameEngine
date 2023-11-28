@@ -28,16 +28,18 @@ void PlayScene::Initialize()
 
 void PlayScene::Update()
 {
-	static Timer* pTimer = new Timer(30);
+	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
+	static Timer pTimer = Timer(30);
 	pStage_ = (Stage*)FindObject("Stage");
 	pPlayer_ = (Player*)FindObject("Player");
-	if (pPlayer_->is_Goal())
+	if (pPlayer_->Is_Goal())
 	{
+		pTrans_->SetSceneState(0);
 		pPlayer_->KillMe();
 		pStage_->KillMe();
 		KillMe();
 	}
-	if (pTimer->Time_Update())
+	if (pTimer.Time_Update())
 	{
 		pPlayer_->KillMe();
 		pStage_->KillMe();
