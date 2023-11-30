@@ -17,7 +17,8 @@ Player::Player(GameObject* parent)
 	player_state_(STATE_WARK), 
 	stage_state_(STATE_START),
 	gravity_(0, 0, 0), 
-	air_dec_velocity_(1)
+	air_dec_velocity_(1),
+	hurdle_Limit_(0)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -26,14 +27,9 @@ Player::Player(GameObject* parent)
 
 	Math_Resize(XSIZE, ZSIZE, &math_);
 
-	PlayScene* pTest = (PlayScene*)FindObject("PlayScene");
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int z = 0; z < ZSIZE; z++)
-		{
-			math_.at(x).at(z) = pTest->GetTableMath(x, z);
-		}
-	}
+	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
+
+	SetTableMath(pPlayScene_->GetTableMath());
 
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -47,7 +43,6 @@ Player::Player(GameObject* parent)
 			{
 				goalPos_ = XMFLOAT3((float)x, 1, (float)z);
 			}
-
 		}
 	}
 }
@@ -79,6 +74,12 @@ void Player::Update()
 	case STATE_GOAL:
 		isGoal_ = true;
 		break;
+	}
+
+	if (pPlayScene_->GetTableChange())
+	{
+		SetTableMath(pPlayScene_->GetTableMath());
+		pPlayScene_->SetTableChange(true);
 	}
 }
 
@@ -181,6 +182,7 @@ void Player::PlayUpdate()
 		jamp_start_velocity_ = velocity_ / 2;
 	}
 	velocity_ += XMLoadFloat3(&gravity_);
+	velocity_ += jamp_start_velocity_;
 	transform_.position_ += velocity_;
 }
 
@@ -223,6 +225,8 @@ void Player::PlayerOperation()
 		sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 		dec_velocity_ = 30;
 	}	
+	sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
+	velocity_ = sub_velocity_ / dec_velocity_ / air_dec_velocity_; 
 
 	dec_velocity_ += 5;
 
@@ -252,13 +256,17 @@ void Player::PlayerOperation()
 	Camera::SetPosition(vPos + cameraRotVec);
 	Camera::SetTarget(XMFLOAT3(transform_.position_.x, 1, transform_.position_.z));
 
-	sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
-
 	//ˆÚ“®•ûŒü‰ñ“]
-	sub_velocity_ = XMVector3Transform(sub_velocity_, yrot);
-	
-	velocity_ = sub_velocity_ / dec_velocity_ / air_dec_velocity_ + jamp_start_velocity_; //1‚¶‚á‘¬‚·‚¬‚é‚©‚çŠ„‚é
+	velocity_ = XMVector3Transform(velocity_, yrot);
+}
 
-	//ˆÚ“®•ûŒü‰ñ“]
-	//velocity_ = XMVector3Transform(velocity_, yrot);
+void Player::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
+{
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			math_.at(x).at(z) = _math.at(x).at(z);
+		}
+	}
 }

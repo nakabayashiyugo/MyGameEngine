@@ -2,6 +2,8 @@
 #include "Engine/GameObject.h"
 #include "StageOrigin.h"
 
+class PlayScene;
+
 enum PLAYER_STATE
 {
 	STATE_WARK = 0,
@@ -25,6 +27,8 @@ class Player
 
 	bool isGoal_;
 
+	PlayScene* pPlayScene_;
+
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
 
 	XMFLOAT3 startPos_, goalPos_;
@@ -38,6 +42,9 @@ class Player
 
 	//空中でのスピード減衰
 	int air_dec_velocity_;
+
+	//障害物の置ける数
+	int hurdle_Limit_;
 public:
 	Player(GameObject* parent);
 
@@ -60,5 +67,9 @@ public:
 	void PlayerOperation();
 
 	bool Is_Goal() { return isGoal_; }
+
+	XMFLOAT3 GetPosition() { return transform_.position_; }
+
+	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
 };
 

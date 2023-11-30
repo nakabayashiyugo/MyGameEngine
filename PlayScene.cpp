@@ -7,7 +7,7 @@
 #include "Timer.h"
 
 PlayScene::PlayScene(GameObject* parent)
-	: GameObject(parent, "PlayScene")
+	: GameObject(parent, "PlayScene"), table_Change_(false)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -101,4 +101,10 @@ void PlayScene::Read()
 		}
 	}
 	read.close();  //ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
+}
+
+XMFLOAT3 PlayScene::GetPlayerPos()
+{
+	pPlayer_ = (Player*)FindObject("Player");
+	return pPlayer_->GetPosition();
 }

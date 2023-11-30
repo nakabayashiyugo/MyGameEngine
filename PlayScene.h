@@ -10,6 +10,8 @@ class PlayScene
 {
 	Stage* pStage_;
 	Player* pPlayer_;
+
+	bool table_Change_;
 public:
 	PlayScene(GameObject* parent);
 
@@ -27,6 +29,10 @@ public:
 
 	void Read();
 
-	MATHDEDAIL GetTableMath(int x, int z) { return math_.at(x).at(z); }
-};
+	std::vector<std::vector<MATHDEDAIL>> GetTableMath() { return math_; }
 
+	XMFLOAT3 GetPlayerPos();
+
+	void SetTableChange(bool _table_change) { table_Change_ = _table_change; }
+	bool GetTableChange() { return table_Change_; }
+};

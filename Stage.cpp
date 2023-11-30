@@ -24,14 +24,8 @@ Stage::Stage(GameObject* parent)
 	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	Math_Resize(XSIZE, ZSIZE, &math_);
-	PlayScene* pTest = (PlayScene*)FindObject("PlayScene");
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int z = 0; z < ZSIZE; z++)
-		{
-			math_.at(x).at(z) = pTest->GetTableMath(x, z);
-		}
-	}
+	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
+	SetTableMath(pPlayScene_->GetTableMath());
 }
 
 void Stage::Initialize()
@@ -59,7 +53,11 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-	
+	if (math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ == MATH_PITFALL)
+	{
+		math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLL;
+		Write();
+	}
 }
 
 void Stage::Draw()
@@ -98,6 +96,7 @@ void Stage::Draw()
 			case MATH_PITFALL:
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
+
 				break;
 			case MATH_START:
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
@@ -127,6 +126,65 @@ void Stage::SetBlock(int x, int z, MATHTYPE _type)
 {
 	math_.at(x).at(z).mathType_ = _type;
 	assert(_type <= MATHTYPE::MATH_MAX);
+}
+
+void Stage::Write()
+{
+	std::ofstream write;
+	std::string savefile = "saveMath";
+	savefile += std::to_string((int)pTrans_->GetSceneState());
+	write.open(savefile, std::ios::out | std::ios::binary);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+
+	for (int i = 0; i < XSIZE; i++) {
+		for (int j = 0; j < ZSIZE; j++)
+		{
+			write.write((char*)&math_[i][j].mathType_, sizeof(math_[i][j].mathType_));
+			//文字列ではないデータをかきこむ
+		}
+	}
+
+	write.close();  //ファイルを閉じる
+
+	savefile = "saveConvRot";
+	savefile += std::to_string((int)pTrans_->GetSceneState());
+	write.open(savefile, std::ios::out | std::ios::binary);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+
+	for (int i = 0; i < XSIZE; i++) {
+		for (int j = 0; j < ZSIZE; j++)
+		{
+			write.write((char*)&math_[i][j].converyor_rotate_, sizeof(math_[i][j].converyor_rotate_));
+			//文字列ではないデータをかきこむ
+		}
+	}
+
+	write.close();  //ファイルを閉じる
+
+
+	pPlayScene_->Read();
+	pPlayScene_->SetTableChange(true);
+}
+
+void Stage::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
+{
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int z = 0; z < ZSIZE; z++)
+		{
+			math_.at(x).at(z) = _math.at(x).at(z);
+		}
+	}
 }
 
 
