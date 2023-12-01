@@ -4,7 +4,7 @@
 #include "PlayScene.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
-	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1)
+	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1), turnNum_(0)
 {
 	XSIZE = (rand() % 15) + 5;
 	ZSIZE = (rand() % 15) + 5;
@@ -33,7 +33,7 @@ void SceneTransition::Update()
 {
 	switch (sceneState_)
 	{
-	case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
+	case SCENE_MAPEDIT1: turnNum_++; Instantiate<MapEditScene>(this); break;
 	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
 	case SCENE_STAGE:Instantiate<PlayScene>(this); break;
 	default:

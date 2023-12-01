@@ -53,10 +53,14 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-	if (math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ == MATH_PITFALL)
+	if (pPlayScene_->GetPlayerPos().x >= 0 && pPlayScene_->GetPlayerPos().x < XSIZE &&
+		pPlayScene_->GetPlayerPos().z >= 0 && pPlayScene_->GetPlayerPos().z < ZSIZE)
 	{
-		math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLL;
-		Write();
+		if (math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ == MATH_PITFALL)
+		{
+			math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLL;
+			Write();
+		}
 	}
 }
 
@@ -132,7 +136,7 @@ void Stage::Write()
 {
 	std::ofstream write;
 	std::string savefile = "saveMath";
-	savefile += std::to_string((int)pTrans_->GetSceneState());
+	savefile += std::to_string((int)pTrans_->GetSceneState() - 6);
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -152,7 +156,7 @@ void Stage::Write()
 	write.close();  //ファイルを閉じる
 
 	savefile = "saveConvRot";
-	savefile += std::to_string((int)pTrans_->GetSceneState());
+	savefile += std::to_string((int)pTrans_->GetSceneState() - 6);
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示

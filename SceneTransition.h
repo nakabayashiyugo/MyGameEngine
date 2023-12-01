@@ -17,6 +17,8 @@ class SceneTransition
 {
 	SCENESTATE sceneState_;
 
+	int turnNum_;
+
 public:
 	SceneTransition(GameObject* parent);
 
@@ -37,6 +39,8 @@ public:
 
 	int GetSceneState() { return (int)sceneState_; };
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
+
+	int GetTurnNum() { return turnNum_; };
 
 	void Write();
 };

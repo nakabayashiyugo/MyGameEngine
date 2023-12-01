@@ -268,7 +268,20 @@ void MapEditScene::Read()
 {
 	std::ifstream read;
 	std::string savefile = "saveMath";
-	savefile += std::to_string((int)pTrans_->GetSceneState());
+	int t;
+	if (pTrans_->GetTurnNum() % 2 == 0)
+	{
+		t = -1;
+	}
+	else
+	{
+		t = 1;
+	}
+	if (((int)pTrans_->GetSceneState() - 2) == t)
+	{
+		t *= -1;
+	}
+	savefile += std::to_string((((int)pTrans_->GetSceneState() - 2) * t) + 2);
 	read.open(savefile, std::ios::in | std::ios::binary);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
@@ -292,7 +305,7 @@ void MapEditScene::Read()
 	read.close();  //ファイルを閉じる
 
 	savefile = "saveConvRot";
-	savefile += std::to_string((int)pTrans_->GetSceneState());
+	savefile += std::to_string((((int)pTrans_->GetSceneState() - 2) * t) + 2);
 	read.open(savefile, std::ios::in | std::ios::binary);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
