@@ -18,12 +18,12 @@ Player::Player(GameObject* parent)
 	stage_state_(STATE_START),
 	gravity_(0, 0, 0), 
 	air_dec_velocity_(1),
-	hurdle_Limit_(0)
+	hurdle_Limit_(0),
+	camPos_(transform_.position_)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
 	ZSIZE = (int)pTrans_->GetMathSize_z();
-	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 
 	Math_Resize(XSIZE, ZSIZE, &math_);
 
@@ -49,9 +49,7 @@ Player::Player(GameObject* parent)
 
 void Player::Initialize()
 {
-	XMFLOAT3 camPos = transform_.position_;
-	camPos.y = 10;
-	Camera::SetPosition(camPos);
+	camPos_.y = 10;
 
 	hModel_ = Model::Load("Assets\\Player.fbx");
 	assert(hModel_ >= 0);
@@ -59,6 +57,7 @@ void Player::Initialize()
 
 void Player::Update()
 {
+	Camera::SetPosition(camPos_);
 	Stage* pStage = (Stage*)FindObject("Stage");
 	
 	switch (stage_state_)
@@ -132,8 +131,15 @@ void Player::PlayUpdate()
 				return;
 			}
 		}
+		if (transform_.position_.y < -1.0f)
+		{
+			player_state_ = STATE_DEAD;
+			return;
+		}
 		break;
 	case STATE_DEAD:
+		camPos_ = XMFLOAT3(camPos_.x + ((camPos_.x - transform_.position_.x) / 10), 10,
+							camPos_.z + ((camPos_.z - transform_.position_.z) / 10));
 		stage_state_ = STATE_START;
 		break;
 	}

@@ -6,7 +6,7 @@
 #include "SceneTransition.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -22,6 +22,23 @@ MapEditScene::MapEditScene(GameObject* parent)
 	Math_Resize(XSIZE, YSIZE, &math_origin_);
 
 	Texture* pTexture = (Texture*)FindObject("Texture");
+
+	if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1_DELAY && pTrans_->GetTurnNum() % 2 == 0)
+	{
+		save_Num_ -= 1;
+	}
+	else if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT2_DELAY && pTrans_->GetTurnNum() % 2 == 0)
+	{
+		save_Num_ += 1;
+	}
+	else if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1_DELAY && pTrans_->GetTurnNum() % 2 == 1)
+	{
+		save_Num_ += 1;
+	}
+	else
+	{
+		save_Num_ -= 1;
+	}
 
 	Read();
 	for (int x = 0; x < XSIZE; x++)
@@ -220,7 +237,7 @@ void MapEditScene::Write()
 {
 	std::ofstream write;
 	std::string savefile = "saveMath";
-	savefile += std::to_string((int)pTrans_->GetSceneState());
+	savefile += std::to_string(save_Num_);
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -240,7 +257,7 @@ void MapEditScene::Write()
 	write.close();  //ファイルを閉じる
 
 	savefile = "saveConvRot";
-	savefile += std::to_string((int)pTrans_->GetSceneState());
+	savefile += std::to_string(save_Num_);
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -268,20 +285,8 @@ void MapEditScene::Read()
 {
 	std::ifstream read;
 	std::string savefile = "saveMath";
-	int t;
-	if (pTrans_->GetTurnNum() % 2 == 0)
-	{
-		t = -1;
-	}
-	else
-	{
-		t = 1;
-	}
-	if (((int)pTrans_->GetSceneState() - 2) == t)
-	{
-		t *= -1;
-	}
-	savefile += std::to_string((((int)pTrans_->GetSceneState() - 2) * t) + 2);
+	
+	savefile += std::to_string(save_Num_);
 	read.open(savefile, std::ios::in | std::ios::binary);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
@@ -305,7 +310,7 @@ void MapEditScene::Read()
 	read.close();  //ファイルを閉じる
 
 	savefile = "saveConvRot";
-	savefile += std::to_string((((int)pTrans_->GetSceneState() - 2) * t) + 2);
+	savefile += std::to_string(save_Num_);
 	read.open(savefile, std::ios::in | std::ios::binary);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式

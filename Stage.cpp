@@ -22,7 +22,6 @@ Stage::Stage(GameObject* parent)
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
 	ZSIZE = (int)pTrans_->GetMathSize_z();
-	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	Math_Resize(XSIZE, ZSIZE, &math_);
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
 	SetTableMath(pPlayScene_->GetTableMath());
@@ -136,7 +135,7 @@ void Stage::Write()
 {
 	std::ofstream write;
 	std::string savefile = "saveMath";
-	savefile += std::to_string((int)pTrans_->GetSceneState() - 6);
+	savefile += std::to_string(pPlayScene_->GetSaveNum());
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -156,7 +155,7 @@ void Stage::Write()
 	write.close();  //ファイルを閉じる
 
 	savefile = "saveConvRot";
-	savefile += std::to_string((int)pTrans_->GetSceneState() - 6);
+	savefile += std::to_string(pPlayScene_->GetSaveNum());
 	write.open(savefile, std::ios::out | std::ios::binary);
 
 	//  ファイルが開けなかったときのエラー表示

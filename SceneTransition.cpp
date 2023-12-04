@@ -4,7 +4,8 @@
 #include "PlayScene.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
-	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1), turnNum_(0)
+	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1), turnNum_(0),
+	isClear_Player_{false, false}, isFinished_(false)
 {
 	XSIZE = (rand() % 15) + 5;
 	ZSIZE = (rand() % 15) + 5;
@@ -35,11 +36,24 @@ void SceneTransition::Update()
 	{
 	case SCENE_MAPEDIT1: turnNum_++; Instantiate<MapEditScene>(this); break;
 	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
-	case SCENE_STAGE:Instantiate<PlayScene>(this); break;
+	case SCENE_STAGE1:
+		pPS_[0]->Instantiate<PlayScene>(this);
+		pPS_[0] = (PlayScene*)FindObject("PlayScene");
+		pPS_[0]->SetPlayerNum(0);
+		break;
+	case SCENE_STAGE2:
+		pPS_[1]->Instantiate<PlayScene>(this);
+		pPS_[1] = (PlayScene*)FindObject("PlayScene");
+		pPS_[1]->SetPlayerNum(1);
+		break;
 	default:
 		break;
 	}
-
+	if (isClear_Player_[0] && isClear_Player_[1])
+	{
+		sceneState_ = SCENE_MAPEDIT1;
+		isClear_Player_[0] = isClear_Player_[1] = false;
+	}
 }
 
 void SceneTransition::Draw()

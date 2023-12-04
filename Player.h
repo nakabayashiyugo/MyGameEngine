@@ -27,6 +27,8 @@ class Player
 
 	bool isGoal_;
 
+	XMFLOAT3 camPos_;
+
 	PlayScene* pPlayScene_;
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;

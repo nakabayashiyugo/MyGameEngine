@@ -1,24 +1,30 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include "StageOrigin.h"
+class PlayScene;
 
 enum SCENESTATE
 {
 	SCENE_MAPEDIT1 = 0,
-	SCENE_DELAY1,
+	SCENE_MAPEDIT1_DELAY,
 	SCENE_MAPEDIT2,
-	SCENE_DELAY2,
-	SCENE_STAGE,
-	SCENE_DELAY3,
+	SCENE_MAPEDIT2_DELAY,
+	SCENE_STAGE1,
+	SCENE_STAGE1_DELAY,
+	SCENE_STAGE2,
+	SCENE_STAGE2_DELAY,
 };
 
 class SceneTransition
 	:public GameObject, StageOrigin
 {
-	SCENESTATE sceneState_;
-
+	bool isClear_Player_[2];
+	bool isFinished_;
 	int turnNum_;
+	
+	PlayScene* pPS_[2];
 
+	SCENESTATE sceneState_;
 public:
 	SceneTransition(GameObject* parent);
 
@@ -41,6 +47,17 @@ public:
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
 
 	int GetTurnNum() { return turnNum_; };
+
+	void SetIsClear(int _player_num, bool _isClear)
+	{
+		if (_player_num >= 2 && _player_num < 0)
+		{
+			return;
+		}
+		isClear_Player_[_player_num] = _isClear;
+	}
+
+	void SetIsFinished(bool _isfinished) { isFinished_ = _isfinished; }
 
 	void Write();
 };

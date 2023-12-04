@@ -12,6 +12,10 @@ class PlayScene
 	Player* pPlayer_;
 
 	bool table_Change_;
+
+	int player_Num_;
+
+	int save_Num_;
 public:
 	PlayScene(GameObject* parent);
 
@@ -35,4 +39,8 @@ public:
 
 	void SetTableChange(bool _table_change) { table_Change_ = _table_change; }
 	bool GetTableChange() { return table_Change_; }
+
+	void SetPlayerNum(int _player_num) { player_Num_ = _player_num; }
+
+	int GetSaveNum() { return save_Num_; }
 };

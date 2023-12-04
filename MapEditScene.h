@@ -5,10 +5,9 @@ class MapEditScene
 	:public GameObject, StageOrigin
 {
 	int hPict_[MATH_MAX + 1];
-
 	int YSIZE;
-
 	int mathtype_;
+	int save_Num_;
 
 	std::vector<std::vector<MATHDEDAIL>> math_origin_;
 public:

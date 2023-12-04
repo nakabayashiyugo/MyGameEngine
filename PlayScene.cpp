@@ -7,13 +7,31 @@
 #include "Timer.h"
 
 PlayScene::PlayScene(GameObject* parent)
-	: GameObject(parent, "PlayScene"), table_Change_(false)
+	: GameObject(parent, "PlayScene"), table_Change_(false), player_Num_(0), save_Num_(2)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
 	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	Math_Resize(XSIZE, ZSIZE, &math_);
+
+	if (pTrans_->GetTurnNum() % 2 == 0 && (int)pTrans_->GetSceneState() == SCENESTATE::SCENE_STAGE1_DELAY)
+	{
+		save_Num_ -= 1;
+	}
+	else if (pTrans_->GetTurnNum() % 2 == 0 && (int)pTrans_->GetSceneState() == SCENESTATE::SCENE_STAGE2_DELAY)
+	{
+		save_Num_ += 1;
+	}
+	else if (pTrans_->GetTurnNum() % 2 == 1 && (int)pTrans_->GetSceneState() == SCENESTATE::SCENE_STAGE1_DELAY)
+	{
+		save_Num_ += 1;
+	}
+	else
+	{
+		save_Num_ -= 1;
+	}
+
 	Read();
 	
 }
@@ -34,7 +52,8 @@ void PlayScene::Update()
 	pPlayer_ = (Player*)FindObject("Player");
 	if (pPlayer_->Is_Goal())
 	{
-		pTrans_->SetSceneState(0);
+		pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+		pTrans_->SetIsClear(player_Num_, true);
 		pPlayer_->KillMe();
 		pStage_->KillMe();
 		KillMe();
@@ -60,7 +79,9 @@ void PlayScene::Read()
 	std::ifstream read;
 	std::string openfile = "saveMath";
 
-	openfile += std::to_string(1);
+	
+
+	openfile += std::to_string(save_Num_);
 	read.open(openfile, std::ios::in | std::ios::binary);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
@@ -85,7 +106,7 @@ void PlayScene::Read()
 
 	openfile = "saveConvRot";
 
-	openfile += std::to_string(1);
+	openfile += std::to_string(save_Num_);
 	read.open(openfile, std::ios::in | std::ios::binary);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
