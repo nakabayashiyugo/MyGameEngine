@@ -108,46 +108,62 @@ void MapEditScene::Update()
 				math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ ||
 				math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
 			{
-				if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_START)
+				switch ((MATHTYPE)mathtype_)
 				{
-					for (int x = 0; x < XSIZE; x++)
+				case MATH_START:
+					if (pTrans_->GetTurnNum() == 1)
 					{
-						for (int y = 0; y < YSIZE; y++)
+						for (int x = 0; x < XSIZE; x++)
 						{
-							if (math_[x][y].mathType_ == MATH_START)
+							for (int y = 0; y < YSIZE; y++)
 							{
-								math_[x][y].mathType_ = MATH_FLOOR;
+								if (math_[x][y].mathType_ == MATH_START)
+								{
+									math_[x][y].mathType_ = MATH_FLOOR;
+								}
 							}
 						}
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = MATH_START;
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_ = 0;
 					}
-				}
-				if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_GOAL)
-				{
-					for (int x = 0; x < XSIZE; x++)
+					break;
+				case MATH_GOAL:
+					if (pTrans_->GetTurnNum() == 1)
 					{
-						for (int y = 0; y < YSIZE; y++)
+						for (int x = 0; x < XSIZE; x++)
 						{
-							if (math_[x][y].mathType_ == MATH_GOAL)
+							for (int y = 0; y < YSIZE; y++)
 							{
-								math_[x][y].mathType_ = MATH_FLOOR;
+								if (math_[x][y].mathType_ == MATH_GOAL)
+								{
+									math_[x][y].mathType_ = MATH_FLOOR;
+								}
 							}
 						}
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = MATH_GOAL;
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_ = 0;
 					}
-				}
-				if ((MATHTYPE)mathtype_ == MATHTYPE::MATH_CONVEYOR &&
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
-				{
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_++;
-				}
-				else
-				{
+					break;
+				case MATH_CONVEYOR:
+					if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+					{
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_++;
+					}
+					else
+					{
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					}
+					break;
+				default:
+					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_ = 0;
 					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					break;
 				}
 			}
 		}
-
 	}
 }
+
 
 void MapEditScene::Draw()
 {
@@ -155,29 +171,26 @@ void MapEditScene::Draw()
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
-			if (math_[x][YSIZE - 1 - y].mathType_ == MATHTYPE::MATH_CONVEYOR)
-			{
-				float mathSin = abs(sin(XMConvertToRadians(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z)));
-				math_[x][YSIZE - 1 - y].mathPos_.scale_ = XMFLOAT3(
-					1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
-					1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE, 
-					1);
+			//
+			float mathSin = abs(sin(XMConvertToRadians(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z)));
+			math_[x][YSIZE - 1 - y].mathPos_.scale_ = XMFLOAT3(
+				1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
+				1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
+				1);
 
-				if (math_[x][YSIZE - 1 - y].mathPos_.rotate_.z >= math_[x][YSIZE - 1 - y].converyor_rotate_ * 90)
-				{
-					math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = math_[x][YSIZE - 1 - y].converyor_rotate_ * 90;
-				}
-				else
-				{
-					math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
-				}
+			if (math_[x][YSIZE - 1 - y].mathPos_.rotate_.z >= math_[x][YSIZE - 1 - y].converyor_rotate_ * 90)
+			{
+				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (float)(int)math_[x][YSIZE - 1 - y].converyor_rotate_ * 90;
+			}
+			else
+			{
+				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
 			}
 			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
 			Image::Draw(hPict_[math_[x][y].mathType_]);
-			
+
 		}
 	}
-	
 }
 
 void MapEditScene::Release()
@@ -223,7 +236,7 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 				}
 			}
 			if(startFlg && goalFlg)	Write(); 
-			if ((int)pTrans_->GetSceneState() >= 3) EndDialog(hDlg, 0);
+			if (pTrans_->GetSceneState() >= SCENESTATE::SCENE_MAPEDIT2_DELAY) EndDialog(hDlg, 0);
 			break;
 		default: break;
 		}

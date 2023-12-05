@@ -27,8 +27,6 @@ class Player
 
 	bool isGoal_;
 
-	XMFLOAT3 camPos_;
-
 	PlayScene* pPlayScene_;
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
@@ -38,6 +36,8 @@ class Player
 
 	PLAYER_STATE player_state_;
 	STAGE_STATE stage_state_;
+
+	MATHTYPE standMath_;
 
 	//èdóÕ
 	XMFLOAT3 gravity_;
