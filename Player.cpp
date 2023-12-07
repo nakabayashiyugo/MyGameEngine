@@ -101,6 +101,7 @@ void Player::PlayUpdate()
 	switch (player_state_)
 	{
 	case STATE_WARK:
+		table_hit_point = XMFLOAT3(0, 0, 0);
 		gravity_ = XMFLOAT3(0, 0, 0);
 		transform_.position_.y = 1;
 		air_dec_velocity_ = 1;
@@ -155,7 +156,7 @@ void Player::PlayUpdate()
 	XMFLOAT3 velo;
 	if (Is_InSide_Table() && transform_.position_.y >= 0.5f)
 	{
-		switch (math_[(int)(transform_.position_.x)][(int)(transform_.position_.z + 0.5f)].mathType_)
+		switch (math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].mathType_)
 		{
 		case MATH_WALL:
 			XMStoreFloat3(&velo, velocity_);
@@ -200,7 +201,7 @@ void Player::PlayUpdate()
 
 bool Player::Is_InSide_Table()
 {
-	return transform_.position_.x + 0.7f >= 0 && transform_.position_.x < XSIZE &&
+	return transform_.position_.x + 0.5f >= 0 && transform_.position_.x + 0.5f < XSIZE &&
 		transform_.position_.z + 0.5f >= 0 && transform_.position_.z + 0.5f < ZSIZE;
 }
 

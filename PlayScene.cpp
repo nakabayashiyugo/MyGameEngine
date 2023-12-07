@@ -79,8 +79,6 @@ void PlayScene::Read()
 	std::ifstream read;
 	std::string openfile = "saveMath";
 
-	
-
 	openfile += std::to_string(save_Num_);
 	read.open(openfile, std::ios::in | std::ios::binary);
 	//  ファイルを開く
