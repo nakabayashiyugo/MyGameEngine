@@ -102,6 +102,7 @@ void Player::PlayUpdate()
 	{
 	case STATE_WARK:
 		table_hit_point = XMFLOAT3(0, 0, 0);
+		is_table_hit = false;
 		gravity_ = XMFLOAT3(0, 0, 0);
 		transform_.position_.y = 1;
 		air_dec_velocity_ = 1;
@@ -129,7 +130,6 @@ void Player::PlayUpdate()
 				math_[(int)(table_hit_point.x + 0.5f)][(int)(table_hit_point.z + 0.5f)].mathType_ != MATH_HOLL)
 			{
 				player_state_ = STATE_WARK;
-				is_table_hit = false;
 				return;
 			}
 		}
@@ -156,14 +156,10 @@ void Player::PlayUpdate()
 	XMFLOAT3 velo;
 	if (Is_InSide_Table() && transform_.position_.y >= 0.5f)
 	{
-		switch (math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].mathType_)
+		switch (math_[(int)(transform_.position_.x + 0.35f)][(int)(transform_.position_.z + 0.35f)].mathType_)
 		{
 		case MATH_WALL:
-			XMStoreFloat3(&velo, velocity_);
-			if(velo.x != 0)		
-				transform_.position_.x = prevPos.x;
-			if(velo.z != 0)		
-				transform_.position_.z = prevPos.z;
+			transform_.position_ = prevPos;
 			break;
 		case MATH_CONVEYOR:
 			XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
@@ -201,8 +197,8 @@ void Player::PlayUpdate()
 
 bool Player::Is_InSide_Table()
 {
-	return transform_.position_.x + 0.5f >= 0 && transform_.position_.x + 0.5f < XSIZE &&
-		transform_.position_.z + 0.5f >= 0 && transform_.position_.z + 0.5f < ZSIZE;
+	return transform_.position_.x + 0.7f >= 0 && transform_.position_.x  < XSIZE &&
+		transform_.position_.z + 0.7f >= 0 && transform_.position_.z < ZSIZE;
 }
 
 void Player::PlayerOperation()
@@ -220,27 +216,31 @@ void Player::PlayerOperation()
 		{
 			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 20;
 		}
 		if (Input::IsKey(DIK_S))
 		{
 			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 30;
 		}
 		if (Input::IsKey(DIK_A))
 		{
 			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
+			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 30;
 		}
 		if (Input::IsKey(DIK_D))
 		{
 			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
+			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 30;
 		}
-		sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
+		
 		velocity_ = sub_velocity_ / dec_velocity_ / air_dec_velocity_;
 
 		dec_velocity_ += 5;
@@ -285,4 +285,14 @@ void Player::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 			math_.at(x).at(z) = _math.at(x).at(z);
 		}
 	}
+}
+
+int Player::SetStandMath(XMFLOAT3 _pos)
+{
+	int ret = 0;
+	ret = (int)math_[_pos.x + 0.5f][_pos.z + 0.5f].mathType_;
+
+
+
+	return ret;
 }
