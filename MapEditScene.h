@@ -1,6 +1,8 @@
 #pragma once
 #include "StageOrigin.h"
 
+const int MATH_CHANGE_NUM_LIMIT = 5;
+
 class MapEditScene
 	:public GameObject, StageOrigin
 {
@@ -8,6 +10,7 @@ class MapEditScene
 	int YSIZE;
 	int mathtype_;
 	int save_Num_;
+	int mathChangeNum_;
 
 	std::vector<std::vector<MATHDEDAIL>> math_origin_;
 public:
@@ -29,5 +32,7 @@ public:
 
 	void Write();
 	void Read();
+
+	void SetMathChangeNum();
 };
 

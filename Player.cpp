@@ -92,6 +92,7 @@ void Player::Release()
 
 void Player::PlayUpdate()
 {
+	standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
 	XMFLOAT3 prevPos = transform_.position_;
 	PlayerOperation();
 
@@ -156,7 +157,7 @@ void Player::PlayUpdate()
 	XMFLOAT3 velo;
 	if (Is_InSide_Table() && transform_.position_.y >= 0.5f)
 	{
-		switch (math_[(int)(transform_.position_.x + 0.35f)][(int)(transform_.position_.z + 0.35f)].mathType_)
+		switch (standMath_)
 		{
 		case MATH_WALL:
 			transform_.position_ = prevPos;
@@ -290,8 +291,23 @@ void Player::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 int Player::SetStandMath(XMFLOAT3 _pos)
 {
 	int ret = 0;
-	ret = (int)math_[_pos.x + 0.5f][_pos.z + 0.5f].mathType_;
-
+	ret = (int)math_[_pos.x += 0.5f][_pos.z += 0.5f].mathType_;
+	if ((int)_pos.x == 0)
+	{
+		ret = math_[_pos.x += 0.2f][_pos.z].mathType_;
+	}
+	else if ((int)_pos.x == XSIZE - 1)
+	{
+		ret = math_[_pos.x -= 0.5f][_pos.z].mathType_;
+	}
+	if ((int)_pos.z == 0)
+	{
+		ret = math_[_pos.x][_pos.z += 0.2f].mathType_;
+	}
+	else if ((int)_pos.z == ZSIZE - 1)
+	{
+		ret = math_[_pos.x][_pos.z -= 0.5f].mathType_;
+	}
 
 
 	return ret;

@@ -6,7 +6,8 @@
 #include "SceneTransition.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2), 
+	mathChangeNum_(0)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -104,8 +105,7 @@ void MapEditScene::Update()
 	{
 		if (Input::IsMouseButtonDown(0))
 		{
-			if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ !=
-				math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ ||
+			if (mathChangeNum_ < MATH_CHANGE_NUM_LIMIT ||
 				math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
 			{
 				switch ((MATHTYPE)mathtype_)
@@ -160,6 +160,7 @@ void MapEditScene::Update()
 					break;
 				}
 			}
+			SetMathChangeNum();
 		}
 	}
 }
@@ -345,4 +346,21 @@ void MapEditScene::Read()
 		}
 	}
 	read.close();  //ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
+}
+
+void MapEditScene::SetMathChangeNum()
+{
+	int num = 0;
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int y = 0; y < YSIZE; y++)
+		{
+			if (math_[x][y].mathType_ != math_origin_[x][y].mathType_ &&
+				math_origin_[x][y].mathType_ != MATH_FLOOR)
+			{
+				num++;
+			}
+		}
+	}
+	mathChangeNum_ = num;
 }
