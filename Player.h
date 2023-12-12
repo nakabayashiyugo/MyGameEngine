@@ -64,7 +64,7 @@ public:
 
 	void PlayUpdate();
 
-	bool Is_InSide_Table();
+	bool Is_InSide_Table(XMFLOAT3 _pos);
 
 	void PlayerOperation();
 

@@ -92,7 +92,6 @@ void Player::Release()
 
 void Player::PlayUpdate()
 {
-	standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
 	XMFLOAT3 prevPos = transform_.position_;
 	PlayerOperation();
 
@@ -127,11 +126,13 @@ void Player::PlayUpdate()
 		}
 		if (is_table_hit)
 		{
-			if (Is_InSide_Table() &&
-				math_[(int)(table_hit_point.x + 0.5f)][(int)(table_hit_point.z + 0.5f)].mathType_ != MATH_HOLL)
+			if (Is_InSide_Table(table_hit_point))
 			{
-				player_state_ = STATE_WARK;
-				return;
+				if(SetStandMath(table_hit_point) != (int)MATH_HOLL)
+				{
+					player_state_ = STATE_WARK;
+					return;
+				}
 			}
 		}
 		if (transform_.position_.y < -1.0f)
@@ -155,8 +156,9 @@ void Player::PlayUpdate()
 	//ƒRƒ“ƒxƒA‚É‚æ‚Á‚ÄˆÚ“®‚·‚é•ûŒü
 	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
 	XMFLOAT3 velo;
-	if (Is_InSide_Table() && transform_.position_.y >= 0.5f)
+	if (Is_InSide_Table(transform_.position_))
 	{
+		standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
 		switch (standMath_)
 		{
 		case MATH_WALL:
@@ -196,10 +198,10 @@ void Player::PlayUpdate()
 	transform_.position_ += velocity_;
 }
 
-bool Player::Is_InSide_Table()
+bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 {
-	return transform_.position_.x + 0.7f >= 0 && transform_.position_.x  < XSIZE &&
-		transform_.position_.z + 0.7f >= 0 && transform_.position_.z < ZSIZE;
+	return (_pos.x + 0.7f) >= 0 && (_pos.x) < XSIZE - 0.3f &&
+		(_pos.z + 0.7f) >= 0 && (_pos.z) < ZSIZE - 0.3f;
 }
 
 void Player::PlayerOperation()
@@ -290,25 +292,29 @@ void Player::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 
 int Player::SetStandMath(XMFLOAT3 _pos)
 {
-	int ret = 0;
-	ret = (int)math_[_pos.x += 0.5f][_pos.z += 0.5f].mathType_;
+	XMFLOAT3 pos = _pos;
+	int ret = -1;
 	if ((int)_pos.x == 0)
 	{
-		ret = math_[_pos.x += 0.2f][_pos.z].mathType_;
+		ret = math_[pos.x = _pos.x + 0.7f][pos.z].mathType_;
 	}
 	else if ((int)_pos.x == XSIZE - 1)
 	{
-		ret = math_[_pos.x -= 0.5f][_pos.z].mathType_;
+		ret = math_[pos.x][pos.z].mathType_;
 	}
 	if ((int)_pos.z == 0)
 	{
-		ret = math_[_pos.x][_pos.z += 0.2f].mathType_;
+		ret = math_[pos.x][pos.x = _pos.x + 0.7f].mathType_;
 	}
 	else if ((int)_pos.z == ZSIZE - 1)
 	{
-		ret = math_[_pos.x][_pos.z -= 0.5f].mathType_;
+		ret = math_[pos.x][pos.z].mathType_;
 	}
 
+	if(ret == -1)
+	{
+		ret = (int)math_[pos.x = _pos.x + 0.5f][pos.z = _pos.z + 0.5f].mathType_;
+	}
 
 	return ret;
 }
