@@ -128,7 +128,7 @@ void Player::PlayUpdate()
 		{
 			if (Is_InSide_Table(table_hit_point))
 			{
-				if(SetStandMath(table_hit_point) != (int)MATH_HOLL)
+ 				if(SetStandMath(table_hit_point) != (int)MATH_HOLL)
 				{
 					player_state_ = STATE_WARK;
 					return;
@@ -294,17 +294,17 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 {
 	XMFLOAT3 pos = _pos;
 	int ret = -1;
-	if ((int)_pos.x == 0)
+	if (_pos.x >= 0 && _pos.x < 1 - 0.7f)
 	{
-		ret = math_[pos.x = _pos.x + 0.7f][pos.z].mathType_;
+		ret = math_[pos.x += 0.7f][pos.z].mathType_;
 	}
 	else if ((int)_pos.x == XSIZE - 1)
 	{
 		ret = math_[pos.x][pos.z].mathType_;
 	}
-	if ((int)_pos.z == 0)
+	if (_pos.z >= 0 && _pos.z < 1 - 0.7f)
 	{
-		ret = math_[pos.x][pos.x = _pos.x + 0.7f].mathType_;
+		ret = math_[pos.x][pos.z += 0.7f].mathType_;
 	}
 	else if ((int)_pos.z == ZSIZE - 1)
 	{
@@ -314,6 +314,12 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 	if(ret == -1)
 	{
 		ret = (int)math_[pos.x = _pos.x + 0.5f][pos.z = _pos.z + 0.5f].mathType_;
+	}
+
+	switch ((MATHTYPE)ret)
+	{
+	case MATH_HOLL:
+		break;
 	}
 
 	return ret;
