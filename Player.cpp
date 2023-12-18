@@ -19,7 +19,8 @@ Player::Player(GameObject* parent)
 	gravity_(0, 0, 0), 
 	air_dec_velocity_(1),
 	hurdle_Limit_(0),
-	standMath_(MATHTYPE::MATH_START)
+	standMath_(MATHTYPE::MATH_START),
+	wallHitDir_(0)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -126,13 +127,10 @@ void Player::PlayUpdate()
 		}
 		if (is_table_hit)
 		{
-			if (Is_InSide_Table(table_hit_point))
+			if (SetStandMath(table_hit_point) != (int)MATH_HOLL)
 			{
- 				if(SetStandMath(table_hit_point) != (int)MATH_HOLL)
-				{
-					player_state_ = STATE_WARK;
-					return;
-				}
+				player_state_ = STATE_WARK;
+				return;
 			}
 		}
 		if (transform_.position_.y < -1.0f)
@@ -142,7 +140,7 @@ void Player::PlayUpdate()
 		}
 		break;
 	case STATE_DEAD:
-		if (abs(startPos_.x - transform_.position_.x) <= 0.01f && 
+		if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
 			abs(startPos_.z - transform_.position_.z) <= 0.01f)
 		{
 			stage_state_ = STATE_START;
@@ -151,40 +149,6 @@ void Player::PlayUpdate()
 		transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
 		transform_.position_.y = 10;
 		return;
-	}
-
-	//コンベアによって移動する方向
-	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
-	XMFLOAT3 velo;
-	if (Is_InSide_Table(transform_.position_))
-	{
-		standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
-		switch (standMath_)
-		{
-		case MATH_WALL:
-			transform_.position_ = prevPos;
-			break;
-		case MATH_CONVEYOR:
-			XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
-			converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
-			converyor_velocity = converyor_velocity / (float)20 * 0.8f;
-			if(player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
-			break;
-		case MATH_TOGETOGE:
-			player_state_ = STATE_DEAD;
-			break;
-		case MATH_GOAL:
-			stage_state_ = STATE_GOAL;
-			break;
-		case MATH_HOLL:
-			player_state_ = STATE_FALL;
-			break;
-		default:break;
-		}
-	}
-	else
-	{
-		player_state_ = STATE_FALL;
 	}
 
 	//ジャンプ
@@ -196,6 +160,44 @@ void Player::PlayUpdate()
 	velocity_ += XMLoadFloat3(&gravity_);
 	velocity_ += jamp_start_velocity_;
 	transform_.position_ += velocity_;
+
+	//コンベアによって移動する方向
+	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
+	XMFLOAT3 velo;
+	standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
+	switch (standMath_)
+	{
+	case MATH_WALL:
+		switch (wallHitDir_)
+		{
+		case 1:
+		case 2:
+			transform_.position_ = XMFLOAT3(transform_.position_.x, transform_.position_.y, prevPos.z);
+			break;
+		case 3:
+		case 4:
+			transform_.position_ = XMFLOAT3(prevPos.x, transform_.position_.y, transform_.position_.z);
+			break;
+		}
+		wallHitDir_ = 0;
+		break;
+	case MATH_CONVEYOR:
+		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
+		converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
+		converyor_velocity = converyor_velocity / (float)20 * 0.8f;
+		if (player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
+		break;
+	case MATH_TOGETOGE:
+		player_state_ = STATE_DEAD;
+		break;
+	case MATH_GOAL:
+		stage_state_ = STATE_GOAL;
+		break;
+	case MATH_HOLL:
+		player_state_ = STATE_FALL;
+		break;
+	default:break;
+	}
 }
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
@@ -292,35 +294,54 @@ void Player::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 
 int Player::SetStandMath(XMFLOAT3 _pos)
 {
-	XMFLOAT3 pos = _pos;
+	if (!Is_InSide_Table(_pos))
+	{
+		return (int)MATH_HOLL;
+	}
+
+	XMFLOAT3 centerPos = XMFLOAT3(_pos.x + 0.5f, _pos.y, _pos.z + 0.5f);
 	int ret = -1;
-	if (_pos.x >= 0 && _pos.x < 1 - 0.7f)
+
+	ret = (int)math_[centerPos.x][centerPos.z].mathType_;
+
+	bool check = false;
+	//HOLLチェック
+
+
+	//WALLチェック
+	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + 0.7f, _pos.y, _pos.z + 0.7f);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + 0.7f, _pos.y, _pos.z);
+	XMFLOAT3 leftFront = XMFLOAT3(_pos.x, _pos.y, _pos.z + 0.7f);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x, _pos.y, _pos.z);
+	//前
+	if (math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL &&
+		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 	{
-		ret = math_[pos.x += 0.7f][pos.z].mathType_;
+		wallHitDir_ = 1;
 	}
-	else if ((int)_pos.x == XSIZE - 1)
+	//後ろ
+	else if (math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL &&
+			 math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 	{
-		ret = math_[pos.x][pos.z].mathType_;
+		wallHitDir_ = 2;
 	}
-	if (_pos.z >= 0 && _pos.z < 1 - 0.7f)
+	//右
+	else if (math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL &&
+		math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 	{
-		ret = math_[pos.x][pos.z += 0.7f].mathType_;
+		wallHitDir_ = 3;
 	}
-	else if ((int)_pos.z == ZSIZE - 1)
+	//左
+	else if (math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL &&
+		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 	{
-		ret = math_[pos.x][pos.z].mathType_;
+		wallHitDir_ = 4;
+	}
+	if (wallHitDir_)
+	{
+		ret = (int)MATH_WALL;
 	}
 
-	if(ret == -1)
-	{
-		ret = (int)math_[pos.x = _pos.x + 0.5f][pos.z = _pos.z + 0.5f].mathType_;
-	}
-
-	switch ((MATHTYPE)ret)
-	{
-	case MATH_HOLL:
-		break;
-	}
 
 	return ret;
 }

@@ -25,6 +25,8 @@ class Player
 {
 	int hModel_;
 
+	int wallHitDir_;
+
 	bool isGoal_;
 
 	PlayScene* pPlayScene_;
