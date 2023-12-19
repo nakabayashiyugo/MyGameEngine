@@ -310,32 +310,28 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 
 	//WALLチェック
 	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + 0.7f, _pos.y, _pos.z + 0.7f);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + 0.7f, _pos.y, _pos.z);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + 0.7f, _pos.y, _pos.z + 0.1f);
 	XMFLOAT3 leftFront = XMFLOAT3(_pos.x, _pos.y, _pos.z + 0.7f);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x, _pos.y, _pos.z);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x, _pos.y, _pos.z + 0.1f);
 	//前
-	if (math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL &&
-		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
+	if (math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 	{
 		wallHitDir_ = 1;
 	}
 	//後ろ
-	else if (math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL &&
-			 math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
+	else if (math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL )
 	{
-		wallHitDir_ = 2;
+		wallHitDir_ = 1;
 	}
 	//右
-	else if (math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL &&
-		math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
+	else if (math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL )
 	{
-		wallHitDir_ = 3;
+		wallHitDir_ = 1;
 	}
 	//左
-	else if (math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL &&
-		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
+	else if (math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL )
 	{
-		wallHitDir_ = 4;
+		wallHitDir_ = 1;
 	}
 	if (wallHitDir_)
 	{
