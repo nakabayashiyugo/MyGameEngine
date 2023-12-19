@@ -35,6 +35,7 @@ class Player
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 camRot_;
+	XMFLOAT3 prevPos_;
 
 	PLAYER_STATE player_state_;
 	STAGE_STATE stage_state_;

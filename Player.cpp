@@ -7,6 +7,8 @@
 #include "SceneTransition.h"
 #include "Stage.h"
 
+const float MODELSIZE = 0.8f;
+
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"), 
 	hModel_(-1),
@@ -20,7 +22,8 @@ Player::Player(GameObject* parent)
 	air_dec_velocity_(1),
 	hurdle_Limit_(0),
 	standMath_(MATHTYPE::MATH_START),
-	wallHitDir_(0)
+	wallHitDir_(0),
+	prevPos_(transform_.position_)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -93,7 +96,6 @@ void Player::Release()
 
 void Player::PlayUpdate()
 {
-	XMFLOAT3 prevPos = transform_.position_;
 	PlayerOperation();
 
 	static XMFLOAT3 table_hit_point = XMFLOAT3(0, 0, 0);
@@ -163,23 +165,12 @@ void Player::PlayUpdate()
 
 	//コンベアによって移動する方向
 	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
-	XMFLOAT3 velo;
+	prevPos_ = transform_.position_;
 	standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
 	switch (standMath_)
 	{
 	case MATH_WALL:
-		switch (wallHitDir_)
-		{
-		case 1:
-		case 2:
-			transform_.position_ = XMFLOAT3(transform_.position_.x, transform_.position_.y, prevPos.z);
-			break;
-		case 3:
-		case 4:
-			transform_.position_ = XMFLOAT3(prevPos.x, transform_.position_.y, transform_.position_.z);
-			break;
-		}
-		wallHitDir_ = 0;
+		transform_.position_ = prevPos_;
 		break;
 	case MATH_CONVEYOR:
 		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
@@ -202,14 +193,12 @@ void Player::PlayUpdate()
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 {
-	return (_pos.x + 0.7f) >= 0 && (_pos.x) < XSIZE - 0.3f &&
-		(_pos.z + 0.7f) >= 0 && (_pos.z) < ZSIZE - 0.3f;
+	return (_pos.x + MODELSIZE) >= 0 && (_pos.x) < XSIZE - 0.3f &&
+		(_pos.z + MODELSIZE) >= 0 && (_pos.z) < ZSIZE - 0.3f;
 }
 
 void Player::PlayerOperation()
 {
-	//velocity_ = XMVectorSet(0, 0, 0, 0);
-
 	XMVECTOR cameraBase = XMVectorSet(0, 7, -5, 0);
 
 	static int dec_velocity_ = 20;
@@ -309,35 +298,79 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 
 
 	//WALLチェック
-	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + 0.7f, _pos.y, _pos.z + 0.7f);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + 0.7f, _pos.y, _pos.z + 0.1f);
-	XMFLOAT3 leftFront = XMFLOAT3(_pos.x, _pos.y, _pos.z + 0.7f);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x, _pos.y, _pos.z + 0.1f);
-	//前
+	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + 0.2f);
+	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + MODELSIZE);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + 0.2f);
+	
 	if (math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 	{
-		wallHitDir_ = 1;
+		check = true;
+		//前
+		if (abs((float)((int)rightFront.x - rightFront.x)) > abs((float)((int)rightFront.z - rightFront.z)) ||
+			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.z = (float)(int)rightFront.z - (rightFront.z - _pos.z);
+		}
+		//右
+		if (abs((float)((int)rightFront.x - rightFront.x)) <= abs((float)((int)rightFront.z - rightFront.z)) || 
+				 math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.x = (float)((int)rightFront.x) - (rightFront.x - _pos.x);
+		}
 	}
-	//後ろ
-	else if (math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL )
+	if (math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 	{
-		wallHitDir_ = 1;
+		check = true;
+		//後ろ
+		if (abs((float)((int)rightBack.x - rightBack.x)) > abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
+			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.z = (float)(int)(rightBack.z + 1) - (rightBack.z - _pos.z);
+		}
+		//右
+		if (abs((float)((int)rightBack.x - rightBack.x)) <= abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
+				math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.x = (float)(int)rightBack.x - (rightBack.x - _pos.x);
+		}
 	}
-	//右
-	else if (math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL )
+	if (math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 	{
-		wallHitDir_ = 1;
+		check = true;
+		//前
+		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) > abs((float)((int)leftFront.z - leftFront.z)) ||
+			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.z = (float)(int)leftFront.z - (leftFront.z - _pos.z);
+		}
+		//左
+		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) <= abs((float)((int)leftFront.z - leftFront.z)) ||
+				 math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.x = (float)(int)(leftFront.x + 1) - (leftFront.x - _pos.x);
+		}
 	}
-	//左
-	else if (math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL )
+	if (math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 	{
-		wallHitDir_ = 1;
+		check = true;
+		//後ろ
+		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) > abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
+			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.z = (float)(int)(leftBack.z + 1) - (leftBack.z - _pos.z);
+		}
+		//左
+		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) <= abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
+			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
+		{
+			prevPos_.x = (float)(int)(leftBack.x + 1) - (leftBack.x - _pos.x);
+		}
 	}
-	if (wallHitDir_)
+	if (check)
 	{
 		ret = (int)MATH_WALL;
 	}
-
 
 	return ret;
 }
