@@ -153,16 +153,6 @@ void Player::PlayUpdate()
 		return;
 	}
 
-	//ジャンプ
-	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WARK)
-	{
-		player_state_ = STATE_JAMP;
-		jamp_start_velocity_ = velocity_ / 2;
-	}
-	velocity_ += XMLoadFloat3(&gravity_);
-	velocity_ += jamp_start_velocity_;
-	transform_.position_ += velocity_;
-
 	//コンベアによって移動する方向
 	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
 	prevPos_ = transform_.position_;
@@ -189,6 +179,17 @@ void Player::PlayUpdate()
 		break;
 	default:break;
 	}
+
+	//ジャンプ
+	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WARK)
+	{
+		player_state_ = STATE_JAMP;
+		jamp_start_velocity_ = velocity_ / 2;
+	}
+
+	velocity_ += XMLoadFloat3(&gravity_);
+	velocity_ += jamp_start_velocity_;
+	transform_.position_ += velocity_;
 }
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
