@@ -58,7 +58,7 @@ void PlayScene::Update()
 		pStage_->KillMe();
 		KillMe();
 	}
-	if (pTimer.Time_Update())
+	if (pTimer.Time_Update() && false)
 	{
 		pPlayer_->KillMe();
 		pStage_->KillMe();
