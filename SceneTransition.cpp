@@ -34,6 +34,10 @@ void SceneTransition::Initialize()
 	assert(hPlayer1_ >= 0);
 	hPlayer2_ = Image::Load("Assets\\Logo_Player2.png");
 	assert(hPlayer2_ >= 0);
+	hWin_ = Image::Load("Assets\\Logo_Win.png");
+	assert(hWin_ >= 0);
+	hLose_ = Image::Load("Assets\\Logo_Lose.png");
+	assert(hLose_ >= 0);
 }
 
 void SceneTransition::Update()
@@ -88,15 +92,15 @@ void SceneTransition::Draw()
 	}
 	if (isFinished_)
 	{
-		player.position_ = XMFLOAT3(-0.3, 0.3, 0);
+		player.position_ = XMFLOAT3(-0.3, 0.1, 0);
 		Image::SetTransform(hPlayer1_, player);
-		player.position_ = XMFLOAT3(0.3, 0.3, 0);
+		player.position_ = XMFLOAT3(0.3, 0.1, 0);
 		Image::SetTransform(hPlayer2_, player);
 		if (isClear_Player_[0] == true && isClear_Player_[1] == false)
 		{
-			player.position_ = XMFLOAT3(-0.3, -0.3, 0);
+			player.position_ = XMFLOAT3(-0.3, -0.1, 0);
 			Image::SetTransform(hWin_, player);
-			player.position_ = XMFLOAT3(0.3, -0.3, 0);
+			player.position_ = XMFLOAT3(0.3, -0.1, 0);
 			Image::SetTransform(hLose_, player);
 		}
 		else

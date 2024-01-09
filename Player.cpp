@@ -159,9 +159,6 @@ void Player::PlayUpdate()
 	standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
 	switch (standMath_)
 	{
-	case MATH_WALL:
-		transform_.position_ = prevPos_;
-		break;
 	case MATH_CONVEYOR:
 		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
 		converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
@@ -288,11 +285,7 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 	{
 		return (int)MATH_HOLL;
 	}
-
-	XMFLOAT3 centerPos = XMFLOAT3(_pos.x + 0.5f, _pos.y, _pos.z + 0.5f);
 	int ret = -1;
-
-	ret = (int)math_[centerPos.x][centerPos.z].mathType_;
 
 	bool check = false;
 	//HOLLチェック
@@ -304,7 +297,8 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + MODELSIZE);
 	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + 0.2f);
 	
-	if (math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
+	if (Is_InSide_Table(rightFront) && 
+		math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 	{
 		check = true;
 		//前
@@ -320,7 +314,8 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 			prevPos_.x = (float)((int)rightFront.x) - (rightFront.x - _pos.x);
 		}
 	}
-	if (math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
+	if (Is_InSide_Table(rightBack) &&
+		math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 	{
 		check = true;
 		//後ろ
@@ -336,7 +331,8 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 			prevPos_.x = (float)(int)rightBack.x - (rightBack.x - _pos.x);
 		}
 	}
-	if (math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
+	if (Is_InSide_Table(leftFront) &&
+		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 	{
 		check = true;
 		//前
@@ -352,7 +348,8 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 			prevPos_.x = (float)(int)(leftFront.x + 1) - (leftFront.x - _pos.x);
 		}
 	}
-	if (math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
+	if (Is_InSide_Table(leftBack) &&
+		math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 	{
 		check = true;
 		//後ろ
@@ -370,7 +367,13 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 	}
 	if (check)
 	{
-		ret = (int)MATH_WALL;
+		transform_.position_ = prevPos_;
+	}
+	else
+	{
+		XMFLOAT3 centerPos = XMFLOAT3(_pos.x + 0.5f, _pos.y, _pos.z + 0.5f);
+
+		ret = (int)math_[centerPos.x][centerPos.z].mathType_;
 	}
 
 	return ret;

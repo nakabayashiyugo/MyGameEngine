@@ -21,5 +21,9 @@ public:
 	//ŠJ•ú
 	void Release();
 
-	void Time_Reset() { count_time_ = 0; }
+	void Time_Reset() 
+	{
+		count_time_ = 0;
+		current_time_ = 0;
+	}
 };
