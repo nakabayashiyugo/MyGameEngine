@@ -54,14 +54,12 @@ void PlayScene::Update()
 	{
 		pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 		pTrans_->SetIsClear(player_Num_, true);
-		pPlayer_->KillMe();
-		pStage_->KillMe();
 		KillMe();
 	}
-	if (pTimer.Time_Update() && false)
+	if (pTimer.Time_Update())
 	{
-		pPlayer_->KillMe();
-		pStage_->KillMe();
+		pTimer.Time_Reset();
+		pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 		KillMe();
 	}
 }

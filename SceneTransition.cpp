@@ -2,10 +2,12 @@
 #include "MapEditScene.h"
 #include "Engine/SceneManager.h"
 #include "PlayScene.h"
+#include "Engine/Image.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1), turnNum_(0),
-	isClear_Player_{false, false}, isFinished_(false)
+	isClear_Player_{ false, false }, isFinished_(false), hPlayer1_(-1), hPlayer2_(-1),
+	hWin_(-1), hLose_(-1)
 {
 	XSIZE = (rand() % 15) + 5;
 	ZSIZE = (rand() % 15) + 5;
@@ -28,6 +30,10 @@ SceneTransition::SceneTransition(GameObject* parent)
 void SceneTransition::Initialize()
 {
 	sceneState_ = SCENE_MAPEDIT1;
+	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");
+	assert(hPlayer1_ >= 0);
+	hPlayer2_ = Image::Load("Assets\\Logo_Player2.png");
+	assert(hPlayer2_ >= 0);
 }
 
 void SceneTransition::Update()
@@ -46,18 +52,65 @@ void SceneTransition::Update()
 		pPS_[1] = (PlayScene*)FindObject("PlayScene");
 		pPS_[1]->SetPlayerNum(1);
 		break;
+	case SCENE_TURNEND:
+		if (isClear_Player_[0] == isClear_Player_[1])
+		{
+			sceneState_ = SCENE_MAPEDIT1;
+			isClear_Player_[0] = isClear_Player_[1] = false;
+		}
+		else
+		{
+			isFinished_ = true;
+		}
+		break;
 	default:
 		break;
-	}
-	if (isClear_Player_[0] && isClear_Player_[1])
-	{
-		sceneState_ = SCENE_MAPEDIT1;
-		isClear_Player_[0] = isClear_Player_[1] = false;
 	}
 }
 
 void SceneTransition::Draw()
 {
+	Transform player;
+	player.position_ = XMFLOAT3(0.8, 0.9, 0);
+	player.scale_ = XMFLOAT3(0.2, 0.1, 1);
+	switch (sceneState_)
+	{
+	case SCENE_MAPEDIT1_DELAY:
+	case SCENE_STAGE1_DELAY:
+		Image::SetTransform(hPlayer1_, player);
+		Image::Draw(hPlayer1_);
+		break;
+	case SCENE_MAPEDIT2_DELAY:
+	case SCENE_STAGE2_DELAY:
+		Image::SetTransform(hPlayer2_, player);
+		Image::Draw(hPlayer2_);
+		break;
+	}
+	if (isFinished_)
+	{
+		player.position_ = XMFLOAT3(-0.3, 0.3, 0);
+		Image::SetTransform(hPlayer1_, player);
+		player.position_ = XMFLOAT3(0.3, 0.3, 0);
+		Image::SetTransform(hPlayer2_, player);
+		if (isClear_Player_[0] == true && isClear_Player_[1] == false)
+		{
+			player.position_ = XMFLOAT3(-0.3, -0.3, 0);
+			Image::SetTransform(hWin_, player);
+			player.position_ = XMFLOAT3(0.3, -0.3, 0);
+			Image::SetTransform(hLose_, player);
+		}
+		else
+		{
+			player.position_ = XMFLOAT3(0.3, -0.3, 0);
+			Image::SetTransform(hWin_, player);
+			player.position_ = XMFLOAT3(-0.3, -0.3, 0);
+			Image::SetTransform(hLose_, player);
+		}
+		Image::Draw(hPlayer1_);
+		Image::Draw(hPlayer2_);
+		Image::Draw(hWin_);
+		Image::Draw(hLose_);
+	}
 }
 
 void SceneTransition::Release()

@@ -20,4 +20,6 @@ public:
 
 	//ŠJ•ú
 	void Release();
+
+	void Time_Reset() { count_time_ = 0; }
 };

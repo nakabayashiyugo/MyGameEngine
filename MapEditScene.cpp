@@ -26,19 +26,19 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 	if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1_DELAY && pTrans_->GetTurnNum() % 2 == 0)
 	{
-		save_Num_ -= 1;
+		save_Num_ += 1;
 	}
 	else if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT2_DELAY && pTrans_->GetTurnNum() % 2 == 0)
 	{
-		save_Num_ += 1;
+		save_Num_ -= 1;
 	}
 	else if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1_DELAY && pTrans_->GetTurnNum() % 2 == 1)
 	{
-		save_Num_ += 1;
+		save_Num_ -= 1;
 	}
 	else
 	{
-		save_Num_ -= 1;
+		save_Num_ += 1;
 	}
 
 	Read();

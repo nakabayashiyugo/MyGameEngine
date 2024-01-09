@@ -13,6 +13,7 @@ enum SCENESTATE
 	SCENE_STAGE1_DELAY,
 	SCENE_STAGE2,
 	SCENE_STAGE2_DELAY,
+	SCENE_TURNEND,
 };
 
 class SceneTransition
@@ -23,6 +24,9 @@ class SceneTransition
 	int turnNum_;
 	
 	PlayScene* pPS_[2];
+
+	int hPlayer1_, hPlayer2_;
+	int hWin_, hLose_;
 
 	SCENESTATE sceneState_;
 public:
