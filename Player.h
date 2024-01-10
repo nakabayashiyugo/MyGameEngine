@@ -78,5 +78,6 @@ public:
 	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
 
 	int SetStandMath(XMFLOAT3 _pos);
+	void WallCheck(XMFLOAT3 _pos);
 };
 

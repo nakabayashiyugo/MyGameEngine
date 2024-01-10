@@ -286,18 +286,29 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 		return (int)MATH_HOLL;
 	}
 	int ret = -1;
-
-	bool check = false;
 	//HOLLチェック
 
 
 	//WALLチェック
+	WallCheck(_pos);
+
+
+	XMFLOAT3 centerPos = XMFLOAT3(_pos.x + 0.5f, _pos.y, _pos.z + 0.5f);
+
+	ret = (int)math_[centerPos.x][centerPos.z].mathType_;
+
+	return ret;
+}
+
+void Player::WallCheck(XMFLOAT3 _pos)
+{
+	bool check = false;
 	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
 	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + 0.2f);
 	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + MODELSIZE);
 	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + 0.2f);
-	
-	if (Is_InSide_Table(rightFront) && 
+
+	if (Is_InSide_Table(rightFront) &&
 		math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 	{
 		check = true;
@@ -308,8 +319,8 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 			prevPos_.z = (float)(int)rightFront.z - (rightFront.z - _pos.z);
 		}
 		//右
-		if (abs((float)((int)rightFront.x - rightFront.x)) <= abs((float)((int)rightFront.z - rightFront.z)) || 
-				 math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
+		if (abs((float)((int)rightFront.x - rightFront.x)) <= abs((float)((int)rightFront.z - rightFront.z)) ||
+			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 		{
 			prevPos_.x = (float)((int)rightFront.x) - (rightFront.x - _pos.x);
 		}
@@ -326,7 +337,7 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 		}
 		//右
 		if (abs((float)((int)rightBack.x - rightBack.x)) <= abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
-				math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
+			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 		{
 			prevPos_.x = (float)(int)rightBack.x - (rightBack.x - _pos.x);
 		}
@@ -343,7 +354,7 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 		}
 		//左
 		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) <= abs((float)((int)leftFront.z - leftFront.z)) ||
-				 math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
+			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 		{
 			prevPos_.x = (float)(int)(leftFront.x + 1) - (leftFront.x - _pos.x);
 		}
@@ -369,12 +380,4 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 	{
 		transform_.position_ = prevPos_;
 	}
-	else
-	{
-		XMFLOAT3 centerPos = XMFLOAT3(_pos.x + 0.5f, _pos.y, _pos.z + 0.5f);
-
-		ret = (int)math_[centerPos.x][centerPos.z].mathType_;
-	}
-
-	return ret;
 }
