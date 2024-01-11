@@ -47,7 +47,7 @@ void PlayScene::Initialize()
 void PlayScene::Update()
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	static Timer pTimer = Timer(10);
+	static Timer pTimer = Timer(30);
 	pStage_ = (Stage*)FindObject("Stage");
 	pPlayer_ = (Player*)FindObject("Player");
 	if (pPlayer_->Is_Goal())

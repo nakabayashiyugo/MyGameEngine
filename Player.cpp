@@ -286,18 +286,63 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 		return (int)MATH_HOLL;
 	}
 	int ret = -1;
-	//HOLLチェック
 
+	float plusX = 0.5f, plusZ = 0.5f;
+	if (XSIZE - _pos.x < plusX)
+	{
+		plusX = (float)(XSIZE - _pos.x) - 0.00001f;
+	}
+	if (ZSIZE - _pos.z < plusZ)
+	{
+		plusZ = (float)(ZSIZE - _pos.z) - 0.00001f;
+	}
+	XMFLOAT3 centerPos = XMFLOAT3(_pos.x + plusX, _pos.y, _pos.z + plusZ);
+
+	ret = (int)math_[centerPos.x][centerPos.z].mathType_;
+	//HOLLチェック
+	if (ret == (int)(MATHTYPE::MATH_HOLL))
+	{
+		HollCheck(_pos);
+	}
 
 	//WALLチェック
 	WallCheck(_pos);
 
-
-	XMFLOAT3 centerPos = XMFLOAT3(_pos.x + 0.5f, _pos.y, _pos.z + 0.5f);
-
-	ret = (int)math_[centerPos.x][centerPos.z].mathType_;
-
 	return ret;
+}
+
+int Player::HollCheck(XMFLOAT3 _pos)
+{
+	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + 0.2f);
+	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + MODELSIZE);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + 0.2f);
+
+	if (Is_InSide_Table(rightFront) &&
+		math_[rightFront.x][rightFront.z].mathType_ != MATH_WALL &&
+		math_[rightFront.x][rightFront.z].mathType_ != MATH_HOLL)
+	{
+		return (int)math_[rightFront.x][rightFront.z].mathType_;
+	}
+	if (Is_InSide_Table(rightBack) &&
+		math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL &&
+		math_[rightBack.x][rightBack.z].mathType_ != MATH_HOLL)
+	{
+		return (int)math_[rightBack.x][rightBack.z].mathType_;
+	}
+	if (Is_InSide_Table(leftFront) &&
+		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL &&
+		math_[leftFront.x][leftFront.z].mathType_ != MATH_HOLL)
+	{
+		return (int)math_[leftFront.x][leftFront.z].mathType_;
+	}
+	if (Is_InSide_Table(leftBack) &&
+		math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL &&
+		math_[leftBack.x][leftBack.z].mathType_ != MATH_HOLL)
+	{
+		return (int)math_[leftBack.x][leftBack.z].mathType_;
+	}
+	return (int)MATH_HOLL;
 }
 
 void Player::WallCheck(XMFLOAT3 _pos)
