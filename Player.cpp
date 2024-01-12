@@ -300,10 +300,7 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 
 	ret = (int)math_[centerPos.x][centerPos.z].mathType_;
 	//HOLLチェック
-	if (ret == (int)(MATHTYPE::MATH_HOLL))
-	{
-		HollCheck(_pos);
-	}
+	ret = HollCheck(_pos);
 
 	//WALLチェック
 	WallCheck(_pos);
@@ -324,20 +321,20 @@ int Player::HollCheck(XMFLOAT3 _pos)
 	{
 		return (int)math_[rightFront.x][rightFront.z].mathType_;
 	}
-	if (Is_InSide_Table(rightBack) &&
-		math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL &&
+	else if (Is_InSide_Table(rightBack) &&
+		math_[rightBack.x][rightBack.z].mathType_ != MATH_WALL &&
 		math_[rightBack.x][rightBack.z].mathType_ != MATH_HOLL)
 	{
 		return (int)math_[rightBack.x][rightBack.z].mathType_;
 	}
-	if (Is_InSide_Table(leftFront) &&
-		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL &&
+	else if (Is_InSide_Table(leftFront) &&
+		math_[leftFront.x][leftFront.z].mathType_ != MATH_WALL &&
 		math_[leftFront.x][leftFront.z].mathType_ != MATH_HOLL)
 	{
 		return (int)math_[leftFront.x][leftFront.z].mathType_;
 	}
-	if (Is_InSide_Table(leftBack) &&
-		math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL &&
+	else if (Is_InSide_Table(leftBack) &&
+		math_[leftBack.x][leftBack.z].mathType_ != MATH_WALL &&
 		math_[leftBack.x][leftBack.z].mathType_ != MATH_HOLL)
 	{
 		return (int)math_[leftBack.x][leftBack.z].mathType_;
