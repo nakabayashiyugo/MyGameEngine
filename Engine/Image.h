@@ -10,4 +10,5 @@ namespace Image
 	int Load(std::string filename);
 	void Draw(int hImage);
 	void Release();
+	XMFLOAT3 GetTextureSize(int hImage);
 }

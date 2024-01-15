@@ -47,7 +47,6 @@ void PlayScene::Initialize()
 void PlayScene::Update()
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	static Timer pTimer = Timer(30);
 	pStage_ = (Stage*)FindObject("Stage");
 	pPlayer_ = (Player*)FindObject("Player");
 	if (pPlayer_->Is_Goal())
@@ -56,9 +55,8 @@ void PlayScene::Update()
 		pTrans_->SetIsClear(player_Num_, true);
 		KillMe();
 	}
-	if (pTimer.Time_Update())
+	if (pPlayer_->GetFailed())
 	{
-		pTimer.Time_Reset();
 		pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 		KillMe();
 	}

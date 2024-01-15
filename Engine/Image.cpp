@@ -7,7 +7,7 @@ namespace Image
 		Sprite* pSprite_;
 		Transform transform_;
 		std::string fileName_;
-		RECT rect_;
+		XMFLOAT3 size_;
 	};
 
 	//モデルのポインタを入れておくポインタ
@@ -37,6 +37,7 @@ int Image::Load(std::string filename)
 		pData->pSprite_ = new Sprite();
 		pData->pSprite_->Load(filename);
 	}
+	pData->size_ = pData->pSprite_->GetTextureSize();
 	imageList.push_back(pData);
 	return (imageList.size() - 1);
 }
@@ -67,4 +68,9 @@ void Image::Release()
 	}
 	imageList.clear();
 
+}
+
+XMFLOAT3 Image::GetTextureSize(int hImage)
+{
+	return imageList[hImage]->size_;
 }

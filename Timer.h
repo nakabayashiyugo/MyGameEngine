@@ -1,29 +1,43 @@
 #include <string>
+#include "Engine/GameObject.h"
 
 const int FPS = 60;
 
-class Timer
+class Timer :public GameObject
 {
+	int hFrame_, hGage_;
+
+	Transform tFrame_, tGage_;
+
 	int count_time_;
 	int current_time_;
 	int limit_time_;
 public:
-	Timer();
-
-	Timer(int _lim_time);
+	Timer(GameObject* parent);
 
 	//‰Šú‰»
-	void Initialize();
+	void Initialize() override;
 
 	//XV
-	bool Time_Update();
+	void Update()override;
+
+	void Draw()override;
 
 	//ŠJ•ú
-	void Release();
+	void Release()override;
 
 	void Time_Reset() 
 	{
 		count_time_ = 0;
 		current_time_ = 0;
+	}
+	
+	bool GetTimeUpped()
+	{
+		if (current_time_ == limit_time_)
+		{
+			return true;
+		}
+		return false;
 	}
 };

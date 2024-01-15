@@ -12,6 +12,8 @@ class MapEditScene
 	int save_Num_;
 	int mathChangeNum_;
 
+	XMFLOAT3 texture_size_;
+
 	std::vector<std::vector<MATHDEDAIL>> math_origin_;
 public:
 	MapEditScene(GameObject* parent);

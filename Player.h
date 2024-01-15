@@ -80,5 +80,13 @@ public:
 	int SetStandMath(XMFLOAT3 _pos);
 	int HollCheck(XMFLOAT3 _pos);
 	void WallCheck(XMFLOAT3 _pos);
+
+	bool GetFailed() {
+		if (stage_state_ == STATE_FAILURE)
+		{
+			return true;
+		}
+		return false;
+	}
 };
 

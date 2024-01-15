@@ -47,7 +47,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 		for (int y = 0; y < YSIZE; y++)
 		{
 			math_origin_[x][y] = math_[x][y];
-			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / Direct3D::scrHeight * MATHSIZE, 1);
+			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / texture_size_.y * MATHSIZE, 1);
 			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
 			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
 		}
@@ -172,7 +172,6 @@ void MapEditScene::Draw()
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
-			//
 			float mathSin = abs(sin(XMConvertToRadians(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z)));
 			math_[x][YSIZE - 1 - y].mathPos_.scale_ = XMFLOAT3(
 				1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,

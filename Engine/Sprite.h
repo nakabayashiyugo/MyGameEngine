@@ -44,6 +44,7 @@ public:
 	HRESULT Load(std::string filename);
 	void Draw(Transform& transform);
 	void Release();
+	XMFLOAT3 GetTextureSize() { return texture_size_; }
 
 private:
 	virtual void InitVertexData();

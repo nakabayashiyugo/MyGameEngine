@@ -6,6 +6,7 @@
 #include "PlayScene.h"
 #include "SceneTransition.h"
 #include "Stage.h"
+#include "Timer.h"
 
 const float MODELSIZE = 0.8f;
 
@@ -64,6 +65,7 @@ void Player::Update()
 	switch (stage_state_)
 	{
 	case STATE_START:
+		Instantiate<Timer>(this);
 		transform_.position_ = startPos_;
 		velocity_ = sub_velocity_ = XMVectorSet(0, 0, 0, 0);
 		stage_state_ = STATE_PLAY;
