@@ -23,8 +23,7 @@ Player::Player(GameObject* parent)
 	air_dec_velocity_(1),
 	hurdle_Limit_(0),
 	standMath_(MATHTYPE::MATH_START),
-	wallHitDir_(0),
-	prevPos_(transform_.position_)
+	wallHitDir_(0)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -165,7 +164,7 @@ void Player::PlayUpdate()
 
 	//ƒRƒ“ƒxƒA‚É‚æ‚Á‚ÄˆÚ“®‚·‚é•ûŒü
 	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
-	prevPos_ = transform_.position_;
+	//prevPos_ = transform_.position_;
 	standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
 	switch (standMath_)
 	{
@@ -427,9 +426,5 @@ void Player::WallCheck(XMFLOAT3 _pos)
 		{
 			transform_.position_.x = (float)(int)(leftBack.x + 1) - (leftBack.x - _pos.x);
 		}
-	}
-	if (check)
-	{
-		//transform_.position_ = prevPos_;
 	}
 }

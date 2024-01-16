@@ -33,10 +33,11 @@ class Player
 	PlayScene* pPlayScene_;
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
+	XMVECTOR prevVelocity_;
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 camRot_;
-	XMFLOAT3 prevPos_;
+	
 
 	PLAYER_STATE player_state_;
 	STAGE_STATE stage_state_;
