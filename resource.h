@@ -4,7 +4,6 @@
 //
 #define IDD_DIALOG1                     101
 #define IDR_MENU1                       103
-#define IDD_DIALOG2                     105
 #define IDC_RADIO_UP                    1018
 #define IDC_RADIO_DOWN                  1019
 #define IDC_RADIO6                      1020
@@ -16,12 +15,8 @@
 #define IDC_UNDO                        1022
 #define IDC_RETURN2                     1023
 #define IDC_REDO                        1023
-#define ID_OK                           1027
-#define ID_CANCEL                       1028
 #define IDC_EDIT_X_MATHNUM              1029
 #define IDC_EDIT_Z_MATHNUM              1030
-#define IDC_EDIT1                       1032
-#define IDC_EDIT2                       1033
 #define IDC_SPIN3                       1036
 #define IDC_MAPEDIT_WALL                1040
 #define IDC_MAPEDIT_HOLL                1041

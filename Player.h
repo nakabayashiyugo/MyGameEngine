@@ -3,6 +3,7 @@
 #include "StageOrigin.h"
 
 class PlayScene;
+class Timer;
 
 enum PLAYER_STATE
 {
@@ -50,6 +51,9 @@ class Player
 
 	//障害物の置ける数
 	int hurdle_Limit_;
+
+	//タイマー
+	Timer* pTimer_;
 public:
 	Player(GameObject* parent);
 

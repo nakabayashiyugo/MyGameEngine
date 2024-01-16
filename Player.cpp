@@ -56,6 +56,9 @@ void Player::Initialize()
 {
 	hModel_ = Model::Load("Assets\\Player.fbx");
 	assert(hModel_ >= 0);
+	
+	pTimer_ = (Timer*)FindObject("Timer");
+	pTimer_->Instantiate<Timer>(this);
 }
 
 void Player::Update()
@@ -65,7 +68,6 @@ void Player::Update()
 	switch (stage_state_)
 	{
 	case STATE_START:
-		Instantiate<Timer>(this);
 		transform_.position_ = startPos_;
 		velocity_ = sub_velocity_ = XMVectorSet(0, 0, 0, 0);
 		stage_state_ = STATE_PLAY;
@@ -98,6 +100,12 @@ void Player::Release()
 
 void Player::PlayUpdate()
 {
+	pTimer_ = (Timer*)FindObject("Timer");
+	if (pTimer_->GetTimeUpped())
+	{
+		stage_state_ = STATE_FAILURE;
+	}
+
 	PlayerOperation();
 
 	static XMFLOAT3 table_hit_point = XMFLOAT3(0, 0, 0);
@@ -360,13 +368,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 		if (abs((float)((int)rightFront.x - rightFront.x)) > abs((float)((int)rightFront.z - rightFront.z)) ||
 			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.z = (float)(int)rightFront.z - (rightFront.z - _pos.z);
+			transform_.position_.z = (float)(int)rightFront.z - (rightFront.z - _pos.z);
 		}
 		//âE
 		if (abs((float)((int)rightFront.x - rightFront.x)) <= abs((float)((int)rightFront.z - rightFront.z)) ||
 			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.x = (float)((int)rightFront.x) - (rightFront.x - _pos.x);
+			transform_.position_.x = (float)((int)rightFront.x) - (rightFront.x - _pos.x);
 		}
 	}
 	if (Is_InSide_Table(rightBack) &&
@@ -377,13 +385,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 		if (abs((float)((int)rightBack.x - rightBack.x)) > abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
 			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.z = (float)(int)(rightBack.z + 1) - (rightBack.z - _pos.z);
+			transform_.position_.z = (float)(int)(rightBack.z + 1) - (rightBack.z - _pos.z);
 		}
 		//âE
 		if (abs((float)((int)rightBack.x - rightBack.x)) <= abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
 			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.x = (float)(int)rightBack.x - (rightBack.x - _pos.x);
+			transform_.position_.x = (float)(int)rightBack.x - (rightBack.x - _pos.x);
 		}
 	}
 	if (Is_InSide_Table(leftFront) &&
@@ -394,13 +402,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) > abs((float)((int)leftFront.z - leftFront.z)) ||
 			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.z = (float)(int)leftFront.z - (leftFront.z - _pos.z);
+			transform_.position_.z = (float)(int)leftFront.z - (leftFront.z - _pos.z);
 		}
 		//ç∂
 		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) <= abs((float)((int)leftFront.z - leftFront.z)) ||
 			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.x = (float)(int)(leftFront.x + 1) - (leftFront.x - _pos.x);
+			transform_.position_.x = (float)(int)(leftFront.x + 1) - (leftFront.x - _pos.x);
 		}
 	}
 	if (Is_InSide_Table(leftBack) &&
@@ -411,17 +419,17 @@ void Player::WallCheck(XMFLOAT3 _pos)
 		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) > abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
 			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.z = (float)(int)(leftBack.z + 1) - (leftBack.z - _pos.z);
+			transform_.position_.z = (float)(int)(leftBack.z + 1) - (leftBack.z - _pos.z);
 		}
 		//ç∂
 		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) <= abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
 			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 		{
-			prevPos_.x = (float)(int)(leftBack.x + 1) - (leftBack.x - _pos.x);
+			transform_.position_.x = (float)(int)(leftBack.x + 1) - (leftBack.x - _pos.x);
 		}
 	}
 	if (check)
 	{
-		transform_.position_ = prevPos_;
+		//transform_.position_ = prevPos_;
 	}
 }

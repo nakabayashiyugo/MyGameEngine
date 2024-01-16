@@ -5,9 +5,11 @@ const int FPS = 60;
 
 class Timer :public GameObject
 {
-	int hFrame_, hGage_;
+	int hFrame_, hGage_, hFrameOutline_;
+	int hTime_;
 
-	Transform tFrame_, tGage_;
+	Transform tFrame_, tGage_, tFrameOutline_;
+	Transform tTime_;
 
 	int count_time_;
 	int current_time_;
