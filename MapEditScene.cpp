@@ -4,6 +4,7 @@
 #include "Engine/Input.h"
 #include "resource.h"
 #include "SceneTransition.h"
+#include "Engine/Text.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2), 
@@ -75,6 +76,8 @@ void MapEditScene::Initialize()
 		assert(hPict_[i] >= 0);
 	}
 	
+	pText_ = new Text();
+	pText_->Initialize();
 }
 
 void MapEditScene::Update()
@@ -168,6 +171,7 @@ void MapEditScene::Update()
 
 void MapEditScene::Draw()
 {
+	//pText_->Draw(1, 1, "mapedit");
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
@@ -191,6 +195,8 @@ void MapEditScene::Draw()
 
 		}
 	}
+
+	
 }
 
 void MapEditScene::Release()

@@ -7,6 +7,7 @@ namespace Image
 		Sprite* pSprite_;
 		Transform transform_;
 		std::string fileName_;
+		RECT rect_;
 		XMFLOAT3 size_;
 	};
 
@@ -47,27 +48,70 @@ void Image::Draw(int hImage)
 	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_);
 }
 
-void Image::Release()
+void Image::Release(int handle)
 {
-	bool isReffered = false;
+	if (handle < 0 || handle >= imageList.size())
+	{
+		return;
+	}
+
+	//同じモデルを他でも使っていないか
+	bool isExist = false;
 	for (int i = 0; i < imageList.size(); i++)
 	{
-		for (int j = i + 1; j < imageList.size(); j++)
+		//すでに開いている場合
+		if (imageList[i] != nullptr && i != handle && imageList[i]->pSprite_ == imageList[handle]->pSprite_)
 		{
-			if (imageList[i]->pSprite_ == imageList[j]->pSprite_)
-			{
-				isReffered = true;
-				break;
-			}
+			isExist = true;
+			break;
 		}
-		if (isReffered == false)
-		{
-			SAFE_DELETE(imageList[i]->pSprite_);
-		}
-		SAFE_DELETE(imageList[i]);
+	}
+
+	//使ってなければモデル解放
+	if (isExist == false)
+	{
+		SAFE_DELETE(imageList[handle]->pSprite_);
+	}
+
+	SAFE_DELETE(imageList[handle]);
+
+}
+
+void Image::AllRelease()
+{
+	for (int i = 0; i < imageList.size(); i++)
+	{
+		Release(i);
 	}
 	imageList.clear();
+}
 
+void Image::SetRect(int handle, int x, int y, int width, int height)
+{
+	if (handle < 0 || handle >= imageList.size())
+	{
+		return;
+	}
+
+	imageList[handle]->rect_.left = x;
+	imageList[handle]->rect_.top = y;
+	imageList[handle]->rect_.right = width;
+	imageList[handle]->rect_.bottom = height;
+}
+
+void Image::ResetRect(int handle)
+{
+	if (handle < 0 || handle >= imageList.size())
+	{
+		return;
+	}
+
+	XMFLOAT3 size = imageList[handle]->pSprite_->GetTextureSize();
+
+	imageList[handle]->rect_.left = 0;
+	imageList[handle]->rect_.top = 0;
+	imageList[handle]->rect_.right = (long)imageList[handle]->size_.x;
+	imageList[handle]->rect_.bottom = (long)imageList[handle]->size_.y;
 }
 
 XMFLOAT3 Image::GetTextureSize(int hImage)

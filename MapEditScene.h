@@ -1,6 +1,8 @@
 #pragma once
 #include "StageOrigin.h"
 
+class Text;
+
 const int MATH_CHANGE_NUM_LIMIT = 5;
 
 class MapEditScene
@@ -15,6 +17,8 @@ class MapEditScene
 	XMFLOAT3 texture_size_;
 
 	std::vector<std::vector<MATHDEDAIL>> math_origin_;
+
+	Text* pText_;
 public:
 	MapEditScene(GameObject* parent);
 
