@@ -134,9 +134,9 @@ void Stage::SetBlock(int x, int z, MATHTYPE _type)
 void Stage::Write()
 {
 	std::ofstream write;
-	std::string savefile = "saveMath";
+	std::string savefile = "StageSaveFile\\saveMath";
 	savefile += std::to_string(pPlayScene_->GetSaveNum());
-	write.open(savefile, std::ios::out | std::ios::binary);
+	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
@@ -154,9 +154,9 @@ void Stage::Write()
 
 	write.close();  //ファイルを閉じる
 
-	savefile = "saveConvRot";
+	savefile = "StageSaveFile\\saveConvRot";
 	savefile += std::to_string(pPlayScene_->GetSaveNum());
-	write.open(savefile, std::ios::out | std::ios::binary);
+	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {

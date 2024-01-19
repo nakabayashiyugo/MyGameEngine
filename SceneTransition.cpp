@@ -124,9 +124,9 @@ void SceneTransition::Release()
 void SceneTransition::Write()
 {
 	std::ofstream write;
-	std::string savefile = "saveMath";
+	std::string savefile = "StageSaveFile\\saveMath";
 	savefile += std::to_string((int)sceneState_ + 1);
-	write.open(savefile, std::ios::out | std::ios::binary);
+	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
@@ -144,9 +144,9 @@ void SceneTransition::Write()
 
 	write.close();  //ファイルを閉じる
 
-	savefile = "saveConvRot";
+	savefile = "StageSaveFile\\saveConvRot";
 	savefile += std::to_string((int)sceneState_ + 1);
-	write.open(savefile, std::ios::out | std::ios::binary);
+	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {

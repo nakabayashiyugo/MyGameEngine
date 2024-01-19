@@ -73,10 +73,10 @@ void PlayScene::Release()
 void PlayScene::Read()
 {
 	std::ifstream read;
-	std::string openfile = "saveMath";
+	std::string openfile = "StageSaveFile\\saveMath";
 
 	openfile += std::to_string(save_Num_);
-	read.open(openfile, std::ios::in | std::ios::binary);
+	read.open(openfile, std::ios::in);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
 
@@ -98,10 +98,10 @@ void PlayScene::Read()
 	}
 	read.close();  //ファイルを閉じる
 
-	openfile = "saveConvRot";
+	openfile = "StageSaveFile\\saveConvRot";
 
 	openfile += std::to_string(save_Num_);
-	read.open(openfile, std::ios::in | std::ios::binary);
+	read.open(openfile, std::ios::in);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
 
