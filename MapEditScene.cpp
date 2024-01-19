@@ -171,7 +171,7 @@ void MapEditScene::Update()
 
 void MapEditScene::Draw()
 {
-	//pText_->Draw(1, 1, "mapedit");
+	//pText_->Draw(1, 1, "g");
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
@@ -255,9 +255,9 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 void MapEditScene::Write()
 {
 	std::ofstream write;
-	std::string savefile = "saveMath";
+	std::string savefile = "StageSaveFile\\saveMath";
 	savefile += std::to_string(save_Num_);
-	write.open(savefile, std::ios::out | std::ios::binary);
+	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
@@ -275,9 +275,9 @@ void MapEditScene::Write()
 
 	write.close();  //ファイルを閉じる
 
-	savefile = "saveConvRot";
+	savefile = "StageSaveFile\\saveConvRot";
 	savefile += std::to_string(save_Num_);
-	write.open(savefile, std::ios::out | std::ios::binary);
+	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
@@ -303,10 +303,10 @@ void MapEditScene::Write()
 void MapEditScene::Read()
 {
 	std::ifstream read;
-	std::string savefile = "saveMath";
+	std::string savefile = "StageSaveFile\\saveMath";
 	
 	savefile += std::to_string(save_Num_);
-	read.open(savefile, std::ios::in | std::ios::binary);
+	read.open(savefile, std::ios::in);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
 
@@ -328,9 +328,9 @@ void MapEditScene::Read()
 	}
 	read.close();  //ファイルを閉じる
 
-	savefile = "saveConvRot";
+	savefile = "StageSaveFile\\saveConvRot";
 	savefile += std::to_string(save_Num_);
-	read.open(savefile, std::ios::in | std::ios::binary);
+	read.open(savefile, std::ios::in);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
 
