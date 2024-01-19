@@ -171,7 +171,7 @@ void MapEditScene::Update()
 
 void MapEditScene::Draw()
 {
-	//pText_->Draw(1, 1, "mapedit");
+	//pText_->Draw(1, 1, "g");
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
