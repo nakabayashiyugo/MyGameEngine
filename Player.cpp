@@ -7,6 +7,7 @@
 #include "SceneTransition.h"
 #include "Stage.h"
 #include "Timer.h"
+#include "StageOrigin.h"
 
 const float MODELSIZE = 0.8f;
 
@@ -22,7 +23,6 @@ Player::Player(GameObject* parent)
 	gravity_(0, 0, 0), 
 	air_dec_velocity_(1),
 	hurdle_Limit_(0),
-	standMath_(MATHTYPE::MATH_START),
 	wallHitDir_(0)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
@@ -138,7 +138,7 @@ void Player::PlayUpdate()
 		}
 		if (is_table_hit)
 		{
-			if (SetStandMath(table_hit_point) != (int)MATH_HOLL)
+			if (SetStandMath(table_hit_point).mathType_ != (int)MATH_HOLE)
 			{
 				player_state_ = STATE_WARK;
 				return;
@@ -165,11 +165,11 @@ void Player::PlayUpdate()
 	//コンベアによって移動する方向
 	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
 	//prevPos_ = transform_.position_;
-	standMath_ = (MATHTYPE)SetStandMath(transform_.position_);
-	switch (standMath_)
+	standMath_ = SetStandMath(transform_.position_);
+	switch (standMath_.mathType_)
 	{
 	case MATH_CONVEYOR:
-		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(math_[(int)(transform_.position_.x + 0.5f)][(int)(transform_.position_.z + 0.5f)].converyor_rotate_ * -90.0f));
+		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(-standMath_.mathPos_.rotate_.z));
 		converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
 		converyor_velocity = converyor_velocity / (float)20 * 0.8f;
 		if (player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
@@ -180,7 +180,7 @@ void Player::PlayUpdate()
 	case MATH_GOAL:
 		stage_state_ = STATE_GOAL;
 		break;
-	case MATH_HOLL:
+	case MATH_HOLE:
 		player_state_ = STATE_FALL;
 		break;
 	default:break;
@@ -288,13 +288,13 @@ void Player::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 	}
 }
 
-int Player::SetStandMath(XMFLOAT3 _pos)
+MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 {
 	if (!Is_InSide_Table(_pos))
 	{
-		return (int)MATH_HOLL;
+		return MATHDEDAIL{ MATH_HOLE, transform_};
 	}
-	int ret = -1;
+	MATHDEDAIL ret;
 
 	float plusX = 0.5f, plusZ = 0.5f;
 	if (XSIZE - _pos.x < plusX)
@@ -307,9 +307,9 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 	}
 	XMFLOAT3 centerPos = XMFLOAT3(_pos.x + plusX, _pos.y, _pos.z + plusZ);
 
-	ret = (int)math_[centerPos.x][centerPos.z].mathType_;
+	ret = math_[centerPos.x][centerPos.z];
 	//HOLLチェック
-	ret = HollCheck(_pos);
+	if(ret.mathType_ == MATH_HOLE) ret = HollCheck(_pos);
 
 	//WALLチェック
 	WallCheck(_pos);
@@ -317,7 +317,7 @@ int Player::SetStandMath(XMFLOAT3 _pos)
 	return ret;
 }
 
-int Player::HollCheck(XMFLOAT3 _pos)
+MATHDEDAIL Player::HollCheck(XMFLOAT3 _pos)
 {
 	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
 	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + 0.2f);
@@ -326,29 +326,29 @@ int Player::HollCheck(XMFLOAT3 _pos)
 
 	if (Is_InSide_Table(rightFront) &&
 		math_[rightFront.x][rightFront.z].mathType_ != MATH_WALL &&
-		math_[rightFront.x][rightFront.z].mathType_ != MATH_HOLL)
+		math_[rightFront.x][rightFront.z].mathType_ != MATH_HOLE)
 	{
-		return (int)math_[rightFront.x][rightFront.z].mathType_;
+		return math_[rightFront.x][rightFront.z];
 	}
 	else if (Is_InSide_Table(rightBack) &&
 		math_[rightBack.x][rightBack.z].mathType_ != MATH_WALL &&
-		math_[rightBack.x][rightBack.z].mathType_ != MATH_HOLL)
+		math_[rightBack.x][rightBack.z].mathType_ != MATH_HOLE)
 	{
-		return (int)math_[rightBack.x][rightBack.z].mathType_;
+		return math_[rightBack.x][rightBack.z];
 	}
 	else if (Is_InSide_Table(leftFront) &&
 		math_[leftFront.x][leftFront.z].mathType_ != MATH_WALL &&
-		math_[leftFront.x][leftFront.z].mathType_ != MATH_HOLL)
+		math_[leftFront.x][leftFront.z].mathType_ != MATH_HOLE)
 	{
-		return (int)math_[leftFront.x][leftFront.z].mathType_;
+		return math_[leftFront.x][leftFront.z];
 	}
 	else if (Is_InSide_Table(leftBack) &&
 		math_[leftBack.x][leftBack.z].mathType_ != MATH_WALL &&
-		math_[leftBack.x][leftBack.z].mathType_ != MATH_HOLL)
+		math_[leftBack.x][leftBack.z].mathType_ != MATH_HOLE)
 	{
-		return (int)math_[leftBack.x][leftBack.z].mathType_;
+		return math_[leftBack.x][leftBack.z];
 	}
-	return (int)MATH_HOLL;
+	return math_[_pos.x][_pos.z];
 }
 
 void Player::WallCheck(XMFLOAT3 _pos)

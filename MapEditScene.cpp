@@ -22,6 +22,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 	Math_Resize(XSIZE, YSIZE, &math_);
 	Math_Resize(XSIZE, YSIZE, &math_origin_);
+	Math_Resize(XSIZE, YSIZE, &isConvRot_);
 
 	Texture* pTexture = (Texture*)FindObject("Texture");
 
@@ -61,7 +62,7 @@ void MapEditScene::Initialize()
 	{
 		"Math_Floor.png",
 		"Math_Wall.png",
-		"Math_Holl.png",
+		"MATH_HOLE.png",
 		"Math_Conveyor.png",
 		"Math_Togetoge.png",
 		"Math_PitFall.png",
@@ -106,14 +107,14 @@ void MapEditScene::Update()
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
-		if (Input::IsMouseButtonDown(0))
+		if (mathChangeNum_ < MATH_CHANGE_NUM_LIMIT ||
+			math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
 		{
-			if (mathChangeNum_ < MATH_CHANGE_NUM_LIMIT ||
-				math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
+			switch ((MATHTYPE)mathtype_)
 			{
-				switch ((MATHTYPE)mathtype_)
+			case MATH_START:
+				if (Input::IsMouseButton(0))
 				{
-				case MATH_START:
 					if (pTrans_->GetTurnNum() == 1)
 					{
 						for (int x = 0; x < XSIZE; x++)
@@ -127,10 +128,13 @@ void MapEditScene::Update()
 							}
 						}
 						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = MATH_START;
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_ = 0;
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 					}
-					break;
-				case MATH_GOAL:
+				}
+				break;
+			case MATH_GOAL:
+				if (Input::IsMouseButton(0))
+				{
 					if (pTrans_->GetTurnNum() == 1)
 					{
 						for (int x = 0; x < XSIZE; x++)
@@ -144,27 +148,33 @@ void MapEditScene::Update()
 							}
 						}
 						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = MATH_GOAL;
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_ = 0;
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 					}
-					break;
-				case MATH_CONVEYOR:
+				}
+				break;
+			case MATH_CONVEYOR:
+				if (Input::IsMouseButtonDown(0))
+				{
 					if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 					{
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_++;
+						isConvRot_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y] = true;
 					}
 					else
 					{
 						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 					}
-					break;
-				default:
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].converyor_rotate_ = 0;
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
-					break;
 				}
+				break;
+			default:
+				if (Input::IsMouseButton(0))
+				{
+					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+				}
+				break;
 			}
-			SetMathChangeNum();
 		}
+		SetMathChangeNum();
 	}
 }
 
@@ -182,14 +192,16 @@ void MapEditScene::Draw()
 				1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
 				1);
 
-			if (math_[x][YSIZE - 1 - y].mathPos_.rotate_.z >= math_[x][YSIZE - 1 - y].converyor_rotate_ * 90)
-			{
-				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (float)(int)math_[x][YSIZE - 1 - y].converyor_rotate_ * 90;
-			}
-			else
+			if (isConvRot_[x][YSIZE - 1 - y])
 			{
 				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
 			}
+			if ((int)math_[x][YSIZE - 1 - y].mathPos_.rotate_.z % 90 == 0)
+			{
+				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (int)(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z / 90) * 90;
+				isConvRot_[x][YSIZE - 1 - y] = false;
+			}
+			
 			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
 			Image::Draw(hPict_[math_[x][y].mathType_]);
 
@@ -238,7 +250,6 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 					{
 						goalFlg = true;
 					}
-					math_[x][y].converyor_rotate_ %= 4;
 				}
 			}
 			if(startFlg && goalFlg)	Write(); 
@@ -275,7 +286,7 @@ void MapEditScene::Write()
 
 	write.close();  //ファイルを閉じる
 
-	savefile = "StageSaveFile\\saveConvRot";
+	savefile = "StageSaveFile\\saveMathPos";
 	savefile += std::to_string(save_Num_);
 	write.open(savefile, std::ios::out);
 
@@ -288,7 +299,7 @@ void MapEditScene::Write()
 	for (int i = 0; i < XSIZE; i++) {
 		for (int j = 0; j < YSIZE; j++)
 		{
-			write.write((char*)&math_[i][j].converyor_rotate_, sizeof(math_[i][j].converyor_rotate_));
+			write.write((char*)&math_[i][j].mathPos_, sizeof(math_[i][j].mathPos_));
 			//文字列ではないデータをかきこむ
 		}
 	}
@@ -328,7 +339,7 @@ void MapEditScene::Read()
 	}
 	read.close();  //ファイルを閉じる
 
-	savefile = "StageSaveFile\\saveConvRot";
+	savefile = "StageSaveFile\\saveMathPos";
 	savefile += std::to_string(save_Num_);
 	read.open(savefile, std::ios::in);
 	//  ファイルを開く
@@ -345,7 +356,7 @@ void MapEditScene::Read()
 	{
 		for (int j = 0; j < YSIZE; j++)
 		{
-			read.read((char*)&math_[i][j].converyor_rotate_, sizeof(math_.at(i).at(j).converyor_rotate_));
+			read.read((char*)&math_[i][j].mathPos_, sizeof(math_.at(i).at(j).mathPos_));
 			//文字列ではないデータを読みこむ
 
 		}

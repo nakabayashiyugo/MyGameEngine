@@ -98,7 +98,7 @@ void PlayScene::Read()
 	}
 	read.close();  //ファイルを閉じる
 
-	openfile = "StageSaveFile\\saveConvRot";
+	openfile = "StageSaveFile\\saveMathPos";
 
 	openfile += std::to_string(save_Num_);
 	read.open(openfile, std::ios::in);
@@ -116,7 +116,7 @@ void PlayScene::Read()
 	{
 		for (int j = 0; j < ZSIZE; j++)
 		{
-			read.read((char*)&math_[i][j].converyor_rotate_, sizeof(math_.at(i).at(j).converyor_rotate_));
+			read.read((char*)&math_[i][j].mathPos_, sizeof(math_.at(i).at(j).mathPos_));
 			//文字列ではないデータを読みこむ
 
 		}

@@ -19,7 +19,6 @@ SceneTransition::SceneTransition(GameObject* parent)
 		for (int y = 0; y < ZSIZE; y++)
 		{
 			math_[x][y].mathType_ = MATH_FLOOR;
-			math_[x][y].converyor_rotate_ = 0;
 		}
 	}
 	Write();
@@ -144,7 +143,7 @@ void SceneTransition::Write()
 
 	write.close();  //ファイルを閉じる
 
-	savefile = "StageSaveFile\\saveConvRot";
+	savefile = "StageSaveFile\\saveMathPos";
 	savefile += std::to_string((int)sceneState_ + 1);
 	write.open(savefile, std::ios::out);
 
@@ -157,7 +156,7 @@ void SceneTransition::Write()
 	for (int i = 0; i < XSIZE; i++) {
 		for (int j = 0; j < ZSIZE; j++)
 		{
-			write.write((char*)&math_[i][j].converyor_rotate_, sizeof(math_[i][j].converyor_rotate_));
+			write.write((char*)&math_[i][j].mathPos_, sizeof(math_[i][j].mathPos_));
 			//文字列ではないデータをかきこむ
 		}
 	}

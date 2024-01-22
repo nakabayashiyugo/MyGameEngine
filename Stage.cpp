@@ -13,7 +13,7 @@
 #include "resource.h"
 
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage")
+	: GameObject(parent, "Stage"), isStandPitfall_(false), makeHoleTime_(1)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -57,8 +57,20 @@ void Stage::Update()
 	{
 		if (math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ == MATH_PITFALL)
 		{
-			math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLL;
+			isStandPitfall_ = true;
+		}
+	}
+	static int countTime = 0;
+	if (isStandPitfall_)
+	{
+		if (countTime % 60 >= makeHoleTime_)
+		{
+			math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLE;
 			Write();
+		}
+		else
+		{
+			countTime++;
 		}
 	}
 }
@@ -85,7 +97,7 @@ void Stage::Draw()
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_CONVEYOR:
-				mathTrans.rotate_.y = -(math_[x][z].converyor_rotate_ * 90);
+				mathTrans.rotate_.y = -(math_[x][z].mathPos_.rotate_.z);
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
@@ -154,7 +166,7 @@ void Stage::Write()
 
 	write.close();  //ファイルを閉じる
 
-	savefile = "StageSaveFile\\saveConvRot";
+	savefile = "StageSaveFile\\saveMathPos";
 	savefile += std::to_string(pPlayScene_->GetSaveNum());
 	write.open(savefile, std::ios::out);
 
@@ -167,7 +179,7 @@ void Stage::Write()
 	for (int i = 0; i < XSIZE; i++) {
 		for (int j = 0; j < ZSIZE; j++)
 		{
-			write.write((char*)&math_[i][j].converyor_rotate_, sizeof(math_[i][j].converyor_rotate_));
+			write.write((char*)&math_[i][j].mathPos_, sizeof(math_[i][j].mathPos_));
 			//文字列ではないデータをかきこむ
 		}
 	}

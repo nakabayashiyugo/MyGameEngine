@@ -17,6 +17,7 @@ class MapEditScene
 	XMFLOAT3 texture_size_;
 
 	std::vector<std::vector<MATHDEDAIL>> math_origin_;
+	std::vector<std::vector<bool>> isConvRot_;
 
 	Text* pText_;
 public:

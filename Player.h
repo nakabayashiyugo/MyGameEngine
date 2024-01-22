@@ -21,6 +21,7 @@ enum STAGE_STATE
 	STATE_FAILURE,
 };
 
+
 class Player
 	:public GameObject, StageOrigin
 {
@@ -42,7 +43,7 @@ class Player
 	PLAYER_STATE player_state_;
 	STAGE_STATE stage_state_;
 
-	MATHTYPE standMath_;
+	MATHDEDAIL standMath_;
 
 	//èdóÕ
 	XMFLOAT3 gravity_;
@@ -82,8 +83,8 @@ public:
 
 	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
 
-	int SetStandMath(XMFLOAT3 _pos);
-	int HollCheck(XMFLOAT3 _pos);
+	MATHDEDAIL SetStandMath(XMFLOAT3 _pos);
+	MATHDEDAIL HollCheck(XMFLOAT3 _pos);
 	void WallCheck(XMFLOAT3 _pos);
 
 	bool GetFailed() {

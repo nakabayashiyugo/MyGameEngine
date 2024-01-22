@@ -6,6 +6,10 @@ class Stage
 {
 	int hModel_[MATH_MAX];
 
+	bool isStandPitfall_;
+
+	float makeHoleTime_;
+
 	PlayScene* pPlayScene_;
 public:
 	Stage(GameObject* parent);
