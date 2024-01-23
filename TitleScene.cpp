@@ -3,6 +3,7 @@
 #include "Engine/Image.h"
 #include "Engine/Input.h"
 #include "Engine/Direct3D.h"
+#include "Engine/SceneManager.h"
 
 TitleScene::TitleScene(GameObject* parent)
 	: GameObject(parent, "TitleScene"), hStartButton_(-1), hOption_(-1),
@@ -25,14 +26,28 @@ void TitleScene::Update()
 	mousePos_.x = mousePos_.x - (Direct3D::scrWidth / 2);
 	mousePos_.y = mousePos_.y - (Direct3D::scrHeight / 2);
 
-	XMFLOAT3 SBRightUp = XMFLOAT3(tStartButton_.position_.x + (Direct3D::scrWidth * tStartButton_.scale_.x / 2),
-									;
-	float SBRightDown = tStartButton_.position_.x - (Direct3D::scrWidth * tStartButton_.scale_.x / 2);
-	float SBRightDown = tStartButton_.position_.x - (Direct3D::scrWidth * tStartButton_.scale_.x / 2);
-	float SBRightDown = tStartButton_.position_.x - (Direct3D::scrWidth * tStartButton_.scale_.x / 2);
+	float SBRight = tStartButton_.position_.x * (Direct3D::scrWidth / 2) + (Direct3D::scrWidth * tStartButton_.scale_.x / 2);
 
-	std::string resStr = std::to_string((float)mousePos_.x) + ", " + std::to_string(mousePos_.y) + "\n";
-	OutputDebugString(resStr.c_str());
+	float SBLeft = tStartButton_.position_.x * (Direct3D::scrWidth / 2) - (Direct3D::scrWidth * tStartButton_.scale_.x / 2);
+
+	float SBUp = (tStartButton_.position_.y * (Direct3D::scrHeight / 2) + (Direct3D::scrHeight * tStartButton_.scale_.y / 2)) * -1;
+
+	float SBDown = (tStartButton_.position_.y * (Direct3D::scrHeight / 2) - (Direct3D::scrHeight * tStartButton_.scale_.y / 2)) * -1;
+
+	if (mousePos_.x >= SBLeft && mousePos_.x <= SBRight &&
+		mousePos_.y >= SBUp && mousePos_.y <= SBDown)
+	{
+		if (Input::IsMouseButton(0))
+		{
+			SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
+			pSceneManager->ChangeScene(SCENE_ID_TRANSITION);
+		}
+	}
+	else
+	{
+		std::string resStr = std::to_string((float)mousePos_.x) + ", " + std::to_string(mousePos_.y) + "\n";
+		OutputDebugString(resStr.c_str());
+	}
 }
 
 void TitleScene::Draw()

@@ -21,13 +21,14 @@ SceneTransition::SceneTransition(GameObject* parent)
 			math_[x][y].mathType_ = MATH_FLOOR;
 		}
 	}
-	Write();
-	sceneState_ = SCENE_MAPEDIT2;
-	Write();
 }
 
 void SceneTransition::Initialize()
 {
+	Write();
+	sceneState_ = SCENE_MAPEDIT2;
+	Write();
+
 	sceneState_ = SCENE_MAPEDIT1;
 	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");
 	assert(hPlayer1_ >= 0);

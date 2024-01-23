@@ -130,7 +130,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             static bool is_be_daialog = false;
             if (((SceneManager*)pRootJob->FindChildObject("SceneManager"))->GetCurrentSceneID() == SCENE_ID_TRANSITION)
             {
-                if (!is_be_daialog && ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == 0)
+                if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == 0 && !is_be_daialog)
                 {
                     HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
                     is_be_daialog = true;
