@@ -109,7 +109,7 @@ namespace Input
 	{
 		mousePosition.x = x;
 		mousePosition.y = y;
-		std::string resStr = std::to_string((float)x) + ", " + std::to_string(y) + "\n";
-		OutputDebugString(resStr.c_str());
+		//std::string resStr = std::to_string((float)x) + ", " + std::to_string(y) + "\n";
+		//OutputDebugString(resStr.c_str());
 	}
 }

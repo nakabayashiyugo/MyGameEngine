@@ -52,11 +52,13 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
+	static XMFLOAT3 PitfallPos;
 	if (pPlayScene_->GetPlayerPos().x >= 0 && pPlayScene_->GetPlayerPos().x < XSIZE &&
 		pPlayScene_->GetPlayerPos().z >= 0 && pPlayScene_->GetPlayerPos().z < ZSIZE)
 	{
 		if (math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ == MATH_PITFALL)
 		{
+			PitfallPos = pPlayScene_->GetPlayerPos();
 			isStandPitfall_ = true;
 		}
 	}
@@ -67,6 +69,7 @@ void Stage::Update()
 		{
 			math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLE;
 			Write();
+			isStandPitfall_ = false;
 		}
 		else
 		{

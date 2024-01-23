@@ -20,7 +20,7 @@ void Timer::Initialize()
 	assert(hGage_ >= 0);
 	hFrameOutline_ = Image::Load("Assets\\Timer_FrameOutline.png");
 	assert(hFrameOutline_ >= 0);
-	hTime_ = Image::Load("Assets\\choriso-.png");
+	hTime_ = Image::Load("Assets\\Logo_TIME.png");
 	assert(hTime_ >= 0);
 }
 
@@ -41,10 +41,11 @@ void Timer::Draw()
 	tFrame_.position_ = XMFLOAT3(-0.6f, 0.8f, 0);
 	tFrameOutline_.position_ = XMFLOAT3(-0.6f, 0.8f, 0);
 	tGage_.position_ = 
-		XMFLOAT3(-(((float)limit_time_ / 100) - (float(limit_time_ - current_time_) / 100)) - 0.6f,
+		XMFLOAT3(-((0.3f / limit_time_) * current_time_) - 0.6f,
 		0.8f, 0);
 	tFrame_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
-	tGage_.scale_ = XMFLOAT3(float(limit_time_ - current_time_) / 100, 0.1f, 1);
+	tGage_.scale_ = XMFLOAT3(float(limit_time_ - current_time_) / 100 * (0.3f / (float(limit_time_) / 100))
+		, 0.1f, 1);
 	tFrameOutline_.scale_ = XMFLOAT3(0.31f, 0.11f, 1);
 
 	Image::SetTransform(hGage_, tGage_);
@@ -55,7 +56,7 @@ void Timer::Draw()
 	Image::Draw(hFrameOutline_);
 
 
-	tTime_.position_ = XMFLOAT3(-0.4f, 0.8f, 0);
+	tTime_.position_ = XMFLOAT3(-0.1f, 0.8f, 0);
 	tTime_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
 	Image::SetTransform(hTime_, tTime_);
 	Image::Draw(hTime_);

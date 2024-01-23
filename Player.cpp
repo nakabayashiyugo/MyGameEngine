@@ -309,7 +309,9 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 
 	ret = math_[centerPos.x][centerPos.z];
 	//HOLLチェック
-	if(ret.mathType_ == MATH_HOLE) ret = HollCheck(_pos);
+	ret = HollCheck(_pos);
+
+	ret = math_[centerPos.x][centerPos.z];
 
 	//WALLチェック
 	WallCheck(_pos);
@@ -320,9 +322,9 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 MATHDEDAIL Player::HollCheck(XMFLOAT3 _pos)
 {
 	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + 0.2f);
-	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + 0.2f);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z - 0.2f);
+	XMFLOAT3 leftFront = XMFLOAT3(_pos.x - 0.2f, _pos.y, _pos.z + MODELSIZE);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x - 0.2f, _pos.y, _pos.z - 0.2f);
 
 	if (Is_InSide_Table(rightFront) &&
 		math_[rightFront.x][rightFront.z].mathType_ != MATH_WALL &&

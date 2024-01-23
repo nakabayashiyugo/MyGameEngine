@@ -7,8 +7,8 @@
 #include "Engine/Camera.h"
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
+#include "Engine/SceneManager.h"
 #include "DirectXCollision.h"
-
 #include "resource.h"
 #include "MapEditScene.h"
 #include "Stage.h"
@@ -128,15 +128,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         else
         {
             static bool is_be_daialog = false;
-            if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == 0 && !is_be_daialog)
+            if (((SceneManager*)pRootJob->FindChildObject("SceneManager"))->GetCurrentSceneID() == SCENE_ID_TRANSITION)
             {
-                HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
-                is_be_daialog = true;
+                if (!is_be_daialog && ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == 0)
+                {
+                    HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
+                    is_be_daialog = true;
+                }
+                if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != 0)
+                {
+                    is_be_daialog = false;
+                }
             }
-            if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != 0)
-            {
-                is_be_daialog = false;
-            }
+            
 
             timeBeginPeriod(1);
 

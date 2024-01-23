@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "../TitleScene.h"
 #include "../PlayScene.h"
 #include "../MapEditScene.h"
 #include "../SceneTransition.h"
@@ -15,9 +16,9 @@ SceneManager::~SceneManager()
 
 void SceneManager::Initialize()
 {
-	currentSceneID_ = SCENE_ID_TRANSITION;
+	currentSceneID_ = SCENE_ID_TITLE;
 	nextSceneID_ = currentSceneID_;
-	Instantiate<SceneTransition>(this);
+	Instantiate<TitleScene>(this);
 }
 
 void SceneManager::Update()
@@ -43,6 +44,9 @@ void SceneManager::Update()
 			break;
 		case SCENE_ID_TRANSITION:
 			Instantiate<SceneTransition>(this);
+			break;
+		case SCENE_ID_TITLE:
+			Instantiate<TitleScene>(this);
 			break;
 		}
 		currentSceneID_ = nextSceneID_;
