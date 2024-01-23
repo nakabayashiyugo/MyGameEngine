@@ -20,7 +20,7 @@ void Timer::Initialize()
 	assert(hGage_ >= 0);
 	hFrameOutline_ = Image::Load("Assets\\Timer_FrameOutline.png");
 	assert(hFrameOutline_ >= 0);
-	hTime_ = Image::Load("Assets\\TIME_Logo.png");
+	hTime_ = Image::Load("Assets\\choriso-.png");
 	assert(hTime_ >= 0);
 }
 
@@ -58,7 +58,7 @@ void Timer::Draw()
 	tTime_.position_ = XMFLOAT3(-0.4f, 0.8f, 0);
 	tTime_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
 	Image::SetTransform(hTime_, tTime_);
-	//Image::Draw(hTime_);
+	Image::Draw(hTime_);
 }
 
 void Timer::Release()

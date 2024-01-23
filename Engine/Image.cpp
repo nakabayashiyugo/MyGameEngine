@@ -45,7 +45,7 @@ int Image::Load(std::string filename)
 
 void Image::Draw(int hImage)
 {
-	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_);
+	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_, imageList[hImage]->rect_);
 }
 
 void Image::Release(int handle)

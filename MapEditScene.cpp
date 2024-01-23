@@ -58,19 +58,18 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 void MapEditScene::Initialize()
 {
-	std::string filename[MATH_MAX + 1] =
+	std::string filename[MATH_MAX] =
 	{
 		"Math_Floor.png",
 		"Math_Wall.png",
-		"MATH_HOLE.png",
+		"MATH_Hole.png",
 		"Math_Conveyor.png",
 		"Math_Togetoge.png",
 		"Math_PitFall.png",
 		"Math_Start.png",
 		"Math_Goal.png",
-		"Math_Rotate.png"
 	};
-	for (int i = 0; i < MATH_MAX + 1; i++)
+	for (int i = 0; i < MATH_MAX; i++)
 	{
 		filename[i] = "Assets\\" + filename[i];
 		hPict_[i] = Image::Load(filename[i]);
