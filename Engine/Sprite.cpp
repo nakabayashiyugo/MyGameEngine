@@ -50,12 +50,12 @@ HRESULT Sprite::Load(std::string filename)
 	return S_OK;
 }
 
-void Sprite::Draw(Transform& transform)
+void Sprite::Draw(Transform& transform, RECT rect)
 {
 	Direct3D::SetShader(SHADER_2D);
 	transform.Calclation();//トランスフォームを計算
 
-	PassDataToCB(transform);
+	PassDataToCB(transform, rect);
 	SetBufferToPipeline();
 }
 
@@ -162,7 +162,7 @@ HRESULT Sprite::CreateConstantBuffer()
 	return S_OK;
 }
 
-void Sprite::PassDataToCB(Transform& transform)
+void Sprite::PassDataToCB(Transform& transform, RECT rect)
 {
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;

@@ -272,6 +272,7 @@ HRESULT Direct3D::InitShader3D()
 HRESULT Direct3D::InitShader2D()
 {
     HRESULT hr;
+
     //2D用
     // 頂点シェーダの作成（コンパイル）
     ID3DBlob* pCompileVS = nullptr;
