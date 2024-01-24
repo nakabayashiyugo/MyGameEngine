@@ -6,7 +6,7 @@ Timer::Timer(GameObject* parent):
 	GameObject(parent, "Timer"),
 	count_time_(0),
 	current_time_(0),
-	limit_time_(30),
+	limit_time_(5000),
 	hFrame_(-1), hGage_(-1), hFrameOutline_(-1),
 	hTime_(-1)
 {

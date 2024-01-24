@@ -14,6 +14,8 @@ class Sprite
 	struct CONSTANT_BUFFER
 	{
 		XMMATRIX	matW;
+		XMMATRIX	uvTrans;
+		XMMATRIX	color;
 	};
 
 	struct VERTEX
