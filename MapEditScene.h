@@ -9,6 +9,9 @@ class MapEditScene
 	:public GameObject, StageOrigin
 {
 	int hPict_[MATH_MAX + 1];
+	int hTgtgRoute_;
+	Transform tTgtgRoute_;
+
 	int YSIZE;
 	int mathtype_;
 	int save_Num_;
