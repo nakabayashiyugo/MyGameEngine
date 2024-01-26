@@ -81,8 +81,8 @@ void MapEditScene::Initialize()
 	assert(hTgtgRoute_ >= 0);
 	//とげとげルートのサイズ調整
 	tTgtgRoute_.scale_ = 
-		XMFLOAT3((1.0f / Direct3D::scrWidth * MATHSIZE) * MATHSIZE, 
-				(1.0f / texture_size_.y * MATHSIZE) * (MATHSIZE / 3), 1);
+		XMFLOAT3((1.0f / Direct3D::scrWidth * MATHSIZE / 3),
+				(1.0f / Direct3D::scrHeight * MATHSIZE), 1);
 	pText_ = new Text();
 	pText_->Initialize();
 }
@@ -179,12 +179,15 @@ void MapEditScene::Update()
 					if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_TOGETOGE)
 					{
 						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
+						std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
+						OutputDebugString(resStr.c_str());
 					}
 					else
 					{
 						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 					}
 				}
+				break;
 			default:
 				if (Input::IsMouseButton(0))
 				{
@@ -198,8 +201,11 @@ void MapEditScene::Update()
 	}
 	if (tgtgRouteMathDown.x != -1 && Input::IsMuoseButtonUp(0))
 	{
-		tgtgRouteMathUp = XMFLOAT3(mousePosX / MATHSIZE, mousePosY / MATHSIZE, 0);
-
+		tgtgRouteMathUp = XMFLOAT3(mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
+		tTgtgRoute_.scale_.y *= tgtgRouteMathUp.y - tgtgRouteMathDown.y;
+		tTgtgRoute_.position_ = 
+			XMFLOAT3((tgtgRouteMathDown.x - (Direct3D::scrWidth / 2)) / (Direct3D::scrWidth / 2),
+			(tgtgRouteMathUp.y - (Direct3D::scrHeight / 2)) / (Direct3D::scrHeight / 2), 0);
 
 		tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
 	}
@@ -235,9 +241,7 @@ void MapEditScene::Draw()
 			Image::Draw(hPict_[math_[x][y].mathType_]);
 
 		}
-	}
-
-	
+	}	
 }
 
 void MapEditScene::Release()
