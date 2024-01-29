@@ -8,7 +8,7 @@
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2), 
-	mathChangeNum_(0)
+	mathChangeNum_(0), hTgtgRoute_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -44,16 +44,6 @@ MapEditScene::MapEditScene(GameObject* parent)
 	}
 
 	Read();
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int y = 0; y < YSIZE; y++)
-		{
-			math_origin_[x][y] = math_[x][y];
-			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / texture_size_.y * MATHSIZE, 1);
-			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
-			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
-		}
-	}
 }
 
 void MapEditScene::Initialize()
@@ -75,7 +65,24 @@ void MapEditScene::Initialize()
 		hPict_[i] = Image::Load(filename[i]);
 		assert(hPict_[i] >= 0);
 	}
-	
+	//マスのサイズ調整
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int y = 0; y < YSIZE; y++)
+		{
+			math_origin_[x][y] = math_[x][y];
+			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE, 1.0f / Direct3D::scrHeight * MATHSIZE, 1);
+			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
+			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
+		}
+	}
+
+	hTgtgRoute_ = Image::Load("Assets\\Togetoge_Route.png");
+	assert(hTgtgRoute_ >= 0);
+	//とげとげルートのサイズ調整
+	tTgtgRoute_.scale_ = 
+		XMFLOAT3((1.0f / Direct3D::scrWidth * MATHSIZE / 3),
+				(1.0f / Direct3D::scrHeight * MATHSIZE), 1);
 	pText_ = new Text();
 	pText_->Initialize();
 }
@@ -86,10 +93,12 @@ void MapEditScene::Update()
 	/*std::string resStr = std::to_string(mousePosX) + '\n';
 	OutputDebugString(resStr.c_str());*/
 
+	static XMFLOAT3 selectMath;
+	static XMFLOAT3 tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
+	static XMFLOAT3 tgtgRouteMathUp = XMFLOAT3(-1, -1, 0);
 
 	float mousePosX = Input::GetMousePosition().x;
 	float mousePosY = Input::GetMousePosition().y;
-	static XMFLOAT3 selectMath;
 	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2) - MATHSIZE / 2;
 	mousePosY -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
 
@@ -164,6 +173,21 @@ void MapEditScene::Update()
 					}
 				}
 				break;
+			case MATH_TOGETOGE:
+				if (Input::IsMouseButtonDown(0))
+				{
+					if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_TOGETOGE)
+					{
+						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
+						std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
+						OutputDebugString(resStr.c_str());
+					}
+					else
+					{
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					}
+				}
+				break;
 			default:
 				if (Input::IsMouseButton(0))
 				{
@@ -175,11 +199,23 @@ void MapEditScene::Update()
 		}
 		SetMathChangeNum();
 	}
+	if (tgtgRouteMathDown.x != -1 && Input::IsMuoseButtonUp(0))
+	{
+		tgtgRouteMathUp = XMFLOAT3(mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
+		tTgtgRoute_.scale_.y *= tgtgRouteMathUp.y - tgtgRouteMathDown.y;
+		tTgtgRoute_.position_ = 
+			XMFLOAT3((tgtgRouteMathDown.x - (Direct3D::scrWidth / 2)) / (Direct3D::scrWidth / 2),
+			(tgtgRouteMathUp.y - (Direct3D::scrHeight / 2)) / (Direct3D::scrHeight / 2), 0);
+
+		tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
+	}
 }
 
 
 void MapEditScene::Draw()
 {
+	Image::SetTransform(hTgtgRoute_, tTgtgRoute_);
+	Image::Draw(hTgtgRoute_);
 	//pText_->Draw(1, 1, "g");
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -205,9 +241,7 @@ void MapEditScene::Draw()
 			Image::Draw(hPict_[math_[x][y].mathType_]);
 
 		}
-	}
-
-	
+	}	
 }
 
 void MapEditScene::Release()
@@ -228,14 +262,14 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		bool startFlg = false, goalFlg = false;
 		switch (LOWORD(wp))
 		{
-		case IDC_MAPEDIT_FLOOR:		mathtype_ = 0; break;
-		case IDC_MAPEDIT_WALL:		mathtype_ = 1; break;
-		case IDC_MAPEDIT_HOLL:		mathtype_ = 2; break;
-		case IDC_MAPEDIT_CONVEYOR:	mathtype_ = 3; break;
-		case IDC_MAPEDIT_TOGETOGE:	mathtype_ = 4; break;
-		case IDC_MAPEDIT_PITFALL:	mathtype_ = 5; break;
-		case IDC_MAPEDIT_START:		mathtype_ = 6; break;
-		case IDC_MAPEDIT_GOAL:		mathtype_ = 7; break;
+		case IDC_MAPEDIT_FLOOR:		mathtype_ = MATH_FLOOR; break;
+		case IDC_MAPEDIT_WALL:		mathtype_ = MATH_WALL; break;
+		case IDC_MAPEDIT_HOLL:		mathtype_ = MATH_HOLE; break;
+		case IDC_MAPEDIT_CONVEYOR:	mathtype_ = MATH_CONVEYOR; break;
+		case IDC_MAPEDIT_TOGETOGE:	mathtype_ = MATH_TOGETOGE; break;
+		case IDC_MAPEDIT_PITFALL:	mathtype_ = MATH_PITFALL; break;
+		case IDC_MAPEDIT_START:		mathtype_ = MATH_START; break;
+		case IDC_MAPEDIT_GOAL:		mathtype_ = MATH_GOAL; break;
 		case IDC_MAPEDIT_COMPLETE:	
 			for (int x = 0; x < XSIZE; x++)
 			{
