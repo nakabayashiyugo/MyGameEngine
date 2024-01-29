@@ -110,8 +110,8 @@ void MapEditScene::Update()
 	{
 		selectMath = XMFLOAT3(-1, -1, 0);
 	}
-	/*std::string resStr = "ç¿ïW : " + std::to_string((int)selectMath.x) + ", " + std::to_string((int)selectMath.y) + '\n';
-	OutputDebugString(resStr.c_str());*/
+	std::string resStr = "ç¿ïW : " + std::to_string((int)mousePosX) + ", " + std::to_string((int)mousePosY) + '\n';
+	OutputDebugString(resStr.c_str());
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
@@ -202,12 +202,10 @@ void MapEditScene::Update()
 	if (tgtgRouteMathDown.x != -1 && Input::IsMuoseButtonUp(0))
 	{
 		tgtgRouteMathUp = XMFLOAT3(mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
-		tTgtgRoute_.scale_.y *= tgtgRouteMathUp.y - tgtgRouteMathDown.y;
+		tTgtgRoute_.scale_.y = (1.0f / Direct3D::scrHeight * MATHSIZE) * (tgtgRouteMathUp.y - tgtgRouteMathDown.y);
 		tTgtgRoute_.scale_.z = 1;
-		tTgtgRoute_.position_ = 
-			XMFLOAT3((tgtgRouteMathDown.x - (Direct3D::scrWidth / 2)) / (Direct3D::scrWidth / 2),
-			(tgtgRouteMathUp.y - (Direct3D::scrHeight / 2)) / (Direct3D::scrHeight / 2), 0);
-
+		tTgtgRoute_.position_ = math_[(int)tgtgRouteMathDown.x][(int)tgtgRouteMathUp.y].mathPos_.position_; 
+		tTgtgRoute_.position_.y = math_[(int)tgtgRouteMathDown.x][(int)tgtgRouteMathUp.y].mathPos_.position_.y / 2.0f;
 		tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
 	}
 }
