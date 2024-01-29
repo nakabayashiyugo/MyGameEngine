@@ -82,7 +82,7 @@ void MapEditScene::Initialize()
 	//とげとげルートのサイズ調整
 	tTgtgRoute_.scale_ = 
 		XMFLOAT3((1.0f / Direct3D::scrWidth * MATHSIZE / 3),
-				(1.0f / Direct3D::scrHeight * MATHSIZE), 1);
+				(1.0f / Direct3D::scrHeight * MATHSIZE), 0);
 	pText_ = new Text();
 	pText_->Initialize();
 }
@@ -203,6 +203,7 @@ void MapEditScene::Update()
 	{
 		tgtgRouteMathUp = XMFLOAT3(mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
 		tTgtgRoute_.scale_.y *= tgtgRouteMathUp.y - tgtgRouteMathDown.y;
+		tTgtgRoute_.scale_.z = 1;
 		tTgtgRoute_.position_ = 
 			XMFLOAT3((tgtgRouteMathDown.x - (Direct3D::scrWidth / 2)) / (Direct3D::scrWidth / 2),
 			(tgtgRouteMathUp.y - (Direct3D::scrHeight / 2)) / (Direct3D::scrHeight / 2), 0);
