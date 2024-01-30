@@ -81,8 +81,7 @@ void MapEditScene::Initialize()
 	assert(hTgtgRoute_ >= 0);
 	//とげとげルートのサイズ調整
 	tTgtgRoute_.scale_ = 
-		XMFLOAT3((1.0f / Direct3D::scrWidth * MATHSIZE / 3),
-				(1.0f / Direct3D::scrHeight * MATHSIZE), 0);
+		XMFLOAT3((1.0f / Direct3D::scrWidth * MATHSIZE / 3), 0, 0);
 	pText_ = new Text();
 	pText_->Initialize();
 }
@@ -202,10 +201,16 @@ void MapEditScene::Update()
 	if (tgtgRouteMathDown.x != -1 && Input::IsMuoseButtonUp(0))
 	{
 		tgtgRouteMathUp = XMFLOAT3(mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
-		tTgtgRoute_.scale_.y = (1.0f / Direct3D::scrHeight * MATHSIZE) * (tgtgRouteMathUp.y - tgtgRouteMathDown.y);
+		tTgtgRoute_.scale_.y = (1.0f / Direct3D::scrHeight * MATHSIZE) * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y);
 		tTgtgRoute_.scale_.z = 1;
-		tTgtgRoute_.position_ = math_[(int)tgtgRouteMathDown.x][(int)tgtgRouteMathUp.y].mathPos_.position_; 
-		tTgtgRoute_.position_.y = math_[(int)tgtgRouteMathDown.x][(int)tgtgRouteMathUp.y].mathPos_.position_.y / 2.0f;
+
+		tTgtgRoute_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
+		//tTgtgRoute_.position_.y = math_[(int)tgtgRouteMathDown.x][(int)tgtgRouteMathUp.y].mathPos_.position_.y / 2.0f;
+
+		if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
+		{
+			tTgtgRoute_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
+		}
 		tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
 	}
 }
