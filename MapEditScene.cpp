@@ -79,9 +79,7 @@ void MapEditScene::Initialize()
 
 	hTgtgRoute_ = Image::Load("Assets\\Togetoge_Route.png");
 	assert(hTgtgRoute_ >= 0);
-	//とげとげルートのサイズ調整
-	tTgtgRoute_.scale_ = 
-		XMFLOAT3((1.0f / Direct3D::scrWidth * MATHSIZE / 3), 0, 0);
+
 	pText_ = new Text();
 	pText_->Initialize();
 }
@@ -197,29 +195,90 @@ void MapEditScene::Update()
 			}
 		}
 		SetMathChangeNum();
-	}
-	if (tgtgRouteMathDown.x != -1 && Input::IsMuoseButtonUp(0))
-	{
-		tgtgRouteMathUp = XMFLOAT3(mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
-		tTgtgRoute_.scale_.y = (1.0f / Direct3D::scrHeight * MATHSIZE) * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y);
-		tTgtgRoute_.scale_.z = 1;
 
-		tTgtgRoute_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
-		//tTgtgRoute_.position_.y = math_[(int)tgtgRouteMathDown.x][(int)tgtgRouteMathUp.y].mathPos_.position_.y / 2.0f;
-
-		if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
+		//とげとげマスでクリックして話したとき
+		if (tgtgRouteMathDown.x != -1 && Input::IsMuoseButtonUp(0))
 		{
-			tTgtgRoute_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
+			tgtgRouteMathUp = XMFLOAT3((int)mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
+
+			auto itr = tTgtgRoute_.begin();
+			//同じマスのルートがすでに決まってるとき
+			while (itr != tTgtgRoute_.end())
+			{
+				if (itr->initPos_.x == tgtgRouteMathDown.x &&
+					itr->initPos_.y == tgtgRouteMathDown.y)
+				{
+					break;
+				}
+				itr++;
+			}
+			//決まってなかったら
+			if (itr == tTgtgRoute_.end())
+			{
+				tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
+				itr = tTgtgRoute_.end() - 1;
+				itr->initPos_ = tgtgRouteMathDown;
+			}
+			//縦移動
+			if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
+			{
+				itr->route_.scale_ =
+					XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE / 5,
+						1.0f / Direct3D::scrHeight * MATHSIZE * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y), 0);
+
+				itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
+				{
+					itr->route_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
+				}
+			}
+			//横移動
+			else
+			{
+				itr->route_.scale_ =
+					XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x),
+						1.0f / Direct3D::scrHeight * MATHSIZE / 5, 0);
+
+				itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) % 2 != 0)
+				{
+					itr->route_.position_.x += (1.0f / Direct3D::scrWidth * MATHSIZE) / 2;
+				}
+			}
+
+			if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
+			{
+				tTgtgRoute_.erase(itr);
+			}
+			tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
 		}
-		tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
+
+		//ルートがあるとげとげのマスが他のマスに変更になったとき
+		auto itr = tTgtgRoute_.begin();
+		while (itr != tTgtgRoute_.end())
+		{
+			if (math_[itr->initPos_.x][itr->initPos_.y].mathType_ != MATH_TOGETOGE)
+			{
+				tTgtgRoute_.erase(itr);
+				break;
+			}
+			itr++;
+		}
 	}
 }
 
 
 void MapEditScene::Draw()
 {
-	Image::SetTransform(hTgtgRoute_, tTgtgRoute_);
-	Image::Draw(hTgtgRoute_);
+	auto itr = tTgtgRoute_.begin();
+	while (itr != tTgtgRoute_.end())
+	{
+		Image::SetTransform(hTgtgRoute_, itr->route_);
+		Image::Draw(hTgtgRoute_);
+		itr++;
+	}
 	//pText_->Draw(1, 1, "g");
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -312,35 +371,28 @@ void MapEditScene::Write()
 		std::cout << "ファイル " << savefile << " が開けません";
 		return;
 	}
-
 	for (int i = 0; i < XSIZE; i++) {
 		for (int j = 0; j < YSIZE; j++)
 		{
-			write.write((char*)&math_[i][j].mathType_, sizeof(math_[i][j].mathType_));
+			write.write((char*)&math_[i][j], sizeof(math_[i][j]));
 			//文字列ではないデータをかきこむ
 		}
 	}
-
 	write.close();  //ファイルを閉じる
 
-	savefile = "StageSaveFile\\saveMathPos";
+	//とげとげルート
+	savefile = "StageSaveFile\\tgtgRoute";
 	savefile += std::to_string(save_Num_);
 	write.open(savefile, std::ios::out);
-
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
 		std::cout << "ファイル " << savefile << " が開けません";
 		return;
 	}
-
-	for (int i = 0; i < XSIZE; i++) {
-		for (int j = 0; j < YSIZE; j++)
-		{
-			write.write((char*)&math_[i][j].mathPos_, sizeof(math_[i][j].mathPos_));
-			//文字列ではないデータをかきこむ
-		}
+	for (int i = 0; i < tTgtgRoute_.size(); i++)
+	{
+		write.write((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
 	}
-
 	write.close();  //ファイルを閉じる
 
 	
@@ -369,34 +421,28 @@ void MapEditScene::Read()
 	{
 		for (int j = 0; j < YSIZE; j++)
 		{
-			read.read((char*)&math_[i][j].mathType_, sizeof(math_.at(i).at(j).mathType_));
+			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
 			//文字列ではないデータを読みこむ
 
 		}
 	}
 	read.close();  //ファイルを閉じる
 
-	savefile = "StageSaveFile\\saveMathPos";
+	//とげとげルート
+	savefile = "StageSaveFile\\tgtgRoute";
 	savefile += std::to_string(save_Num_);
 	read.open(savefile, std::ios::in);
-	//  ファイルを開く
-	//  ios::in は読み込み専用  ios::binary はバイナリ形式
-
 	if (!read) {
 		std::cout << "ファイルが開けません";
 		return;
 	}
-	//  ファイルが開けなかったときの対策
 
-	//ファイルの最後まで続ける
-	for (int i = 0; i < XSIZE; i++)
+	int i = 0;
+	while (!read.eof())
 	{
-		for (int j = 0; j < YSIZE; j++)
-		{
-			read.read((char*)&math_[i][j].mathPos_, sizeof(math_.at(i).at(j).mathPos_));
-			//文字列ではないデータを読みこむ
-
-		}
+		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
+		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
+		i++;
 	}
 	read.close();  //ファイルを閉じる
 }

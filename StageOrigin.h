@@ -26,12 +26,19 @@ struct MATHDEDAIL
 	Transform mathPos_;
 };
 
+struct TOGETOGEROUTE
+{
+	Transform route_;
+	XMFLOAT3 initPos_;
+};
+
 class StageOrigin
 {
 protected:
 	const int MATHSIZE = 30;
 
 	std::vector<std::vector<MATHDEDAIL>> math_;
+	std::vector<TOGETOGEROUTE> tTgtgRoute_;
 
 	SceneTransition* pTrans_;
 

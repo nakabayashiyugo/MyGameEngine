@@ -162,33 +162,27 @@ void Stage::Write()
 	for (int i = 0; i < XSIZE; i++) {
 		for (int j = 0; j < ZSIZE; j++)
 		{
-			write.write((char*)&math_[i][j].mathType_, sizeof(math_[i][j].mathType_));
+			write.write((char*)&math_[i][j], sizeof(math_[i][j]));
 			//文字列ではないデータをかきこむ
 		}
 	}
 
 	write.close();  //ファイルを閉じる
 
-	savefile = "StageSaveFile\\saveMathPos";
+	//とげとげルート
+	savefile = "StageSaveFile\\tgtgRoute";
 	savefile += std::to_string(pPlayScene_->GetSaveNum());
 	write.open(savefile, std::ios::out);
-
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
 		std::cout << "ファイル " << savefile << " が開けません";
 		return;
 	}
-
-	for (int i = 0; i < XSIZE; i++) {
-		for (int j = 0; j < ZSIZE; j++)
-		{
-			write.write((char*)&math_[i][j].mathPos_, sizeof(math_[i][j].mathPos_));
-			//文字列ではないデータをかきこむ
-		}
+	for (auto itr = tTgtgRoute_.begin(); itr != tTgtgRoute_.end(); itr++)
+	{
+		write.write((char*)&itr, sizeof(itr));
 	}
-
 	write.close();  //ファイルを閉じる
-
 
 	pPlayScene_->Read();
 	pPlayScene_->SetTableChange(true);

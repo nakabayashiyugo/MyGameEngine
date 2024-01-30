@@ -91,35 +91,28 @@ void PlayScene::Read()
 	{
 		for (int j = 0; j < ZSIZE; j++)
 		{
-			read.read((char*)&math_[i][j].mathType_, sizeof(math_.at(i).at(j).mathType_));
+			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
 			//文字列ではないデータを読みこむ
 
 		}
 	}
 	read.close();  //ファイルを閉じる
 
-	openfile = "StageSaveFile\\saveMathPos";
-
+	//とげとげルート
+	openfile = "StageSaveFile\\tgtgRoute";
 	openfile += std::to_string(save_Num_);
 	read.open(openfile, std::ios::in);
-	//  ファイルを開く
-	//  ios::in は読み込み専用  ios::binary はバイナリ形式
-
 	if (!read) {
 		std::cout << "ファイルが開けません";
 		return;
 	}
-	//  ファイルが開けなかったときの対策
 
-	//ファイルの最後まで続ける
-	for (int i = 0; i < XSIZE; i++)
+	int i = 0;
+	while (!read.eof())
 	{
-		for (int j = 0; j < ZSIZE; j++)
-		{
-			read.read((char*)&math_[i][j].mathPos_, sizeof(math_.at(i).at(j).mathPos_));
-			//文字列ではないデータを読みこむ
-
-		}
+		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
+		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
+		i++;
 	}
 	read.close();  //ファイルを閉じる
 }
