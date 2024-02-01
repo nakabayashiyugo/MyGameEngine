@@ -30,6 +30,7 @@ struct TOGETOGEROUTE
 {
 	Transform route_;
 	XMFLOAT3 initPos_;
+	XMFLOAT3 destPos_;
 };
 
 class StageOrigin

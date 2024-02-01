@@ -1,14 +1,17 @@
 #include <string>
 #include <vector>
 #include <array>
-#include "Stage.h"
+
 #include "Engine/Input.h"
 #include "Engine/Model.h"
 #include "Engine/Direct3D.h"
-#include "PlayScene.h"
-#include "SceneTransition.h"
 #include "Engine/RootJob.h"
 #include "Engine/Camera.h"
+
+#include "SceneTransition.h"
+#include "PlayScene.h"
+#include "Stage.h"
+#include "Togetoge.h"
 
 #include "resource.h"
 
@@ -86,6 +89,7 @@ void Stage::Draw()
 		{
 			Transform mathTrans;
 			mathTrans.position_ = XMFLOAT3(x, 0, z);
+
 			switch (math_[x][z].mathType_)
 			{
 			case MATH_FLOOR:
@@ -108,8 +112,13 @@ void Stage::Draw()
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
 				mathTrans.position_.y = 1;
-				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
-				Model::Draw(hModel_[math_[x][z].mathType_]);
+				pTgtg_.resize(pTgtg_.size());
+				auto itr = pTgtg_.begin();
+				while(itr != pTgtg_.end())
+				{
+					pTgtg_[0]->Instantiate<Togetoge>(this);
+				}
+				
 				break;
 			case MATH_PITFALL:
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);

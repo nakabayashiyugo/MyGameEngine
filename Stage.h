@@ -1,4 +1,5 @@
 class PlayScene;
+class Togetoge;
 #include "StageOrigin.h"
 
 class Stage
@@ -11,6 +12,8 @@ class Stage
 	float makeHoleTime_;
 
 	PlayScene* pPlayScene_;
+
+	std::vector<Togetoge*> pTgtg_;
 public:
 	Stage(GameObject* parent);
 

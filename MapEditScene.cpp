@@ -107,8 +107,6 @@ void MapEditScene::Update()
 	{
 		selectMath = XMFLOAT3(-1, -1, 0);
 	}
-	std::string resStr = "À•W : " + std::to_string((int)mousePosX) + ", " + std::to_string((int)mousePosY) + '\n';
-	OutputDebugString(resStr.c_str());
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
@@ -247,6 +245,7 @@ void MapEditScene::Update()
 					itr->route_.position_.x += (1.0f / Direct3D::scrWidth * MATHSIZE) / 2;
 				}
 			}
+			itr->destPos_ = tgtgRouteMathUp;
 
 			if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
 			{
