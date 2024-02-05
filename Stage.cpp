@@ -50,6 +50,12 @@ void Stage::Initialize()
 		hModel_[i] = Model::Load(fname_base + modelName[i]);
 		assert(hModel_[i] >= 0);
 	}
+
+	pTgtg_.resize(pTgtg_.size());
+	for (int i = 0; i < pTgtg_.size(); i++)
+	{
+		pTgtg_[i]->Instantiate<Togetoge>(this);
+	}
 }
 
 
@@ -112,13 +118,6 @@ void Stage::Draw()
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
 				mathTrans.position_.y = 1;
-				pTgtg_.resize(pTgtg_.size());
-				auto itr = pTgtg_.begin();
-				while(itr != pTgtg_.end())
-				{
-					pTgtg_[0]->Instantiate<Togetoge>(this);
-				}
-				
 				break;
 			case MATH_PITFALL:
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);

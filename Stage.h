@@ -33,6 +33,20 @@ public:
 
 	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
 
+	XMFLOAT3 GetTogetogeDestPos(int x, int z)
+	{
+		auto itr = tTgtgRoute_.begin();
+		while (itr != tTgtgRoute_.end())
+		{
+			if ((int)itr->initPos_.x == x &&
+				(int)itr->initPos_.y == z)
+			{
+				return XMFLOAT3(itr->destPos_.x, 0, itr->destPos_.y);
+			}
+		}
+		return XMFLOAT3();
+	}
+
 	void Write();
 };
 

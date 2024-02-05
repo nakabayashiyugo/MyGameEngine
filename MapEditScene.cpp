@@ -171,15 +171,30 @@ void MapEditScene::Update()
 			case MATH_TOGETOGE:
 				if (Input::IsMouseButtonDown(0))
 				{
-					if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_TOGETOGE)
+					tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
+					auto itr = tTgtgRoute_.begin();
+					
+					while (itr != tTgtgRoute_.end())
 					{
-						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
-						std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
-						OutputDebugString(resStr.c_str());
+						//押されたマスがとげとげマスだったら
+						if (itr->initPos_.x == tgtgRouteMathDown.x &&
+							itr->initPos_.y == tgtgRouteMathDown.y)
+						{
+							std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
+							OutputDebugString(resStr.c_str());
+							break;
+						}
+						itr++;
 					}
-					else
+					//ちがったら
+					if (itr == tTgtgRoute_.end())
 					{
 						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+
+						tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
+						itr = tTgtgRoute_.end() - 1;
+						itr->initPos_ = itr->destPos_ = tgtgRouteMathDown;
+						itr->route_.scale_ = XMFLOAT3(0, 0, 0);
 					}
 				}
 				break;
@@ -200,56 +215,53 @@ void MapEditScene::Update()
 			tgtgRouteMathUp = XMFLOAT3((int)mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
 
 			auto itr = tTgtgRoute_.begin();
-			//同じマスのルートがすでに決まってるとき
+			
 			while (itr != tTgtgRoute_.end())
 			{
 				if (itr->initPos_.x == tgtgRouteMathDown.x &&
 					itr->initPos_.y == tgtgRouteMathDown.y)
 				{
+					itr->destPos_ = tgtgRouteMathUp;
 					break;
 				}
 				itr++;
 			}
 			//決まってなかったら
-			if (itr == tTgtgRoute_.end())
+			if (itr < tTgtgRoute_.end())
 			{
-				tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
-				itr = tTgtgRoute_.end() - 1;
-				itr->initPos_ = tgtgRouteMathDown;
-			}
-			//縦移動
-			if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
-			{
-				itr->route_.scale_ =
-					XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE / 5,
-						1.0f / Direct3D::scrHeight * MATHSIZE * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y), 0);
-
-				itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
-
-				if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
+				//縦移動
+				if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
 				{
-					itr->route_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
+					itr->route_.scale_ =
+						XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE / 5,
+							1.0f / Direct3D::scrHeight * MATHSIZE * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y), 0);
+
+					itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
+
+					if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
+					{
+						itr->route_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
+					}
 				}
-			}
-			//横移動
-			else
-			{
-				itr->route_.scale_ =
-					XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x),
-						1.0f / Direct3D::scrHeight * MATHSIZE / 5, 0);
-
-				itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
-
-				if (((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) % 2 != 0)
+				//横移動
+				else
 				{
-					itr->route_.position_.x += (1.0f / Direct3D::scrWidth * MATHSIZE) / 2;
-				}
-			}
-			itr->destPos_ = tgtgRouteMathUp;
+					itr->route_.scale_ =
+						XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x),
+							1.0f / Direct3D::scrHeight * MATHSIZE / 5, 0);
 
-			if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
-			{
-				tTgtgRoute_.erase(itr);
+					itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
+
+					if (((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) % 2 != 0)
+					{
+						itr->route_.position_.x += (1.0f / Direct3D::scrWidth * MATHSIZE) / 2;
+					}
+				}
+
+				if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
+				{
+					tTgtgRoute_.erase(itr);
+				}
 			}
 			tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
 		}
