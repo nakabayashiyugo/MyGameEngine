@@ -6,8 +6,9 @@ Togetoge::Togetoge(GameObject* parent) :
 	GameObject(parent, "Togetoge"), hModel_(-1)
 {
 	Stage* pStage = (Stage*)FindObject("Stage");
-	transform_.position_ = pStage->GetTogetogeInitPos();
+	transform_.position_.x = pStage->GetTogetogeInitPos().x;
 	transform_.position_.y = 1;
+	transform_.position_.z = pStage->GetTogetogeInitPos().y;
 }
 
 void Togetoge::Initialize()

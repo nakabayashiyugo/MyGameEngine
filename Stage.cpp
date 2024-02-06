@@ -39,7 +39,7 @@ void Stage::Initialize()
 		"Block_Wall.fbx",
 		"Block_Floor.fbx",
 		"Block_Converyor.fbx",
-		"Block_Togetoge.fbx",
+		"Block_Floor.fbx",
 		"Block_Floor.fbx",
 		"Block_Start.fbx",
 		"Block_Goal.fbx"
@@ -251,6 +251,11 @@ void Stage::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 			math_.at(x).at(z) = _math.at(x).at(z);
 		}
 	}
+}
+
+XMFLOAT3 Stage::GetTogetogeInitPos()
+{
+	return tgtgGivePos_;
 }
 
 

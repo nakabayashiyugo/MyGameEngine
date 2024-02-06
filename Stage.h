@@ -36,7 +36,7 @@ public:
 
 	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
 
-	XMFLOAT3 GetTogetogeInitPos() { return tgtgGivePos_; }
+	XMFLOAT3 GetTogetogeInitPos();
 
 	XMFLOAT3 GetTogetogeDestPos(XMFLOAT3 _pos)
 	{
