@@ -1,9 +1,13 @@
 #include "Togetoge.h"
+#include "Stage.h"
 #include "Engine/Model.h"
 
 Togetoge::Togetoge(GameObject* parent) :
 	GameObject(parent, "Togetoge"), hModel_(-1)
 {
+	Stage* pStage = (Stage*)FindObject("Stage");
+	transform_.position_ = pStage->GetTogetogeInitPos();
+	transform_.position_.y = 1;
 }
 
 void Togetoge::Initialize()

@@ -16,7 +16,8 @@
 #include "resource.h"
 
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"), isStandPitfall_(false), makeHoleTime_(1)
+	: GameObject(parent, "Stage"), isStandPitfall_(false), makeHoleTime_(1), 
+	tgtgGivePos_(0, 0, 0)
 {
 	for (int i = 0; i < 5; i++)
 	{
@@ -27,7 +28,7 @@ Stage::Stage(GameObject* parent)
 	ZSIZE = (int)pTrans_->GetMathSize_z();
 	Math_Resize(XSIZE, ZSIZE, &math_);
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
-	SetTableMath(pPlayScene_->GetTableMath());
+	Read();
 }
 
 void Stage::Initialize()
@@ -51,9 +52,10 @@ void Stage::Initialize()
 		assert(hModel_[i] >= 0);
 	}
 
-	pTgtg_.resize(pTgtg_.size());
+	pTgtg_.resize(tTgtgRoute_.size());
 	for (int i = 0; i < pTgtg_.size(); i++)
 	{
+		tgtgGivePos_ = tTgtgRoute_[i].initPos_;
 		pTgtg_[i]->Instantiate<Togetoge>(this);
 	}
 }
@@ -78,6 +80,7 @@ void Stage::Update()
 		{
 			math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLE;
 			Write();
+			pPlayScene_->Read();
 			isStandPitfall_ = false;
 		}
 		else
@@ -191,9 +194,52 @@ void Stage::Write()
 		write.write((char*)&itr, sizeof(itr));
 	}
 	write.close();  //ファイルを閉じる
+}
+void Stage::Read()
+{
+	std::ifstream read;
+	std::string openfile = "StageSaveFile\\saveMath";
 
-	pPlayScene_->Read();
-	pPlayScene_->SetTableChange(true);
+	openfile += std::to_string(pPlayScene_->GetSaveNum());
+	read.open(openfile, std::ios::in);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+
+	//ファイルの最後まで続ける
+	for (int i = 0; i < XSIZE; i++)
+	{
+		for (int j = 0; j < ZSIZE; j++)
+		{
+			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
+			//文字列ではないデータを読みこむ
+
+		}
+	}
+	read.close();  //ファイルを閉じる
+
+	//とげとげルート
+	openfile = "StageSaveFile\\tgtgRoute";
+	openfile += std::to_string(pPlayScene_->GetSaveNum());
+	read.open(openfile, std::ios::in);
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+
+	int i = 0;
+	while (!read.eof())
+	{
+		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
+		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
+		i++;
+	}
+	read.close();  //ファイルを閉じる
 }
 
 void Stage::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)

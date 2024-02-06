@@ -18,7 +18,5 @@ public:
 
 	//ŠJ•ú
 	void Release() override;
-
-	void SetPosition(XMFLOAT3 pos) { transform_.position_ = pos; }
 };
 
