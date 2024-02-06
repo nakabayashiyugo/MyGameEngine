@@ -4,6 +4,8 @@ class Togetoge
 	:public GameObject
 {
 	int hModel_;
+
+	XMFLOAT3 initPos_, destPos_;
 public:
 	Togetoge(GameObject* parent);
 

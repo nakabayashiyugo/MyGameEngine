@@ -48,6 +48,7 @@ public:
 			{
 				return XMFLOAT3(itr->destPos_.x, 0, itr->destPos_.y);
 			}
+			itr++;
 		}
 		return XMFLOAT3();
 	}

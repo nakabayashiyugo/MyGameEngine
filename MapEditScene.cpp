@@ -221,7 +221,6 @@ void MapEditScene::Update()
 				if (itr->initPos_.x == tgtgRouteMathDown.x &&
 					itr->initPos_.y == tgtgRouteMathDown.y)
 				{
-					itr->destPos_ = tgtgRouteMathUp;
 					break;
 				}
 				itr++;
@@ -242,6 +241,7 @@ void MapEditScene::Update()
 					{
 						itr->route_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
 					}
+					itr->destPos_.y = tgtgRouteMathUp.y;
 				}
 				//‰¡ˆÚ“®
 				else
@@ -256,6 +256,7 @@ void MapEditScene::Update()
 					{
 						itr->route_.position_.x += (1.0f / Direct3D::scrWidth * MATHSIZE) / 2;
 					}
+					itr->destPos_.x = tgtgRouteMathUp.x;
 				}
 
 				if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
