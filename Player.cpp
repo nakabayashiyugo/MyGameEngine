@@ -3,6 +3,7 @@
 #include "Engine/Camera.h"
 #include "Engine/Model.h"
 #include "Engine/Fbx.h"
+#include "Engine/SphereCollider.h"
 #include "PlayScene.h"
 #include "SceneTransition.h"
 #include "Stage.h"
@@ -99,6 +100,9 @@ void Player::Release()
 
 void Player::PlayUpdate()
 {
+	SphereCollider* pSC = new SphereCollider(MODELSIZE / 2);
+	this->AddCollider(pSC);
+
 	pTimer_ = (Timer*)FindObject("Timer");
 	if (pTimer_->GetTimeUpped())
 	{
@@ -173,9 +177,6 @@ void Player::PlayUpdate()
 		converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//‚»‚Ì‰ñ“]‚ÅƒxƒNƒgƒ‹‚ÌŒü‚«‚ð•Ï‚¦‚é
 		converyor_velocity = converyor_velocity / (float)20 * 0.8f;
 		if (player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
-		break;
-	case MATH_TOGETOGE:
-		player_state_ = STATE_DEAD;
 		break;
 	case MATH_GOAL:
 		stage_state_ = STATE_GOAL;
@@ -428,5 +429,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 		{
 			transform_.position_.x = (float)(int)(leftBack.x + 1) - (leftBack.x - _pos.x);
 		}
+	}
+}
+
+void Player::OnCollision(GameObject* pTarget)
+{
+	if (pTarget->GetObjectName() == "Togetoge")
+	{
+		player_state_ = STATE_DEAD;
 	}
 }

@@ -94,5 +94,7 @@ public:
 		}
 		return false;
 	}
+
+	void OnCollision(GameObject* pTarget) override;
 };
 
