@@ -1,17 +1,11 @@
 #pragma once
 #include <d3d11.h>
 #include <fbxsdk.h>
-#include <string>
 #include <vector>
+#include <string>
 #include "Transform.h"
-#include "Direct3D.h"
-#include "Camera.h"
 
-class Texture;
-
-#pragma comment(lib, "LibFbxSDK-MD.lib")
-#pragma comment(lib, "LibXml2-MD.lib")
-#pragma comment(lib, "zlib-MD.lib")
+class FbxParts;
 
 struct RayCastData
 {
@@ -23,90 +17,48 @@ struct RayCastData
 
 class Fbx
 {
-	//マテリアル
-	struct MATERIAL
-	{
-		Texture* pTexture;
-		XMFLOAT4	diffuse;
-	};
+	//FbxPartクラスをフレンドクラスにする
+	//FbxPartのprivateな関数にもアクセス可
+	friend class FbxParts;
 
-	struct CONSTANT_BUFFER
-	{
-		XMMATRIX	matWVP;
-		XMMATRIX	matNormal;
-		XMFLOAT4    diffuseColor;		// ディフューズカラー（マテリアルの色）
-		int		    isTexture;		// テクスチャ貼ってあるかどうか
-	};
+	//モデルの各パーツ（複数あるかも）
+	std::vector<FbxParts*>	parts_;
 
-	struct VERTEX
-	{
-		XMVECTOR position;
-		XMVECTOR uv;
-		XMVECTOR normal;
-	};
+	//FBXファイルを扱う機能の本体
+	FbxManager* pFbxManager_;
 
-	// ボーン構造体（関節情報）
-	struct  Bone
-	{
-		XMMATRIX  bindPose;      // 初期ポーズ時のボーン変換行列
-		XMMATRIX  newPose;       // アニメーションで変化したときのボーン変換行列
-		XMMATRIX  diffPose;      // mBindPose に対する mNowPose の変化量
-	};
+	//FBXファイルのシーン（Mayaで作ったすべての物体）を扱う
+	FbxScene* pFbxScene_;
 
-	// ウェイト構造体（ボーンと頂点の関連付け）
-	struct Weight
-	{
-		XMFLOAT3	posOrigin;		// 元々の頂点座標
-		XMFLOAT3	normalOrigin;	// 元々の法線ベクトル
-		int* pBoneIndex;		// 関連するボーンのID
-		float* pBoneWeight;	// ボーンの重み
-	};
+	// アニメーションのフレームレート
+	FbxTime::EMode	frameRate_;
 
-	VERTEX* pVertices_;
-	int** ppIndex_;
-	int vertexCount_;	//頂点数
-	int polygonCount_;	//ポリゴン数
-	int materialCount_;	//マテリアルの個数
+	//アニメーション速度
+	float			animSpeed_;
 
-	ID3D11Buffer* pVertexBuffer_;
-	ID3D11Buffer** pIndexBuffer_;
-	ID3D11Buffer* pConstantBuffer_;
-	MATERIAL* pMaterialList_;
-	std::vector <int> indexCount_;
+	//アニメーションの最初と最後のフレーム
+	int startFrame_, endFrame_;
 
-	//ボーン情報
-	FbxSkin*		pSkinInfo_;		// スキンメッシュ情報（スキンメッシュアニメーションのデータ本体）
-	FbxCluster**	ppCluster_;		// クラスタ情報（関節ごとに関連付けられた頂点情報）
-	int				numBone_;		// FBXに含まれている関節の数
-	Bone*			pBoneArray_;	// 各関節の情報
-	Weight*			pWeightArray_;	// ウェイト情報（頂点の対する各関節の影響度合い）
+
+	//ノードの中身を調べる
+	//引数：pNode		調べるノード
+	//引数：pPartsList	パーツのリスト
+	void CheckNode(FbxNode* pNode, std::vector<FbxParts*>* pPartsList);
+
 
 public:
 
 	Fbx();
 	HRESULT Load(std::string fileName);
 
-	HRESULT InitVertex(fbxsdk::FbxMesh* mesh);
-	HRESULT InitIndex(fbxsdk::FbxMesh* mesh);		//インデックスバッファ準備
-	HRESULT IntConstantBuffer();
-	HRESULT InitMaterial(fbxsdk::FbxNode* node);
-	HRESULT InitSkelton(FbxMesh* pMesh);			//骨の情報を準備
+	void	Draw(Transform& transform, int frame);
 
-	void    Draw(Transform& transform);
-
-	//ボーン有りのモデルを描画
-	//引数：transform	行列情報
-	//引数：time		フレーム情報（１アニメーション内の今どこか）
-	void DrawSkinAnime(Transform& transform, FbxTime time);
 
 	//任意のボーンの位置を取得
 	//引数：boneName	取得したいボーンの位置
 	//戻値：ボーンの位置
 	XMFLOAT3 GetBonePosition(std::string boneName);
 
-	//スキンメッシュ情報を取得
-	//戻値：スキンメッシュ情報
-	FbxSkin* GetSkinInfo() { return pSkinInfo_; }
 
 	void    Release();
 

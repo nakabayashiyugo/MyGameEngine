@@ -1,4 +1,5 @@
 #include "Model.h"
+#include "Direct3D.h"
 
 namespace Model
 {
@@ -68,7 +69,7 @@ void Model::Draw(int hModel)
 	if (modelList[hModel]->nowFrame > (float)modelList[hModel]->endFrame)
 		modelList[hModel]->nowFrame = (float)modelList[hModel]->startFrame;
 
-	modelList[hModel]->pFbx_->Draw(modelList[hModel]->transform_);
+	modelList[hModel]->pFbx_->Draw(modelList[hModel]->transform_, modelList[hModel]->nowFrame);
 }
 
 void Model::Release()
