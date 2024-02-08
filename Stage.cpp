@@ -53,7 +53,7 @@ void Stage::Initialize()
 	}
 
 	pTgtg_.resize(tTgtgRoute_.size());
-	for (int i = 0; i < pTgtg_.size(); i++)
+	for (int i = 0; i < pTgtg_.size()-1; i++)
 	{
 		tgtgGivePos_ = tTgtgRoute_[i].initPos_;
 		pTgtg_[i]->Instantiate<Togetoge>(this);
@@ -235,9 +235,8 @@ void Stage::Read()
 	int i = 0;
 	while (!read.eof())
 	{
-		TOGETOGEROUTE subTg;
-		read.read((char*)&subTg, sizeof(subTg));
 		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
+		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
 		i++;
 	}
 	read.close();  //ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
