@@ -7,6 +7,25 @@ namespace Model
 		Fbx* pFbx_;
 		Transform transform_;
 		std::string fileName_;
+		//アニメーションのフレーム
+		float nowFrame, animSpeed;
+		int startFrame, endFrame;
+		//初期化
+		ModelData() : pFbx_(nullptr), nowFrame(0), startFrame(0), endFrame(0), animSpeed(0),
+			fileName_("")
+		{
+		}
+		//アニメーションのフレーム数をセット
+		//引数：startFrame	開始フレーム
+		//引数：endFrame	終了フレーム
+		//引数：animSpeed	アニメーション速度
+		void SetAnimFrame(int start, int end, float speed)
+		{
+			nowFrame = (float)start;
+			startFrame = start;
+			endFrame = end;
+			animSpeed = speed;
+		}
 	};
 
 	//モデルのポインタを入れておくポインタ
@@ -42,6 +61,13 @@ int Model::Load(std::string filename)
 
 void Model::Draw(int hModel)
 {
+	//アニメーションを進める
+	modelList[hModel]->nowFrame += modelList[hModel]->animSpeed;
+
+	//最後までアニメーションしたら戻す
+	if (modelList[hModel]->nowFrame > (float)modelList[hModel]->endFrame)
+		modelList[hModel]->nowFrame = (float)modelList[hModel]->startFrame;
+
 	modelList[hModel]->pFbx_->Draw(modelList[hModel]->transform_);
 }
 
@@ -66,6 +92,24 @@ void Model::Release()
 	}
 	modelList.clear();
 
+}
+
+void Model::SetAnimFrame(int handle, int startFrame, int endFrame, float animSpeed)
+{
+	modelList[handle]->SetAnimFrame(startFrame, endFrame, animSpeed);
+}
+
+int Model::GetAnimFrame(int handle)
+{
+	return (int)modelList[handle]->nowFrame;
+}
+
+XMFLOAT3 Model::GetBonePosition(int handle, std::string boneName)
+{
+	XMFLOAT3 pos = modelList[handle]->pFbx_->GetBonePosition(boneName);
+	XMVECTOR vec = XMVector3TransformCoord(XMLoadFloat3(&pos), modelList[handle]->transform_.GetWorldMatrix());
+	XMStoreFloat3(&pos, vec);
+	return pos;
 }
 
 void Model::RayCast(int hModel, RayCastData& rayData)
