@@ -54,7 +54,7 @@ Player::Player(GameObject* parent)
 
 void Player::Initialize()
 {
-	hModel_ = Model::Load("Assets\\Player.fbx");
+	hModel_ = Model::Load("Assets\\cher2.fbx");
 	assert(hModel_ >= 0);
 	
 	pTimer_ = (Timer*)FindObject("Timer");
@@ -90,6 +90,7 @@ void Player::Update()
 
 void Player::Draw()
 {
+	transform_.scale_ = XMFLOAT3(10, 10, 10);
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 }
