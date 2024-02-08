@@ -108,7 +108,9 @@ void PlayScene::Read()
 	}
 
 	int i = 0;
-	while (!read.eof())
+	std::vector<bool> num;
+	
+	while (!read.eof() && read.get() >= 0)
 	{
 		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
 		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));

@@ -235,8 +235,9 @@ void Stage::Read()
 	int i = 0;
 	while (!read.eof())
 	{
+		TOGETOGEROUTE subTg;
+		read.read((char*)&subTg, sizeof(subTg));
 		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
-		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
 		i++;
 	}
 	read.close();  //ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
