@@ -47,7 +47,7 @@ HRESULT Fbx::Load(std::string fileName)
 	SetCurrentDirectory(defaultCurrentDir);
 
 	//マネージャ解放
-	pFbxManager_->Destroy();
+	//pFbxManager_->Destroy();
 	return S_OK;
 }
 
@@ -59,7 +59,11 @@ void Fbx::CheckNode(FbxNode* pNode, std::vector<FbxParts*>* pPartsList)
 	{
 		//パーツを用意
 		FbxParts* pParts = new FbxParts;
-		pParts->Init(pNode);
+		if (FAILED(pParts->Init(pNode)))
+		{
+			//エラー処理
+			MessageBox(nullptr, "スケルトン情報の初期化に失敗しました。", "エラー", MB_OK);
+		}
 
 		//パーツ情報を動的配列に追加
 		pPartsList->push_back(pParts);

@@ -15,9 +15,8 @@ const float MODELSIZE = 0.8f;
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"), 
 	hModel_(-1),
-	velocity_(XMVectorSet(0, 0, 0, 0)), 
-	sub_velocity_(XMVectorSet(0, 0, 0, 0)),
-	jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)),
+	velocity_(XMVectorSet(0, 0, 0, 0)), sub_velocity_(XMVectorSet(0, 0, 0, 0)), jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)),
+	eyeDirection_(XMVectorSet(0, 0, 0, 0)), prevEyeDirection_(XMVectorSet(0, 0, 0, 0)),
 	camRot_(0, 0, 0), 
 	player_state_(STATE_WARK), 
 	stage_state_(STATE_START),
@@ -42,7 +41,7 @@ Player::Player(GameObject* parent)
 		{
 			if (math_[x][z].mathType_ == MATH_START)
 			{
-				startPos_ = XMFLOAT3((float)x, -1.0f, (float)z);
+				startPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
 			}
 			if (math_[x][z].mathType_ == MATH_GOAL)
 			{
@@ -50,7 +49,6 @@ Player::Player(GameObject* parent)
 			}
 		}
 	}
-	//transform_.scale_ = XMFLOAT3(0.1f, 0.1f, 0.1f);
 }
 
 void Player::Initialize()
@@ -90,8 +88,9 @@ void Player::Update()
 }
 
 void Player::Draw()
-{
-	transform_.scale_ = XMFLOAT3(.1, .1, .1);
+{ 
+	transform_.scale_ = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	Model::SetAnimFrame(hModel_, 0, 30, 1);
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 }
@@ -105,6 +104,7 @@ void Player::PlayUpdate()
 	SphereCollider* pSC = new SphereCollider(MODELSIZE / 2);
 	this->AddCollider(pSC);
 
+	//TimeOver
 	pTimer_ = (Timer*)FindObject("Timer");
 	if (pTimer_->GetTimeUpped())
 	{
@@ -122,7 +122,7 @@ void Player::PlayUpdate()
 		table_hit_point = XMFLOAT3(0, 0, 0);
 		is_table_hit = false;
 		gravity_ = XMFLOAT3(0, 0, 0);
-		transform_.position_.y = 1;
+		transform_.position_.y = startPos_.y;
 		air_dec_velocity_ = 1;
 		jamp_start_velocity_ = XMVectorSet(0, 0, 0, 0);
 		break;
@@ -170,7 +170,6 @@ void Player::PlayUpdate()
 
 	//ƒRƒ“ƒxƒA‚É‚æ‚Á‚ÄˆÚ“®‚·‚é•ûŒü
 	XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
-	//prevPos_ = transform_.position_;
 	standMath_ = SetStandMath(transform_.position_);
 	switch (standMath_.mathType_)
 	{
@@ -213,33 +212,39 @@ void Player::PlayerOperation()
 
 	static int dec_velocity_ = 20;
 
+	if (velocity_.m128_f32[0] != 0 ||
+		velocity_.m128_f32[2] != 0)
+	{
+		prevEyeDirection_ = XMVector4Normalize(velocity_);
+	}
+
 	if (player_state_ != STATE_DEAD)
 	{
 		//‘OŒã¶‰EˆÚ“®
 		if (Input::IsKey(DIK_W))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 20;
 		}
 		if (Input::IsKey(DIK_S))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 30;
 		}
 		if (Input::IsKey(DIK_A))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 30;
 		}
 		if (Input::IsKey(DIK_D))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //³‹K‰»‚µ‚Ä‘S•”1‚É‚È‚é
 			dec_velocity_ = 30;
@@ -251,9 +256,20 @@ void Player::PlayerOperation()
 
 		if (dec_velocity_ >= 100)
 		{
+
 			velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 			dec_velocity_ = 20;
 		}
+
+		if (velocity_.m128_f32[0] != 0 ||
+			velocity_.m128_f32[2] != 0)
+		{
+			eyeDirection_ = XMVector4Normalize(velocity_);
+		}
+		
+		XMVECTOR v = XMVector4Dot(prevEyeDirection_, eyeDirection_);
+		float c = acos(XMConvertToDegrees(v.m128_f32[0]));
+		float ac = acos(c);
 
 		//‰ñ“]
 		if (Input::IsKey(DIK_RIGHT))

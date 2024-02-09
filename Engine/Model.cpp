@@ -54,7 +54,11 @@ int Model::Load(std::string filename)
 	if (pData->pFbx_ == nullptr)
 	{
 		pData->pFbx_ = new Fbx();
-		pData->pFbx_->Load(filename);
+		if (FAILED(pData->pFbx_->Load(filename)))
+		{
+			//エラー処理
+			MessageBox(nullptr, "モデルのロードに失敗しました。", "エラー", MB_OK);
+		}
 	}
 	modelList.push_back(pData);
 	return (modelList.size() - 1);
@@ -62,6 +66,11 @@ int Model::Load(std::string filename)
 
 void Model::Draw(int hModel)
 {
+	if (hModel < 0 || hModel >= modelList.size() || modelList[hModel] == nullptr)
+	{
+		return;
+	}
+
 	//アニメーションを進める
 	modelList[hModel]->nowFrame += modelList[hModel]->animSpeed;
 
@@ -69,7 +78,12 @@ void Model::Draw(int hModel)
 	if (modelList[hModel]->nowFrame > (float)modelList[hModel]->endFrame)
 		modelList[hModel]->nowFrame = (float)modelList[hModel]->startFrame;
 
-	modelList[hModel]->pFbx_->Draw(modelList[hModel]->transform_, modelList[hModel]->nowFrame);
+
+
+	if (modelList[hModel]->pFbx_)
+	{
+		modelList[hModel]->pFbx_->Draw(modelList[hModel]->transform_, (int)modelList[hModel]->nowFrame);
+	}
 }
 
 void Model::Release()

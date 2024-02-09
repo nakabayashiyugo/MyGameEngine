@@ -34,7 +34,7 @@ class Player
 	PlayScene* pPlayScene_;
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
-	XMVECTOR prevVelocity_;
+	XMVECTOR eyeDirection_, prevEyeDirection_;
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 camRot_;

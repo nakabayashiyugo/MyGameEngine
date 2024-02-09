@@ -75,11 +75,11 @@ class FbxParts
 	std::vector<int> indexCount_;
 
 	//ボーン情報
-	FbxSkin* pSkinInfo_;		// スキンメッシュ情報（スキンメッシュアニメーションのデータ本体）
-	FbxCluster** ppCluster_;		// クラスタ情報（関節ごとに関連付けられた頂点情報）
+	FbxSkin*		pSkinInfo_;		// スキンメッシュ情報（スキンメッシュアニメーションのデータ本体）
+	FbxCluster**	ppCluster_;		// クラスタ情報（関節ごとに関連付けられた頂点情報）
 	int				numBone_;		// Fbxに含まれている関節の数
-	Bone* pBoneArray_;	// 各関節の情報
-	Weight* pWeightArray_;	// ウェイト情報（頂点の対する各関節の影響度合い）
+	Bone*			pBoneArray_;	// 各関節の情報
+	Weight*			pWeightArray_;	// ウェイト情報（頂点の対する各関節の影響度合い）
 
 public:
 
