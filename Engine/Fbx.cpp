@@ -9,6 +9,7 @@ Fbx::Fbx(): animSpeed_(0)
 
 HRESULT Fbx::Load(std::string fileName)
 {
+	str = fileName;
 	//マネージャを生成
 	pFbxManager_ = FbxManager::Create();
 
@@ -21,6 +22,7 @@ HRESULT Fbx::Load(std::string fileName)
 	fbxImporter->Import(pFbxScene_);
 	fbxImporter->Destroy();
 
+
 	//現在のカレントディレクトリを覚えておく
 	char defaultCurrentDir[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, defaultCurrentDir);
@@ -32,7 +34,6 @@ HRESULT Fbx::Load(std::string fileName)
 	//カレントディレクトリ変更
 	SetCurrentDirectory(dir);
 
-	//ルートノードを取得して
 	FbxNode* rootNode = pFbxScene_->GetRootNode();
 	//そいつの子供の数を調べて
 	int childCount = rootNode->GetChildCount();

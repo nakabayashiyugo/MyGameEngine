@@ -60,6 +60,8 @@ class FbxParts
 		float* pBoneWeight;	// ボーンの重み
 	};
 
+	
+
 	VERTEX* pVertices_;
 	int** ppIndex_;
 	int vertexCount_;	//頂点数

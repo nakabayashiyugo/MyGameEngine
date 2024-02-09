@@ -40,8 +40,8 @@ void PlayScene::Initialize()
 {
 	pStage_ = (Stage*)FindObject("Stage");
 	pPlayer_ = (Player*)FindObject("Player");
-	pStage_->Instantiate<Stage>(this);
 	pPlayer_->Instantiate<Player>(this);
+	pStage_->Instantiate<Stage>(this);
 }
 
 void PlayScene::Update()

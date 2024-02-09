@@ -42,14 +42,15 @@ Player::Player(GameObject* parent)
 		{
 			if (math_[x][z].mathType_ == MATH_START)
 			{
-				startPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
+				startPos_ = XMFLOAT3((float)x, -1.0f, (float)z);
 			}
 			if (math_[x][z].mathType_ == MATH_GOAL)
 			{
-				goalPos_ = XMFLOAT3((float)x, 1, (float)z);
+				goalPos_ = XMFLOAT3((float)x, -1, (float)z);
 			}
 		}
 	}
+	//transform_.scale_ = XMFLOAT3(0.1f, 0.1f, 0.1f);
 }
 
 void Player::Initialize()
@@ -90,7 +91,7 @@ void Player::Update()
 
 void Player::Draw()
 {
-	transform_.scale_ = XMFLOAT3(10, 10, 10);
+	transform_.scale_ = XMFLOAT3(.1, .1, .1);
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 }
@@ -176,7 +177,7 @@ void Player::PlayUpdate()
 	case MATH_CONVEYOR:
 		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(-standMath_.mathPos_.rotate_.z));
 		converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//‚»‚Ì‰ñ“]‚ÅƒxƒNƒgƒ‹‚ÌŒü‚«‚ð•Ï‚¦‚é
-		converyor_velocity = converyor_velocity / (float)20 * 0.8f;
+		converyor_velocity = converyor_velocity / 16;
 		if (player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
 		break;
 	case MATH_GOAL:

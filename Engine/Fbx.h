@@ -39,6 +39,7 @@ class Fbx
 	//アニメーションの最初と最後のフレーム
 	int startFrame_, endFrame_;
 
+	std::string str;
 
 	//ノードの中身を調べる
 	//引数：pNode		調べるノード
