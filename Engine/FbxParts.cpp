@@ -228,7 +228,7 @@ HRESULT FbxParts::InitMaterial(fbxsdk::FbxNode* pNode)
 			//ファイルからテクスチャ作成
 			pMaterialList_[i].pTexture = new Texture();
 			HRESULT hr = pMaterialList_[i].pTexture->Load(name);
-			assert(hr == S_OK);
+			//assert(hr == S_OK);
 		}
 		//テクスチャ無し
 		else
@@ -432,7 +432,10 @@ void FbxParts::DrawSkinAnime(Transform& transform, FbxTime time)
 	// ボーンごとの現在の行列を取得する
 	for (int i = 0; i < numBone_; i++)
 	{
-		FbxAnimEvaluator* evaluator = ppCluster_[i]->GetLink()->GetScene()->GetAnimationEvaluator();
+		FbxNode* node = ppCluster_[i]->GetLink();
+		FbxScene* obj = node->GetScene();
+		FbxAnimEvaluator* evaluator = obj->GetAnimationEvaluator();
+			//ppCluster_[i]->GetLink()->GetScene()->GetAnimationEvaluator();
 		FbxMatrix mCurrentOrentation = evaluator->GetNodeGlobalTransform(ppCluster_[i]->GetLink(), time);
 
 		// 行列コピー（Fbx形式からDirectXへの変換）

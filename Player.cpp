@@ -54,7 +54,7 @@ Player::Player(GameObject* parent)
 
 void Player::Initialize()
 {
-	hModel_ = Model::Load("Assets\\cher2.fbx");
+	hModel_ = Model::Load("Assets\\char2.fbx");
 	assert(hModel_ >= 0);
 	
 	pTimer_ = (Timer*)FindObject("Timer");
