@@ -16,7 +16,7 @@ Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"), 
 	hModel_(-1),
 	velocity_(XMVectorSet(0, 0, 0, 0)), sub_velocity_(XMVectorSet(0, 0, 0, 0)), jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)),
-	eyeDirection_(XMVectorSet(0, 0, 0, 0)), prevEyeDirection_(XMVectorSet(0, 0, 0, 0)),
+	eyeDirection_(XMVectorSet(0, 0, 1, 0)), prevEyeDirection_(XMVectorSet(0, 0, 0, 0)),
 	camRot_(0, 0, 0), 
 	player_state_(STATE_WARK), 
 	stage_state_(STATE_START),
@@ -58,7 +58,7 @@ void Player::Initialize()
 	
 	pTimer_ = (Timer*)FindObject("Timer");
 	pTimer_->Instantiate<Timer>(this);
-	Model::SetAnimFrame(hModel_, 0, 120, 1);
+	Model::SetAnimFrame(hModel_, 0, 180, 1);
 }
 
 void Player::Update()
@@ -84,7 +84,7 @@ void Player::Update()
 	if (pPlayScene_->GetTableChange())
 	{
 		SetTableMath(pPlayScene_->GetTableMath());
-		pPlayScene_->SetTableChange(true);
+		pPlayScene_->SetTableChange(false);
 	}
 }
 
@@ -213,39 +213,33 @@ void Player::PlayerOperation()
 
 	static int dec_velocity_ = 20;
 
-	if (velocity_.m128_f32[0] != 0 ||
-		velocity_.m128_f32[2] != 0)
-	{
-		prevEyeDirection_ = XMVector4Normalize(velocity_);
-	}
-
 	if (player_state_ != STATE_DEAD)
 	{
 		//ëOå„ç∂âEà⁄ìÆ
 		if (Input::IsKey(DIK_W))
 		{
-			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //ê≥ãKâªÇµÇƒëSïî1Ç…Ç»ÇÈ
 			dec_velocity_ = 20;
 		}
 		if (Input::IsKey(DIK_S))
 		{
-			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //ê≥ãKâªÇµÇƒëSïî1Ç…Ç»ÇÈ
 			dec_velocity_ = 30;
 		}
 		if (Input::IsKey(DIK_A))
 		{
-			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //ê≥ãKâªÇµÇƒëSïî1Ç…Ç»ÇÈ
 			dec_velocity_ = 30;
 		}
 		if (Input::IsKey(DIK_D))
 		{
-			//transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
+			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //ê≥ãKâªÇµÇƒëSïî1Ç…Ç»ÇÈ
 			dec_velocity_ = 30;
@@ -261,16 +255,6 @@ void Player::PlayerOperation()
 			velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 			dec_velocity_ = 20;
 		}
-
-		if (velocity_.m128_f32[0] != 0 ||
-			velocity_.m128_f32[2] != 0)
-		{
-			eyeDirection_ = XMVector4Normalize(velocity_);
-		}
-		
-		XMVECTOR v = XMVector4Dot(prevEyeDirection_, eyeDirection_);
-		float c = acos(XMConvertToDegrees(v.m128_f32[0]));
-		float ac = acos(c);
 
 		//âÒì]
 		if (Input::IsKey(DIK_RIGHT))

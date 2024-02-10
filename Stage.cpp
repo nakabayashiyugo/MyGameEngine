@@ -16,7 +16,7 @@
 #include "resource.h"
 
 Stage::Stage(GameObject* parent)
-	: GameObject(parent, "Stage"), isStandPitfall_(false), makeHoleTime_(1), 
+	: GameObject(parent, "Stage"), isStandPitfall_(false), makeHoleTime_(3), 
 	tgtgGivePos_(0, 0, 0)
 {
 	for (int i = 0; i < 5; i++)
@@ -76,12 +76,14 @@ void Stage::Update()
 	static int countTime = 0;
 	if (isStandPitfall_)
 	{
-		if (countTime % 60 >= makeHoleTime_)
+		if (countTime / 60 >= makeHoleTime_)
 		{
-			math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLE;
+s			math_[pPlayScene_->GetPlayerPos().x][pPlayScene_->GetPlayerPos().z].mathType_ = MATH_HOLE;
 			Write();
 			pPlayScene_->Read();
+			pPlayScene_->SetTableChange(true);
 			isStandPitfall_ = false;
+			countTime = 0;
 		}
 		else
 		{

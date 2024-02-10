@@ -287,8 +287,12 @@ void MapEditScene::Draw()
 	auto itr = tTgtgRoute_.begin();
 	while (itr != tTgtgRoute_.end())
 	{
-		Image::SetTransform(hTgtgRoute_, itr->route_);
-		Image::Draw(hTgtgRoute_);
+		if (itr->route_.scale_.x != 1)
+		{
+			Image::SetTransform(hTgtgRoute_, itr->route_);
+			Image::Draw(hTgtgRoute_);
+			
+		}
 		itr++;
 	}
 	//pText_->Draw(1, 1, "g");

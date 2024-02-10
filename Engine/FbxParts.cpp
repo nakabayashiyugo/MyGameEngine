@@ -432,10 +432,7 @@ void FbxParts::DrawSkinAnime(Transform& transform, FbxTime time)
 	// ボーンごとの現在の行列を取得する
 	for (int i = 0; i < numBone_; i++)
 	{
-		FbxNode* node = ppCluster_[i]->GetLink();
-		FbxScene* obj = node->GetScene();
-		FbxAnimEvaluator* evaluator = obj->GetAnimationEvaluator();
-			//ppCluster_[i]->GetLink()->GetScene()->GetAnimationEvaluator();
+		FbxAnimEvaluator* evaluator = ppCluster_[i]->GetLink()->GetScene()->GetAnimationEvaluator();
 		FbxMatrix mCurrentOrentation = evaluator->GetNodeGlobalTransform(ppCluster_[i]->GetLink(), time);
 
 		// 行列コピー（Fbx形式からDirectXへの変換）
