@@ -53,11 +53,12 @@ Player::Player(GameObject* parent)
 
 void Player::Initialize()
 {
-	hModel_ = Model::Load("Assets\\char2.fbx");
+	hModel_ = Model::Load("Assets\\Player1.fbx");
 	assert(hModel_ >= 0);
 	
 	pTimer_ = (Timer*)FindObject("Timer");
 	pTimer_->Instantiate<Timer>(this);
+	Model::SetAnimFrame(hModel_, 0, 120, 1);
 }
 
 void Player::Update()
@@ -90,7 +91,7 @@ void Player::Update()
 void Player::Draw()
 { 
 	transform_.scale_ = XMFLOAT3(0.05f, 0.05f, 0.05f);
-	Model::SetAnimFrame(hModel_, 0, 30, 1);
+	
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 }

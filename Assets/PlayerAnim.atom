@@ -1,0 +1,55 @@
+atomVersion 1.0;
+mayaVersion 2024;
+mayaSceneFile C:/Users/ba7ya/U0101/äwçZ/GE2A/ÉQÅ[ÉÄêßçÏ/Maya/game/scenes/gamesotai4.mb;
+timeUnit ntscf;
+linearUnit cm;
+angularUnit deg;
+startTime 1;
+endTime 180;
+dagNode {
+  Character1_Reference 1 2;
+  static scale.sx scaleX 0;
+  { 1 }
+  static scale.sy scaleY 1;
+  { 1 }
+  static scale.sz scaleZ 2;
+  { 1 }
+  static translate.tx translateX 3;
+  { 0 }
+  static translate.ty translateY 4;
+  { 0 }
+  static translate.tz translateZ 5;
+  { -2.6608063 }
+  static rotate.rx rotateX 6;
+  { 0 }
+  static rotate.ry rotateY 7;
+  { 0 }
+  static rotate.rz rotateZ 8;
+  { 0 }
+}
+dagNode {
+  Character1_Ctrl_Reference 1 30;
+  static scale.sx scaleX 0;
+  { 1 }
+  static scale.sy scaleY 1;
+  { 1 }
+  static scale.sz scaleZ 2;
+  { 1 }
+  static translate.tx translateX 3;
+  { 0 }
+  static translate.ty translateY 4;
+  { 0 }
+  static translate.tz translateZ 5;
+  { -2.6608063 }
+  static rotate.rx rotateX 6;
+  { 0 }
+  static rotate.ry rotateY 7;
+  { 0 }
+  static rotate.rz rotateZ 8;
+  { 0 }
+}
+dagNode {
+  polySurface3 1 2;
+  static v visibility 0;
+  { 1 }
+}
