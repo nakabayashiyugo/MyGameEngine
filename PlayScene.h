@@ -34,6 +34,7 @@ public:
 	void Read();
 
 	std::vector<std::vector<MATHDEDAIL>> GetTableMath() { return math_; }
+	std::vector<TOGETOGEROUTE> GetTogetogeRoute() { return tTgtgRoute_; }
 
 	XMFLOAT3 GetPlayerPos();
 

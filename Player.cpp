@@ -45,7 +45,7 @@ Player::Player(GameObject* parent)
 			}
 			if (math_[x][z].mathType_ == MATH_GOAL)
 			{
-				goalPos_ = XMFLOAT3((float)x, -1, (float)z);
+				goalPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
 			}
 		}
 	}
@@ -279,17 +279,6 @@ void Player::PlayerOperation()
 
 	//ˆÚ“®•ûŒü‰ñ“]
 	velocity_ = XMVector3Transform(velocity_, yrot);
-}
-
-void Player::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
-{
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int z = 0; z < ZSIZE; z++)
-		{
-			math_.at(x).at(z) = _math.at(x).at(z);
-		}
-	}
 }
 
 MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)

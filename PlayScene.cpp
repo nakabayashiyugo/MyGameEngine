@@ -106,15 +106,15 @@ void PlayScene::Read()
 		std::cout << "ファイルが開けません";
 		return;
 	}
-
-	int i = 0;
-	std::vector<bool> num;
 	
 	while (!read.eof())
 	{
-		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
-		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
-		i++;
+		TOGETOGEROUTE pTg;
+		read.read((char*)&pTg, sizeof(pTg));
+		if (pTg.route_.scale_.x < 1)
+		{
+			tTgtgRoute_.push_back(pTg);
+		}
 	}
 	read.close();  //ファイルを閉じる
 }

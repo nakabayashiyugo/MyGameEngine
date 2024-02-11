@@ -1,6 +1,7 @@
+#include "StageOrigin.h"
+
 class PlayScene;
 class Togetoge;
-#include "StageOrigin.h"
 
 class Stage
 	:public GameObject, StageOrigin
@@ -10,11 +11,10 @@ class Stage
 
 	bool isStandPitfall_;
 
-	float makeHoleTime_;
-
 	PlayScene* pPlayScene_;
 
 	std::vector<Togetoge*> pTgtg_;
+	std::vector<std::vector<int>> makeHoleTimes_;
 
 	XMFLOAT3 tgtgGivePos_;
 public:
@@ -54,6 +54,5 @@ public:
 	}
 
 	void Write();
-	void Read();
 };
 

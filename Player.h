@@ -81,8 +81,6 @@ public:
 
 	XMFLOAT3 GetPosition() { return transform_.position_; }
 
-	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
-
 	MATHDEDAIL SetStandMath(XMFLOAT3 _pos);
 	MATHDEDAIL HollCheck(XMFLOAT3 _pos);
 	void WallCheck(XMFLOAT3 _pos);
