@@ -16,14 +16,17 @@ enum SCENESTATE
 	SCENE_TURNEND,
 };
 
+const int PLAYERNUM = 2;
+
 class SceneTransition
 	:public GameObject, StageOrigin
 {
-	bool isClear_Player_[2];
+	bool isClear_Player_[PLAYERNUM];
 	bool isFinished_;
 	int turnNum_;
+	int player_Num_;
 	
-	PlayScene* pPS_[2];
+	PlayScene* pPS_[PLAYERNUM];
 
 	int hPlayer1_, hPlayer2_;
 	int hWin_, hLose_;
@@ -49,6 +52,8 @@ public:
 
 	int GetSceneState() { return (int)sceneState_; };
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
+
+	int GetPlayerNum() { return player_Num_; }
 
 	int GetTurnNum() { return turnNum_; };
 

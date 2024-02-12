@@ -7,12 +7,13 @@
 #include "Timer.h"
 
 PlayScene::PlayScene(GameObject* parent)
-	: GameObject(parent, "PlayScene"), table_Change_(false), player_Num_(0), save_Num_(2)
+	: GameObject(parent, "PlayScene"), table_Change_(false), save_Num_(2)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
 	ZSIZE = (int)pTrans_->GetMathSize_z();
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+	player_Num_ = pTrans_->GetPlayerNum();
 	Math_Resize(XSIZE, ZSIZE, &math_);
 
 	if (pTrans_->GetTurnNum() % 2 == 0 && (int)pTrans_->GetSceneState() == SCENESTATE::SCENE_STAGE1_DELAY)

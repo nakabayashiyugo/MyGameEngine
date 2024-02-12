@@ -41,7 +41,7 @@ public:
 	void SetTableChange(bool _table_change) { table_Change_ = _table_change; }
 	bool GetTableChange() { return table_Change_; }
 
-	void SetPlayerNum(int _player_num) { player_Num_ = _player_num; }
+	int GetPlayerNum() { return player_Num_; }
 
 	int GetSaveNum() { return save_Num_; }
 };

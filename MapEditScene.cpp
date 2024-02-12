@@ -7,8 +7,7 @@
 #include "Engine/Text.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2), 
-	mathChangeNum_(0), hTgtgRoute_(-1)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2), hTgtgRoute_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -42,6 +41,20 @@ MapEditScene::MapEditScene(GameObject* parent)
 	{
 		save_Num_ += 1;
 	}
+	int mathChangeNumLimitFirst;
+	int mathChangeNumLimitPlus;
+	if (XSIZE >= YSIZE)
+	{
+		mathChangeNumLimitFirst = XSIZE;
+		mathChangeNumLimitPlus = XSIZE / 2;
+	}
+	else
+	{
+		mathChangeNumLimitFirst = YSIZE;
+		mathChangeNumLimitPlus = YSIZE / 2;
+	}
+
+	mathChangeNumLimit_ = mathChangeNumLimitFirst + (pTrans_->GetTurnNum() - 1) * mathChangeNumLimitPlus;
 
 	Read();
 }
@@ -110,7 +123,7 @@ void MapEditScene::Update()
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
-		if (mathChangeNum_ < MATH_CHANGE_NUM_LIMIT ||
+		if (!isMathChangeNumLimit() &&
 			math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
 		{
 			switch ((MATHTYPE)mathtype_)
@@ -207,7 +220,6 @@ void MapEditScene::Update()
 				break;
 			}
 		}
-		SetMathChangeNum();
 
 		//とげとげマスでクリックして話したとき
 		if (tgtgRouteMathDown.x != -1 && Input::IsMuoseButtonUp(0))
@@ -463,19 +475,25 @@ void MapEditScene::Read()
 	read.close();  //ファイルを閉じる
 }
 
-void MapEditScene::SetMathChangeNum()
+bool MapEditScene::isMathChangeNumLimit()
 {
 	int num = 0;
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
-			if (math_[x][y].mathType_ != math_origin_[x][y].mathType_ &&
-				math_origin_[x][y].mathType_ != MATH_FLOOR)
+			if (math_[x][y].mathType_ != math_origin_[x][y].mathType_)
 			{
 				num++;
 			}
 		}
 	}
-	mathChangeNum_ = num;
+	if (mathChangeNumLimit_ > num)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }

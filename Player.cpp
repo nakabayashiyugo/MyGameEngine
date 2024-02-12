@@ -53,7 +53,9 @@ Player::Player(GameObject* parent)
 
 void Player::Initialize()
 {
-	hModel_ = Model::Load("Assets\\Player1.fbx");
+	std::string fileName = "Assets\\Player";
+	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
+	hModel_ = Model::Load(fileName);
 	assert(hModel_ >= 0);
 	
 	pTimer_ = (Timer*)FindObject("Timer");

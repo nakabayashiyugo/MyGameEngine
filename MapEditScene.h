@@ -3,8 +3,6 @@
 
 class Text;
 
-const int MATH_CHANGE_NUM_LIMIT = 5;
-
 class MapEditScene
 	:public GameObject, StageOrigin
 {
@@ -15,7 +13,7 @@ class MapEditScene
 	int YSIZE;
 	int mathtype_;
 	int save_Num_;
-	int mathChangeNum_;
+	int mathChangeNumLimit_;
 
 	XMFLOAT3 texture_size_;
 
@@ -43,6 +41,6 @@ public:
 	void Write();
 	void Read();
 
-	void SetMathChangeNum();
+	bool isMathChangeNumLimit();
 };
 

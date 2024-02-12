@@ -7,7 +7,7 @@
 SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1), turnNum_(0),
 	isClear_Player_{ false, false }, isFinished_(false), hPlayer1_(-1), hPlayer2_(-1),
-	hWin_(-1), hLose_(-1)
+	hWin_(-1), hLose_(-1), player_Num_(0)
 {
 	XSIZE = (rand() % 15) + 5;
 	ZSIZE = (rand() % 15) + 5;
@@ -47,14 +47,14 @@ void SceneTransition::Update()
 	case SCENE_MAPEDIT1: turnNum_++; Instantiate<MapEditScene>(this); break;
 	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
 	case SCENE_STAGE1:
-		pPS_[0]->Instantiate<PlayScene>(this);
-		pPS_[0] = (PlayScene*)FindObject("PlayScene");
-		pPS_[0]->SetPlayerNum(0);
+		player_Num_ = 0;
+		pPS_[player_Num_]->Instantiate<PlayScene>(this);
+		pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
 		break;
 	case SCENE_STAGE2:
-		pPS_[1]->Instantiate<PlayScene>(this);
-		pPS_[1] = (PlayScene*)FindObject("PlayScene");
-		pPS_[1]->SetPlayerNum(1);
+		player_Num_ = 1;
+		pPS_[player_Num_]->Instantiate<PlayScene>(this);
+		pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
 		break;
 	case SCENE_TURNEND:
 		if (isClear_Player_[0] == isClear_Player_[1])
