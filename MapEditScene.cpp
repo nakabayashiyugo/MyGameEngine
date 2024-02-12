@@ -123,8 +123,7 @@ void MapEditScene::Update()
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
-		if (!isMathChangeNumLimit() &&
-			math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
+		if (math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
 		{
 			switch ((MATHTYPE)mathtype_)
 			{
@@ -168,54 +167,66 @@ void MapEditScene::Update()
 					}
 				}
 				break;
+			case MATH_FLOOR:
+					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 			case MATH_CONVEYOR:
-				if (Input::IsMouseButtonDown(0))
+				if (!isMathChangeNumLimit())
 				{
-					if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+					if (Input::IsMouseButtonDown(0))
 					{
-						isConvRot_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y] = true;
-					}
-					else
-					{
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+						{
+							isConvRot_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y] = true;
+						}
+						else
+						{
+							math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						}
 					}
 				}
 				break;
 			case MATH_TOGETOGE:
-				if (Input::IsMouseButtonDown(0))
+				if (!isMathChangeNumLimit())
 				{
-					tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
-					auto itr = tTgtgRoute_.begin();
-					
-					while (itr != tTgtgRoute_.end())
+					if (Input::IsMouseButtonDown(0))
 					{
-						//押されたマスがとげとげマスだったら
-						if (itr->initPos_.x == tgtgRouteMathDown.x &&
-							itr->initPos_.y == tgtgRouteMathDown.y)
-						{
-							std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
-							OutputDebugString(resStr.c_str());
-							break;
-						}
-						itr++;
-					}
-					//ちがったら
-					if (itr == tTgtgRoute_.end())
-					{
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
+						auto itr = tTgtgRoute_.begin();
 
-						tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
-						itr = tTgtgRoute_.end() - 1;
-						itr->initPos_ = itr->destPos_ = tgtgRouteMathDown;
-						itr->route_.scale_ = XMFLOAT3(0, 0, 0);
+						while (itr != tTgtgRoute_.end())
+						{
+							//押されたマスがとげとげマスだったら
+							if (itr->initPos_.x == tgtgRouteMathDown.x &&
+								itr->initPos_.y == tgtgRouteMathDown.y)
+							{
+								std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
+								OutputDebugString(resStr.c_str());
+								break;
+							}
+							itr++;
+						}
+						//ちがったら
+						if (itr == tTgtgRoute_.end())
+						{
+							math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+
+							tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
+							itr = tTgtgRoute_.end() - 1;
+							itr->initPos_ = itr->destPos_ = tgtgRouteMathDown;
+							itr->route_.scale_ = XMFLOAT3(0, 0, 0);
+						}
 					}
 				}
 				break;
 			default:
-				if (Input::IsMouseButton(0))
+				if (!isMathChangeNumLimit())
 				{
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					if (Input::IsMouseButton(0))
+					{
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					}
 				}
 				break;
 			}
