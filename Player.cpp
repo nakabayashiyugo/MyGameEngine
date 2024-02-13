@@ -119,8 +119,8 @@ void Player::PlayUpdate()
 	static XMFLOAT3 table_hit_point = XMFLOAT3(0, 0, 0);
 	static bool is_table_hit = false;
 
-	const float AIR_DEC_VELOCITY_INIT = 1;
-	const float AIR_DEC_VELOCITY = 1.5f;
+	const float AIR_DEC_VELOCITY_INIT = 1.0f;
+	const float AIR_DEC_VELOCITY = 2.0f;
 
 	switch (player_state_)
 	{
@@ -182,7 +182,7 @@ void Player::PlayUpdate()
 	case MATH_CONVEYOR:
 		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(-standMath_.mathPos_.rotate_.z));
 		converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//‚»‚Ì‰ñ“]‚ÅƒxƒNƒgƒ‹‚ÌŒü‚«‚ð•Ï‚¦‚é
-		converyor_velocity = converyor_velocity / 16;
+		converyor_velocity = converyor_velocity * 0.04f;
 		if (player_state_ == STATE_WARK)		velocity_ += converyor_velocity;
 		break;
 	case MATH_GOAL:
@@ -248,7 +248,7 @@ void Player::PlayerOperation()
 		}
 
 
-		velocity_ = sub_velocity_ / dec_velocity_;
+		velocity_ = sub_velocity_ / dec_velocity_ / air_dec_velocity_;
 
 		dec_velocity_ += DEC_VELOCITY_UPDATE;
 

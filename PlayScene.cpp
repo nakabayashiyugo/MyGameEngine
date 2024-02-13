@@ -1,10 +1,13 @@
 #include "PlayScene.h"
-#include "Stage.h"
-#include "Player.h"
+
 #include "Engine/Input.h"
 #include "Engine/SceneManager.h"
+#include "Engine/Image.h"
+
 #include "SceneTransition.h"
 #include "Timer.h"
+#include "Stage.h"
+#include "Player.h"
 
 PlayScene::PlayScene(GameObject* parent)
 	: GameObject(parent, "PlayScene"), table_Change_(false), save_Num_(2)
@@ -34,7 +37,6 @@ PlayScene::PlayScene(GameObject* parent)
 	}
 
 	Read();
-	
 }
 
 void PlayScene::Initialize()

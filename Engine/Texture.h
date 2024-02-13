@@ -3,8 +3,9 @@
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
 #include <wincodec.h>
-#include "string"
 #include <wrl.h>
+
+#include "string"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "d3dcompiler.lib")
