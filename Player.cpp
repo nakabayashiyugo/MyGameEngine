@@ -16,7 +16,7 @@ Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"), 
 	hModel_(-1),
 	velocity_(XMVectorSet(0, 0, 0, 0)), sub_velocity_(XMVectorSet(0, 0, 0, 0)), jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)),
-	eyeDirection_(XMVectorSet(0, 0, 1, 0)), prevEyeDirection_(XMVectorSet(0, 0, 0, 0)),
+	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
 	camRot_(0, 0, 0), 
 	player_state_(STATE_WARK), 
 	stage_state_(STATE_START),
@@ -55,12 +55,11 @@ void Player::Initialize()
 {
 	std::string fileName = "Assets\\Player";
 	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
-	hModel_ = Model::Load("Assets\\Player1.fbx");
+	hModel_ = Model::Load(fileName);
 	assert(hModel_ >= 0);
 	
 	pTimer_ = (Timer*)FindObject("Timer");
 	pTimer_->Instantiate<Timer>(this);
-	Model::SetAnimFrame(hModel_, 1, 180, 1);
 }
 
 void Player::Update()
@@ -116,8 +115,12 @@ void Player::PlayUpdate()
 
 	PlayerOperation();
 
+
 	static XMFLOAT3 table_hit_point = XMFLOAT3(0, 0, 0);
 	static bool is_table_hit = false;
+
+	const float AIR_DEC_VELOCITY_INIT = 1;
+	const float AIR_DEC_VELOCITY = 1.5f;
 
 	switch (player_state_)
 	{
@@ -126,12 +129,12 @@ void Player::PlayUpdate()
 		is_table_hit = false;
 		gravity_ = XMFLOAT3(0, 0, 0);
 		transform_.position_.y = startPos_.y;
-		air_dec_velocity_ = 1;
+		air_dec_velocity_ = AIR_DEC_VELOCITY_INIT;
 		jamp_start_velocity_ = XMVectorSet(0, 0, 0, 0);
 		break;
 	case STATE_JAMP:
 		gravity_.y = 0.2f;
-		air_dec_velocity_ = 2;
+		air_dec_velocity_ = AIR_DEC_VELOCITY;
 		if (transform_.position_.y >= 1.5f)
 		{
 			player_state_ = STATE_FALL;
@@ -139,7 +142,7 @@ void Player::PlayUpdate()
 		break;
 	case STATE_FALL:
 		gravity_.y += -0.01f;
-		air_dec_velocity_ = 2;
+		air_dec_velocity_ = AIR_DEC_VELOCITY;
 		if (transform_.position_.y < 1.0f && !is_table_hit)
 		{
 			is_table_hit = true;
@@ -195,7 +198,7 @@ void Player::PlayUpdate()
 	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WARK)
 	{
 		player_state_ = STATE_JAMP;
-		jamp_start_velocity_ = velocity_ / 2;
+		jamp_start_velocity_ = velocity_ / (air_dec_velocity_ + 1);
 	}
 
 	velocity_ += XMLoadFloat3(&gravity_);
@@ -205,67 +208,57 @@ void Player::PlayUpdate()
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 {
-	return (_pos.x + MODELSIZE) >= 0 && (_pos.x) < XSIZE - 0.3f &&
-		(_pos.z + MODELSIZE) >= 0 && (_pos.z) < ZSIZE - 0.3f;
+	return (_pos.x + MODELSIZE) >= 0 && (_pos.x) < XSIZE - (1.0f - MODELSIZE) &&
+		(_pos.z + MODELSIZE) >= 0 && (_pos.z) < ZSIZE - (1.0f - MODELSIZE);
 }
 
 void Player::PlayerOperation()
 {
-	XMVECTOR cameraBase = XMVectorSet(0, 7, -5, 0);
-
-	static int dec_velocity_ = 20;
+	const int DEC_VELOCITY_INIT = 20;
+	const int DEC_VELOCITY_UPDATE = 5;
+	const int DEC_VELOCITY_LIMIT = 100;
+	static int dec_velocity_ = DEC_VELOCITY_INIT;
 
 	if (player_state_ != STATE_DEAD)
 	{
 		//前後左右移動
 		if (Input::IsKey(DIK_W))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 			sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-			dec_velocity_ = 20;
+			dec_velocity_ = DEC_VELOCITY_INIT;
 		}
 		if (Input::IsKey(DIK_S))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-			sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-			dec_velocity_ = 30;
+			sub_velocity_ = XMVector4Normalize(sub_velocity_);
+			dec_velocity_ = DEC_VELOCITY_INIT;
 		}
 		if (Input::IsKey(DIK_A))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
-			sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-			dec_velocity_ = 30;
+			sub_velocity_ = XMVector4Normalize(sub_velocity_);
+			dec_velocity_ = DEC_VELOCITY_INIT;
 		}
 		if (Input::IsKey(DIK_D))
 		{
-			transform_.rotate_.y += (camRot_.y - transform_.rotate_.y) / 10;
 			sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-			sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-			dec_velocity_ = 30;
+			sub_velocity_ = XMVector4Normalize(sub_velocity_);
+			dec_velocity_ = DEC_VELOCITY_INIT;
 		}
-		
-		velocity_ = sub_velocity_ / dec_velocity_ / air_dec_velocity_;
 
-		dec_velocity_ += 5;
 
-		if (dec_velocity_ >= 100)
+		velocity_ = sub_velocity_ / dec_velocity_;
+
+		dec_velocity_ += DEC_VELOCITY_UPDATE;
+
+		if (dec_velocity_ >= DEC_VELOCITY_LIMIT)
 		{
-
 			velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			dec_velocity_ = 20;
+			dec_velocity_ = DEC_VELOCITY_INIT;
 		}
 
 		//カメラ回転
-		XMFLOAT3 v;
-		XMStoreFloat3(&v, velocity_);
-
-		XMMATRIX playerYRot = XMMatrixRotationY(XMConvertToRadians(v));
-
-		XMVECTOR rotateYVec = XMVector3Transform(cameraBase, yrot);
-
 		//回転
 		if (Input::IsKey(DIK_RIGHT))
 		{
@@ -278,6 +271,8 @@ void Player::PlayerOperation()
 	}
 
 	//カメラ回転
+	XMVECTOR cameraBase = XMVectorSet(0, 7, -5, 0);
+
 	XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(camRot_.y));
 
 	XMVECTOR cameraRotVec = XMVector3Transform(cameraBase, yrot);
@@ -289,6 +284,23 @@ void Player::PlayerOperation()
 
 	//移動方向回転
 	velocity_ = XMVector3Transform(velocity_, yrot);
+
+	if (XMVector3Length(velocity_).m128_f32[0] != 0)
+	{
+		XMVECTOR v = XMVector3Dot(eyeDirection_, XMVector3Normalize(velocity_));
+
+		float angle = XMConvertToDegrees(acos(XMVectorGetX(v)));
+
+		// XMVector3Cross : vFront と vMove の外積求める
+		XMVECTOR vCross = XMVector3Cross(eyeDirection_, XMVector3Normalize(velocity_));
+
+		// vFront と vMove の外積が下向きだったら angle に-1をかけて、向きを反対にする
+		if (XMVectorGetY(vCross) < 0)
+		{
+			angle *= -1;
+		}
+		transform_.rotate_.y = angle;
+	}
 }
 
 MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
@@ -300,21 +312,22 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 	MATHDEDAIL ret;
 
 	float plusX = MODELSIZE / 2, plusZ = MODELSIZE / 2;
-	if (XSIZE - _pos.x < plusX)
+	if (XSIZE - transform_.position_.x < plusX)
 	{
-		plusX = (float)(XSIZE - _pos.x) - 0.00001f;
+		plusX = (float)(XSIZE - transform_.position_.x) - 0.00001f;
 	}
-	if (ZSIZE - _pos.z < plusZ)
+	if (ZSIZE - transform_.position_.z < plusZ)
 	{
-		plusZ = (float)(ZSIZE - _pos.z) - 0.00001f;
+		plusZ = (float)(ZSIZE - transform_.position_.z) - 0.00001f;
 	}
-	XMFLOAT3 centerPos = XMFLOAT3(_pos.x + plusX, _pos.y, _pos.z + plusZ);
+	centerPos_ =
+		XMFLOAT3(transform_.position_.x + plusX, transform_.position_.y, transform_.position_.z + plusZ);
 
-	ret = math_[centerPos.x][centerPos.z];
+	ret = math_[centerPos_.x][centerPos_.z];
 	//HOLLチェック
 	ret = HollCheck(_pos);
 
-	ret = math_[centerPos.x][centerPos.z];
+	ret = math_[centerPos_.x][centerPos_.z];
 
 	//WALLチェック
 	WallCheck(_pos);
