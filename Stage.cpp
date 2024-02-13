@@ -52,8 +52,8 @@ void Stage::Initialize()
 		"Block_Wall.fbx",
 		"Block_Holl.fbx",
 		"Block_Converyor.fbx",
-		"Block_Crack.fbx",
 		"Block_Floor.fbx",
+		"Block_Crack.fbx",
 		"Block_Start.fbx",
 		"Block_Goal.fbx"
 	};
@@ -130,13 +130,13 @@ void Stage::Draw()
 			case MATH_PITFALL:
 				if (makeHoleTimes_[x][z] >= FPS * MAKEHOLETIME / 2)
 				{
-					Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
-					Model::Draw(hModel_[math_[x][z].mathType_]);
+					Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
+					Model::Draw(hModel_[MATH_FLOOR]);
 				}
 				else
 				{
-					Model::SetTransform(hModel_[math_[x][z].mathType_] - 1, mathTrans);
-					Model::Draw(hModel_[math_[x][z].mathType_] - 1);
+					Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
+					Model::Draw(hModel_[math_[x][z].mathType_]);
 				}
 
 				break;

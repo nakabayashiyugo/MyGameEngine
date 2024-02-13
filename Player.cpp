@@ -55,7 +55,7 @@ void Player::Initialize()
 {
 	std::string fileName = "Assets\\Player";
 	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
-	hModel_ = Model::Load("Assets\\Enemy.fbx");
+	hModel_ = Model::Load("Assets\\Player1.fbx");
 	assert(hModel_ >= 0);
 	
 	pTimer_ = (Timer*)FindObject("Timer");
@@ -92,7 +92,7 @@ void Player::Update()
 
 void Player::Draw()
 { 
-	//transform_.scale_ = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	transform_.scale_ = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
@@ -258,6 +258,14 @@ void Player::PlayerOperation()
 			dec_velocity_ = 20;
 		}
 
+		//ÉJÉÅÉââÒì]
+		XMFLOAT3 v;
+		XMStoreFloat3(&v, velocity_);
+
+		XMMATRIX playerYRot = XMMatrixRotationY(XMConvertToRadians(v));
+
+		XMVECTOR rotateYVec = XMVector3Transform(cameraBase, yrot);
+
 		//âÒì]
 		if (Input::IsKey(DIK_RIGHT))
 		{
@@ -291,7 +299,7 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 	}
 	MATHDEDAIL ret;
 
-	float plusX = 0.5f, plusZ = 0.5f;
+	float plusX = MODELSIZE / 2, plusZ = MODELSIZE / 2;
 	if (XSIZE - _pos.x < plusX)
 	{
 		plusX = (float)(XSIZE - _pos.x) - 0.00001f;
@@ -317,9 +325,9 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 MATHDEDAIL Player::HollCheck(XMFLOAT3 _pos)
 {
 	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z - 0.2f);
-	XMFLOAT3 leftFront = XMFLOAT3(_pos.x - 0.2f, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x - 0.2f, _pos.y, _pos.z - 0.2f);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z - (1.0f - MODELSIZE));
+	XMFLOAT3 leftFront = XMFLOAT3(_pos.x - (1.0f - MODELSIZE), _pos.y, _pos.z + MODELSIZE);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x - (1.0f - MODELSIZE), _pos.y, _pos.z - (1.0f - MODELSIZE));
 
 	if (Is_InSide_Table(rightFront) &&
 		math_[rightFront.x][rightFront.z].mathType_ != MATH_WALL &&
@@ -352,9 +360,9 @@ void Player::WallCheck(XMFLOAT3 _pos)
 {
 	bool check = false;
 	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + 0.2f);
-	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + 0.2f, _pos.y, _pos.z + 0.2f);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + (1.0f - MODELSIZE));
+	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + (1.0f - MODELSIZE), _pos.y, _pos.z + MODELSIZE);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + (1.0f - MODELSIZE), _pos.y, _pos.z + (1.0f - MODELSIZE));
 
 	if (Is_InSide_Table(rightFront) &&
 		math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
