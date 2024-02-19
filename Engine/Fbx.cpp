@@ -22,6 +22,8 @@ HRESULT Fbx::Load(std::string fileName)
 	fbxImporter->Import(pFbxScene_);
 	fbxImporter->Destroy();
 
+	// アニメーションのタイムモードの取得
+	frameRate_ = pFbxScene_->GetGlobalSettings().GetTimeMode();
 
 	//現在のカレントディレクトリを覚えておく
 	char defaultCurrentDir[MAX_PATH];

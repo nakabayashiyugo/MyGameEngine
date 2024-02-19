@@ -57,6 +57,7 @@ void Player::Initialize()
 	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
 	hModel_ = Model::Load("Assets\\Enemy.fbx");
 	assert(hModel_ >= 0);
+	Model::SetAnimFrame(hModel_, 0, 180, 1);
 	
 	pTimer_ = (Timer*)FindObject("Timer");
 	pTimer_->Instantiate<Timer>(this);
@@ -91,7 +92,7 @@ void Player::Update()
 
 void Player::Draw()
 { 
-	transform_.scale_ = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	//transform_.scale_ = XMFLOAT3(0.05f, 0.05f, 0.05f);
 	
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
