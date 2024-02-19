@@ -7,7 +7,7 @@
 #include "Engine/Text.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0), YSIZE(ZSIZE), save_Num_(2), hTgtgRoute_(-1)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), save_Num_(2), YSIZE(ZSIZE), hTgtgRoute_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{

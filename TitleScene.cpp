@@ -6,7 +6,7 @@
 #include "Engine/SceneManager.h"
 
 TitleScene::TitleScene(GameObject* parent)
-	: GameObject(parent, "TitleScene"), hStartButton_(-1), hOption_(-1), hStaful_(-1),
+	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1),
 	mousePos_(0, 0, 0)
 {
 }
@@ -15,8 +15,6 @@ void TitleScene::Initialize()
 {
 	hStartButton_ = Image::Load("Assets\\Logo_StartButton.png");
 	assert(hStartButton_ >= 0);
-	hOption_ = Image::Load("Assets\\Logo_Option.png");
-	assert(hOption_ >= 0);
 	hStaful_ = Image::Load("Assets\\Logo_Staful.png");
 	assert(hStaful_ >= 0);
 }
@@ -55,17 +53,13 @@ void TitleScene::Update()
 void TitleScene::Draw()
 {
 	tStartButton_.position_.y = -0.1f;
-	tOption_.position_.y = -0.5f;
 	tStartButton_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
-	tOption_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
 	tStaful_.position_.y = 0.5f;
 	tStaful_.scale_ = XMFLOAT3(0.6f, 0.4f, 1);
 
 	Image::SetTransform(hStartButton_, tStartButton_);
-	Image::SetTransform(hOption_, tOption_);
 	Image::SetTransform(hStaful_, tStaful_);
 	Image::Draw(hStartButton_);
-	Image::Draw(hOption_);
 	Image::Draw(hStaful_);
 }
 

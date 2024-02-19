@@ -34,9 +34,10 @@ class Player
 	PlayScene* pPlayScene_;
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
-	XMVECTOR eyeDirection_, prevEyeDirection_;
+	XMVECTOR eyeDirection_;
 
 	XMFLOAT3 startPos_, goalPos_;
+	XMFLOAT3 centerPos_;
 	XMFLOAT3 camRot_;
 	
 
@@ -79,7 +80,7 @@ public:
 
 	bool Is_Goal() { return isGoal_; }
 
-	XMFLOAT3 GetPosition() { return transform_.position_; }
+	XMFLOAT3 GetPosition() { return centerPos_; }
 
 	MATHDEDAIL SetStandMath(XMFLOAT3 _pos);
 	MATHDEDAIL HollCheck(XMFLOAT3 _pos);
