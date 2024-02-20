@@ -23,10 +23,10 @@ Player::Player(GameObject* parent)
 	velocity_(XMVectorSet(0, 0, 0, 0)), sub_velocity_(XMVectorSet(0, 0, 0, 0)), 
 	jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)), eyeDirection_(XMVectorSet(0, 0, 1, 0)),
 	camRot_(0, 0, 0), gravity_(0, 0, 0), 
-	player_state_(STATE_IDLE), stage_state_(STATE_START),
+	playerState_(STATE_IDLE), prevPlayerState_(STATE_DEAD), stageState(STATE_START),
 	air_dec_velocity_(1),
 	hurdle_Limit_(0),
-	table_hit_point_(XMFLOAT3(0, 0, 0)), is_table_hit_(false),
+	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
 	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
 	isGoal_(false)
 {
@@ -62,7 +62,6 @@ void Player::Initialize()
 	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
 	hModel_ = Model::Load("Assets\\Enemy.fbx");
 	assert(hModel_ >= 0);
-	Model::SetAnimFrame(hModel_, 0, 180, 1);
 
 	hFrame_ = Image::Load("Assets\\Timer_Frame.png");
 	assert(hFrame_ >= 0);
@@ -80,13 +79,13 @@ void Player::Update()
 {
 	Stage* pStage = (Stage*)FindObject("Stage");
 	
-	switch (stage_state_)
+	switch (stageState)
 	{
 	case STATE_START:
 		transform_.position_ = startPos_;
 		velocity_ = sub_velocity_ = XMVectorSet(0, 0, 0, 0);
-		stage_state_ = STATE_PLAY;
-		player_state_ = STATE_IDLE;
+		stageState = STATE_PLAY;
+		playerState_ = STATE_IDLE;
 		break;
 	case STATE_PLAY:
 		PlayUpdate();
@@ -148,12 +147,12 @@ void Player::PlayUpdate()
 	pTimer_->Update();
 	if (pTimer_->isTimeUpped())
 	{
-		stage_state_ = STATE_FAILURE;
+		stageState = STATE_FAILURE;
 	}
 
 	PlayerOperation();
 
-	switch (player_state_)
+	switch (playerState_)
 	{
 	case STATE_IDLE:
 		IdleUpdate();
@@ -172,7 +171,7 @@ void Player::PlayUpdate()
 		break;
 	}
 
-	if (player_state_ != STATE_DEAD)
+	if (playerState_ != STATE_DEAD)
 	{
 		//コンベアによって移動する方向
 		XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
@@ -183,13 +182,13 @@ void Player::PlayUpdate()
 			XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(-standMath_.mathPos_.rotate_.z));
 			converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
 			converyor_velocity = converyor_velocity * 0.04f;
-			if (player_state_ == STATE_WALK || player_state_ == STATE_IDLE)		velocity_ += converyor_velocity;
+			if (playerState_ == STATE_WALK || playerState_ == STATE_IDLE)		velocity_ += converyor_velocity;
 			break;
 		case MATH_GOAL:
-			stage_state_ = STATE_GOAL;
+			stageState = STATE_GOAL;
 			break;
 		case MATH_HOLE:
-			player_state_ = STATE_FALL;
+			playerState_ = STATE_FALL;
 			break;
 		default:break;
 		}
@@ -213,7 +212,7 @@ void Player::PlayerOperation()
 	const int DEC_VELOCITY_LIMIT = 100;
 	static int dec_velocity_ = DEC_VELOCITY_INIT;
 
-	if (player_state_ != STATE_DEAD)
+	if (playerState_ != STATE_DEAD)
 	{
 		//前後左右移動
 		if (Input::IsKey(DIK_W))
@@ -276,10 +275,11 @@ void Player::PlayerOperation()
 	Camera::SetPosition(vPos + cameraRotVec);
 	Camera::SetTarget(XMFLOAT3(transform_.position_.x, 1, transform_.position_.z));
 
+
 	//移動方向回転
 	velocity_ = XMVector3Transform(velocity_, yrot);
 
-	if (XMVector3Length(velocity_).m128_f32[0] != 0)
+	if (XMVectorGetX(XMVector3Length(velocity_)) != 0)
 	{
 		XMVECTOR v = XMVector3Dot(eyeDirection_, XMVector3Normalize(velocity_));
 
@@ -295,12 +295,14 @@ void Player::PlayerOperation()
 		}
 		transform_.rotate_.y = angle;
 	}
+
 	//ジャンプ
-	if (Input::IsKeyDown(DIK_SPACE) && player_state_ == STATE_WALK)
+	if (Input::IsKeyDown(DIK_SPACE) && playerState_ == STATE_WALK)
 	{
-		player_state_ = STATE_JAMP;
+		playerState_ = STATE_JAMP;
 		jamp_start_velocity_ = velocity_ / (air_dec_velocity_ + 1);
 	}
+	
 }
 
 MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
@@ -337,8 +339,10 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 
 void Player::IdleUpdate()
 {
-	table_hit_point_ = XMFLOAT3(0, 0, 0);
-	is_table_hit_ = false;
+	SetAnimFramerate();
+
+	tableHitPoint_ = XMFLOAT3(0, 0, 0);
+	isTableHit_ = false;
 	gravity_ = XMFLOAT3(0, 0, 0);
 	transform_.position_.y = startPos_.y;
 	air_dec_velocity_ = AIR_DEC_VELOCITY_INIT;
@@ -346,14 +350,16 @@ void Player::IdleUpdate()
 
 	if (XMVectorGetX(XMVector3Length(velocity_)))
 	{
-		player_state_ = STATE_WALK;
+		playerState_ = STATE_WALK;
 	}
 }
 
 void Player::WalkUpdate()
 {
-	table_hit_point_ = XMFLOAT3(0, 0, 0);
-	is_table_hit_ = false;
+	SetAnimFramerate();
+
+	tableHitPoint_ = XMFLOAT3(0, 0, 0);
+	isTableHit_ = false;
 	gravity_ = XMFLOAT3(0, 0, 0);
 	transform_.position_.y = startPos_.y;
 	air_dec_velocity_ = AIR_DEC_VELOCITY_INIT;
@@ -361,17 +367,19 @@ void Player::WalkUpdate()
 
 	if (!XMVectorGetX(XMVector3Length(velocity_)))
 	{
-		player_state_ = STATE_IDLE;
+		playerState_ = STATE_IDLE;
 	}
 }
 
 void Player::JampUpdate()
 {
+	SetAnimFramerate();
+
 	gravity_.y = 0.2f;
 	air_dec_velocity_ = AIR_DEC_VELOCITY;
 	if (transform_.position_.y >= 1.5f)
 	{
-		player_state_ = STATE_FALL;
+		playerState_ = STATE_FALL;
 	}
 }
 
@@ -379,22 +387,22 @@ void Player::FallUpdate()
 {
 	gravity_.y += -0.01f;
 	air_dec_velocity_ = AIR_DEC_VELOCITY;
-	if (transform_.position_.y < 1.0f && !is_table_hit_)
+	if (transform_.position_.y < 1.0f && !isTableHit_)
 	{
-		is_table_hit_ = true;
-		table_hit_point_ = transform_.position_;
+		isTableHit_ = true;
+		tableHitPoint_ = transform_.position_;
 	}
-	if (is_table_hit_)
+	if (isTableHit_)
 	{
-		if (SetStandMath(table_hit_point_).mathType_ != (int)MATH_HOLE)
+		if (SetStandMath(tableHitPoint_).mathType_ != (int)MATH_HOLE)
 		{
-			player_state_ = STATE_WALK;
+			playerState_ = STATE_WALK;
 			return;
 		}
 	}
 	if (transform_.position_.y < -1.0f)
 	{
-		player_state_ = STATE_DEAD;
+		playerState_ = STATE_DEAD;
 		return;
 	}
 }
@@ -404,11 +412,31 @@ void Player::DeadUpdate()
 	if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
 		abs(startPos_.z - transform_.position_.z) <= 0.01f)
 	{
-		stage_state_ = STATE_START;
+		stageState = STATE_START;
 	}
 	transform_.position_.x = transform_.position_.x + (startPos_.x - transform_.position_.x) / 10;
 	transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
 	transform_.position_.y = 10;
+}
+
+void Player::SetAnimFramerate()
+{
+	if (prevPlayerState_ != playerState_)
+	{
+		switch (playerState_)
+		{
+		case STATE_IDLE:
+			Model::SetAnimFrame(hModel_, 1, 60, 1);
+			break;
+		case STATE_WALK:
+			Model::SetAnimFrame(hModel_, 61, 120, 1);
+			break;
+		case STATE_JAMP:
+			Model::SetAnimFrame(hModel_, 121, 180, 1);
+			break;
+		}
+	}
+	prevPlayerState_ = playerState_;
 }
 
 MATHDEDAIL Player::HollCheck(XMFLOAT3 _pos)
@@ -527,6 +555,6 @@ void Player::OnCollision(GameObject* pTarget)
 {
 	if (pTarget->GetObjectName() == "Togetoge")
 	{
-		player_state_ = STATE_DEAD;
+		playerState_ = STATE_DEAD;
 	}
 }

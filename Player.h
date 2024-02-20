@@ -40,16 +40,17 @@ class Player
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
 	XMVECTOR eyeDirection_;
 
-	XMFLOAT3 table_hit_point_;
-	bool is_table_hit_;
+	XMFLOAT3 tableHitPoint_;
+	bool isTableHit_;
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 centerPos_;
 	XMFLOAT3 camRot_;
 	
 
-	PLAYER_STATE player_state_;
-	STAGE_STATE stage_state_;
+	PLAYER_STATE playerState_;
+	PLAYER_STATE prevPlayerState_;
+	STAGE_STATE stageState;
 
 	MATHDEDAIL standMath_;
 
@@ -87,6 +88,8 @@ public:
 	void FallUpdate();
 	void DeadUpdate();
 
+	void SetAnimFramerate();
+
 	bool Is_InSide_Table(XMFLOAT3 _pos);
 
 	void PlayerOperation();
@@ -100,7 +103,7 @@ public:
 	void WallCheck(XMFLOAT3 _pos);
 
 	bool GetFailed() {
-		if (stage_state_ == STATE_FAILURE)
+		if (stageState == STATE_FAILURE)
 		{
 			return true;
 		}

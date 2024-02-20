@@ -70,35 +70,44 @@ HRESULT FbxParts::InitVertex(fbxsdk::FbxMesh* mesh)
 		//3頂点分
 		for (int vertex = 0; vertex < 3; vertex++)
 		{
-			//調べる頂点の番号
 			int index = mesh->GetPolygonVertex(poly, vertex);
 
-			//頂点の位置
+			/////////////////////////頂点の位置/////////////////////////////////////
 			FbxVector4 pos = mesh->GetControlPointAt(index);
-			pVertices_[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0.0f);
+			pVertices_[index].position = XMVectorSet((float)-pos[0], (float)pos[1], (float)pos[2], 0);
 
-			//頂点のUV
+			/////////////////////////頂点の法線/////////////////////////////////////
+			FbxVector4 Normal;
+			mesh->GetPolygonVertexNormal(poly, vertex, Normal);	//ｉ番目のポリゴンの、ｊ番目の頂点の法線をゲット
+			pVertices_[index].normal = XMVectorSet((float)-Normal[0], (float)Normal[1], (float)Normal[2], 0);
+
+			///////////////////////////頂点のＵＶ/////////////////////////////////////
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
 			FbxVector2  uv = pUV->GetDirectArray().GetAt(uvIndex);
-			pVertices_[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
-
-			//頂点の法線
-			FbxVector4 Normal;
-			mesh->GetPolygonVertexNormal(poly, vertex, Normal);	//ｉ番目のポリゴンの、ｊ番目の頂点の法線をゲット
-			pVertices_[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0.0f);
+			pVertices_[index].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0);
 		}
 	}
 
+	int m_dwNumUV = mesh->GetTextureUVCount();
+	FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
+	if (m_dwNumUV > 0 && pUV->GetMappingMode() == FbxLayerElement::eByControlPoint)
+	{
+		for (int k = 0; k < m_dwNumUV; k++)
+		{
+			FbxVector2 uv = pUV->GetDirectArray().GetAt(k);
+			pVertices_[k].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
+		}
+	}
 
 	HRESULT hr;
 
 	// 頂点データ用バッファの設定
 	D3D11_BUFFER_DESC bd_vertex;
 	bd_vertex.ByteWidth = sizeof(VERTEX) * vertexCount_;
-	bd_vertex.Usage = D3D11_USAGE_DEFAULT;
+	bd_vertex.Usage = D3D11_USAGE_DYNAMIC;
 	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd_vertex.CPUAccessFlags = 0;
+	bd_vertex.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	bd_vertex.MiscFlags = 0;
 	bd_vertex.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA data_vertex;
@@ -145,7 +154,6 @@ HRESULT FbxParts::InitIndex(fbxsdk::FbxMesh* mesh)
 			}
 		}
 		indexCount_[i] = count;
-
 
 		HRESULT hr;
 
@@ -228,7 +236,7 @@ HRESULT FbxParts::InitMaterial(fbxsdk::FbxNode* pNode)
 			//ファイルからテクスチャ作成
 			pMaterialList_[i].pTexture = new Texture();
 			HRESULT hr = pMaterialList_[i].pTexture->Load(name);
-			//assert(hr == S_OK);
+			assert(hr == S_OK);
 		}
 		//テクスチャ無し
 		else
@@ -479,8 +487,6 @@ void FbxParts::DrawSkinAnime(Transform& transform, FbxTime time)
 	D3D11_MAPPED_SUBRESOURCE msr = {};
 	ID3D11Resource* pr = pVertexBuffer_;
 	HRESULT hr = Direct3D::pContext_->Map(pr, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
-
-	
 
 	if (msr.pData)
 	{
