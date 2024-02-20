@@ -7,7 +7,8 @@ class Timer;
 
 enum PLAYER_STATE
 {
-	STATE_WARK = 0,
+	STATE_IDLE = 0,
+	STATE_WALK,
 	STATE_JAMP,
 	STATE_FALL,
 	STATE_DEAD,
@@ -26,8 +27,11 @@ class Player
 	:public GameObject, StageOrigin
 {
 	int hModel_;
+	int hFrame_, hGage_, hFrameOutline_;
+	int hTime_;
 
-	int wallHitDir_;
+	Transform tFrame_, tGage_, tFrameOutline_;
+	Transform tTime_;
 
 	bool isGoal_;
 
@@ -35,6 +39,9 @@ class Player
 
 	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
 	XMVECTOR eyeDirection_;
+
+	XMFLOAT3 table_hit_point_;
+	bool is_table_hit_;
 
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 centerPos_;
@@ -73,6 +80,12 @@ public:
 	void Release() override;
 
 	void PlayUpdate();
+
+	void IdleUpdate();
+	void WalkUpdate();
+	void JampUpdate();
+	void FallUpdate();
+	void DeadUpdate();
 
 	bool Is_InSide_Table(XMFLOAT3 _pos);
 

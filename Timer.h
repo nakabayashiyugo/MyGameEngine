@@ -3,43 +3,24 @@
 
 const int FPS = 60;
 
-class Timer :public GameObject
+class Timer
 {
-	int hFrame_, hGage_, hFrameOutline_;
-	int hTime_;
-
-	Transform tFrame_, tGage_, tFrameOutline_;
-	Transform tTime_;
-
 	int count_time_;
 	int current_time_;
 	int limit_time_;
+
+	bool isTimeUpped_;
 public:
-	Timer(GameObject* parent);
+	Timer(int _limitTime);
 
 	//‰Šú‰»
-	void Initialize() override;
+	void Initialize();
 
 	//XV
-	void Update()override;
+	void Update();
 
-	void Draw()override;
+	bool isTimeUpped() { return isTimeUpped_; }
 
-	//ŠJ•ú
-	void Release()override;
-
-	void Time_Reset() 
-	{
-		count_time_ = 0;
-		current_time_ = 0;
-	}
-	
-	bool GetTimeUpped()
-	{
-		if (current_time_ == limit_time_)
-		{
-			return true;
-		}
-		return false;
-	}
+	int GetCurTime() { return current_time_; }
+	int GetLimitTime() { return limit_time_; }
 };
